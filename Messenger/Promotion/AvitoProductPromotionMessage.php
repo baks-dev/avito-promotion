@@ -23,15 +23,21 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Messenger\Promotion;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+final readonly class AvitoProductPromotionMessage
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    public function __construct(
+        private AvitoProductPromotionUid $id,
+    ) {}
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
-
-
+    /**
+     * Идентификатор
+     */
+    public function getId(): AvitoProductPromotionUid
+    {
+        return $this->id;
+    }
 }

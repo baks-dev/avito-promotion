@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,19 +19,40 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\UseCase\NewEdit;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
+use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
+use BaksDev\Avito\Promotion\Messenger\AvitoPromotionMessage;
+use BaksDev\Core\Entity\AbstractHandler;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+final class AvitoPromotionHandler extends AbstractHandler
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    public function handle(AvitoPromotionDTO $command): AvitoPromotion|string
+    {
+        $this->setCommand($command);
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
+        $this->preEventPersistOrUpdate(AvitoPromotion::class, AvitoPromotionEvent::class);
 
+        /** Валидация всех объектов */
+        if ($this->validatorCollection->isInvalid())
+        {
+            return $this->validatorCollection->getErrorUniqid();
+        }
 
+        $this->flush();
+
+        /** Отправляем сообщение в шину */
+        $this->messageDispatch->dispatch(
+            message: new AvitoPromotionMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
+            transport: 'avito-promotion'
+        );
+
+        return $this->main;
+    }
 }

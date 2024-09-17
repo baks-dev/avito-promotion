@@ -23,15 +23,24 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Security;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Users\Profile\Group\Security\RoleInterface;
+use BaksDev\Users\Profile\Group\Security\VoterInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+#[AutoconfigureTag('baks.security.voter')]
+final class VoterEdit implements VoterInterface
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    public const string VOTER = 'EDIT';
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public static function getVoter(): string
+    {
+        return Role::ROLE.'_'.self::VOTER;
+    }
 
-
+    public function equals(RoleInterface $role): bool
+    {
+        return $role->getRole() === Role::ROLE;
+    }
 }

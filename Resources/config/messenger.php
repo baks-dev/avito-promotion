@@ -21,17 +21,29 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-namespace BaksDev\Avito\Promotion;
+use Symfony\Config\FrameworkConfig;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+return static function (FrameworkConfig $framework) {
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
-{
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    $messenger = $framework->messenger();
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
+    $messenger
+        ->transport('avito-promotion')
+        ->dsn('redis://%env(REDIS_PASSWORD)%@%env(REDIS_HOST)%:%env(REDIS_PORT)%?auto_setup=true')
+        ->options(['stream' => 'avito-promotion'])
+        ->failureTransport('failed-avito-promotion')
+        ->retryStrategy()
+        ->maxRetries(3)
+        ->delay(1000)
+        ->maxDelay(0)
+        ->multiplier(3)
+        ->service(null);
 
+    $failure = $framework->messenger();
 
-}
+    $failure->transport('failed-avito-promotion')
+        ->dsn('%env(MESSENGER_TRANSPORT_DSN)%')
+        ->options(['queue_name' => 'failed-avito-promotion']);
+};

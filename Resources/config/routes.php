@@ -21,17 +21,19 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+use BaksDev\Avito\Promotion\BaksDevAvitoPromotionBundle;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
-namespace BaksDev\Avito\Promotion;
+return function (RoutingConfigurator $routes) {
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+    $MODULE = BaksDevAvitoPromotionBundle::PATH;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
-{
-    public const NAMESPACE = __NAMESPACE__.'\\';
-
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
-
-
-}
+    $routes->import(
+        $MODULE.'Controller',
+        'attribute',
+        false,
+        $MODULE.implode(DIRECTORY_SEPARATOR, ['Controller', '**', '*Test.php'])
+    )
+        ->prefix(\BaksDev\Core\Type\Locale\Locale::routes())
+        ->namePrefix('avito-promotion:');
+};

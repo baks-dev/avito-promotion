@@ -23,15 +23,12 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Messenger;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+#[AsMessageHandler]
+final class AvitoPromotionHandlerNull
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
-
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
-
-
+    public function __invoke(AvitoPromotionMessage $message): void {}
 }

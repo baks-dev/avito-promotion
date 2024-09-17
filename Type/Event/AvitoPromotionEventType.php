@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,19 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Type\Event;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Core\Type\UidType\UidType;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+final class AvitoPromotionEventType extends UidType
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    public function getClassType(): string
+    {
+        return AvitoPromotioneventUid::class;
+    }
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
-
-
+    public function getName(): string
+    {
+        return AvitoPromotioneventUid::TYPE;
+    }
 }

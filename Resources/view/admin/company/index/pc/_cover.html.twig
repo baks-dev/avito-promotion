@@ -1,0 +1,16 @@
+{% trans_default_domain('avito-promotion.admin') %}
+
+{#                 Обложка  #}
+
+	            {% set image_path = '/assets/img/blank.svg' %}
+
+	            {% if item.ext is defined and item.ext is not null %}
+                    {% set img_host =  item.cdn == true  ? CDN_HOST : '' %}
+                    {% set img_dir = item.cover %}
+                    {% set img_file = (img_host is empty ? '/image.' : '/small.') ~ item.ext %}
+                    {% set image_path = img_host ~ img_dir ~ img_file %}
+                {% endif %}
+
+<div class="rounded-circle bg-contain lazy pe-3" style="width: 80px; height: 80px;"
+     data-bg="{{ image_path }}">
+</div>

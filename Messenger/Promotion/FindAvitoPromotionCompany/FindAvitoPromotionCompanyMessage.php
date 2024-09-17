@@ -23,15 +23,24 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Messenger\Promotion\FindAvitoPromotionCompany;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+final readonly class FindAvitoPromotionCompanyMessage
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    /**
+     * Идентификатор
+     */
+    private UserProfileUid $profile;
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
+    public function __construct(UserProfileUid $profile)
+    {
+        $this->profile = $profile;
+    }
 
-
+    public function getProfile(): UserProfileUid
+    {
+        return $this->profile;
+    }
 }

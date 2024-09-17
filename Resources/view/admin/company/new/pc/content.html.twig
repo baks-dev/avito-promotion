@@ -1,0 +1,77 @@
+{% trans_default_domain 'avito-promotion.admin' %}
+
+<div class="modal-dialog modal-dialog-centered " style="max-width: 800px;">
+    {{ form_start(form) }}
+
+    <div class="modal-content p-3 border-bottom border-5 border-primary">
+
+        {# Табы #}
+        <ul class="nav nav-pills gap-3 mb-3 mt-3" id="nav-avito-promotion">
+
+            <li class="nav-item" role="presentation">
+                <button class="btn fw-bolder nav-link active"
+                        data-bs-toggle="tab"
+                        type="button"
+                        role="tab"
+                        aria-selected="true"
+
+                        id="tab_company-tab"
+                        data-bs-target="#tab_company"
+                        aria-controls="nav-avito-promotion"
+                >
+                    <small class="text-uppercase px-3">
+                        Настройки рекламной компании
+                    </small>
+                </button>
+            </li>
+
+            <li class="nav-item">
+                <button class="btn fw-bolder nav-link"
+                        data-bs-toggle="tab"
+                        type="button"
+                        role="tab"
+                        aria-selected="true"
+
+                        id="tab_filter-tab"
+                        data-bs-target="#tab_filter"
+                        aria-controls="nav-avito-promotion"
+                >
+                    <small class="text-uppercase px-3">
+                        Фильтры продукции
+                    </small>
+                </button>
+            </li>
+
+        </ul>
+
+        <div class="modal-header">
+            <h5 class="modal-title">
+                {{ 'page.new'|trans }}
+            </h5>
+        </div>
+
+        <div class="modal-body">
+            {# ФОРМА #}
+            {{ include('@avito-promotion/admin/company/_form/pc/form.html.twig') }}
+        </div>
+
+        <div class="modal-footer ">
+            {#            #}{# БЛОК КНОПОК ДЛЯ ФОРМЫ #}
+            {{ include(_self|replace({ "content.html.twig": "_btn.html.twig" })) }}
+        </div>
+    </div>
+
+    {# Прототип для элемента коллекции фильтров #}
+    <div id="filterCollection_prototype"
+            {#         data-prototype="{{ include(_self|replace({ "content.html.twig": "_prototype.filter.html.twig" }))|e('html_attr') }}"> #}
+         data-prototype="{{ include('@avito-promotion/admin/company/_form/pc/_prototype.filter.html.twig')|e('html_attr') }}">
+    </div>
+
+    <div id="title_prototype"
+         data-prototype="{{ include('@avito-promotion/admin/company/_form/pc/_template.title.html.twig')|e('html_attr') }}">
+    </div>
+
+    {{ form_end(form) }}
+</div>
+
+

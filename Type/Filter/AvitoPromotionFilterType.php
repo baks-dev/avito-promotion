@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,19 +19,24 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Type\Filter;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Core\Type\UidType\UidType;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+final class AvitoPromotionFilterType extends UidType
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    public function getClassType(): string
+    {
+        return AvitoPromotionFilterUid::class;
+    }
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
-
-
+    public function getName(): string
+    {
+        return AvitoPromotionFilterUid::TYPE;
+    }
 }

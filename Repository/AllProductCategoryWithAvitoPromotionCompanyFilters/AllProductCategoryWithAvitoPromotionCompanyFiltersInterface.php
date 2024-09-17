@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -21,17 +21,19 @@
  *  THE SOFTWARE.
  */
 
-declare(strict_types=1);
+namespace BaksDev\Avito\Promotion\Repository\AllProductCategoryWithAvitoPromotionCompanyFilters;
 
-namespace BaksDev\Avito\Promotion;
+use BaksDev\Core\Services\Paginator\PaginatorInterface;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+/**
+ * Находит все категории товаров, для которых созданы рекламные компании для Авито
+ */
+interface AllProductCategoryWithAvitoPromotionCompanyFiltersInterface
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    /**
+     * Только активные категории
+     */
+    public function onlyActive(): self;
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
-
-
+    public function findWithPaginator(): PaginatorInterface;
 }

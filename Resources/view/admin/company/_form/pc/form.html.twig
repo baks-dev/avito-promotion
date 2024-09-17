@@ -1,0 +1,176 @@
+{% trans_default_domain 'avito-promotion.admin' %}
+
+<div>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="tab_company" role="tabpanel">
+            <div>
+                {{ form_row(form.name, { label: 'Название рекламной компании' }) }}
+            </div>
+
+            <div class="d-flex gap-3 justify-content-between">
+                <div class="w-50">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="16" height="16"
+                             fill="currentColor"
+                             class="text-muted me-2" viewBox="0 0 16 16"
+                             role="tooltip"
+                             data-bs-toggle="tooltip"
+                             data-bs-placement="bottom"
+                             data-bs-original-title="Бюджет на сутки для одного продукта"
+                        >
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+                        </svg>
+                        {{ form_label(form.budget, 'Бюджет на сутки') }}
+
+                    </div>
+                    {{ form_row(form.budget) }}
+                </div>
+
+                <div class="w-50">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="16" height="16"
+                             fill="currentColor"
+                             class="text-muted me-2" viewBox="0 0 16 16"
+                             role="tooltip"
+                             data-bs-toggle="tooltip"
+                             data-bs-placement="bottom"
+                             data-bs-original-title="Лимит бюджета для одного продукта"
+                        >
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+                        </svg>
+                        {{ form_label(form.budgetLimit, 'Лимит бюджета') }}
+
+                    </div>
+                    {{ form_row(form.budgetLimit) }}
+                </div>
+                <div class="w-100">
+
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="16" height="16"
+                             fill="currentColor"
+                             class="text-muted me-2" viewBox="0 0 16 16"
+                             role="tooltip"
+                             data-bs-toggle="tooltip"
+                             data-bs-placement="bottom"
+                             data-bs-original-title="Дата, после которой текущая рекламная компания не будет автоматически продлена"
+                        >
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+                        </svg>
+
+                        {{ form_label(form.dateEnd, 'Срок окончания рекламной компании') }}
+                    </div>
+
+                    {{ form_widget(form.dateEnd) }}
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="tab-pane fade show" id="tab_filter" role="tabpanel">
+
+            <div class="d-flex mb-1 gap-2 w-50">
+                {{ form_label(form.category, 'Категория') }}
+                {{ form_widget(form.category, {
+                    placeholder: 'Выберите категорию...',
+                    attr: { 'data-select' : 'select2', class:  'mb-0'},
+                }) }}
+            </div>
+
+            <div id="prototypeElements" class="d-flex gap-3">
+
+                <div id="preProperty" class="w-100">
+                    <div id="prePropertyContainer" class="mb-2 mt-2">
+                        {{ form_row(form.preProperty, {
+                            placeholder: 'Выберите свойство категории...',
+                            attr: { 'data-select' : 'select2', class:  'mb-0'},
+                            label: 'Свойство продукта',
+                        }) }}
+                    </div>
+                </div>
+
+                <div id="preValue" class="w-50">
+                    <div id="preValueContainer" class="mb-2 mt-2">
+                        {{ form_widget(form.preValue, {
+                            placeholder: 'Выберите значение...',
+                            attr: { 'data-select' : 'select2', class:  'mb-0'},
+                            label: 'Значение',
+                        }) }}
+                    </div>
+                </div>
+
+                <div id="predicatePrototype" class="w-10">
+                    <div id="predicatePrototypeContainer" class="mb-2 mt-2">
+                        {{ form_row(form.predicatePrototype, {
+                            placeholder: 'Выберите параметр...',
+                            attr: { 'data-select' : 'select2', class:  'mb-0'},
+                        }) }}
+                    </div>
+                </div>
+
+            </div>
+
+            {% set titleValues = form.vars.value.filterValues %}
+
+            <div>
+                <strong>КАТЕГОРИЯ:</strong>
+                <span id="categoryName">
+
+        {{ form.vars.value.categoryName }}
+        </span>
+            </div>
+
+            {#    Для добавления элементов коллекции #}
+            <div id="filterCollection">
+                {% for key, filter in form.filters %}
+
+                    <div id="avito_promotion_form_filters_{{ key }}" class="item-filter">
+
+                        {{ form_widget(filter.property) }}
+                        {{ form_widget(filter.value) }}
+                        {{ form_widget(filter.predicate) }}
+
+                        {% set title = titleValues.get(filter.value.vars.value) %}
+
+                        {% if title is not null %}
+                            <div class="w-100">
+
+                                {{ include(_self|replace({ "form.html.twig": "_title.html.twig" })) }}
+
+                            </div>
+                        {% endif %}
+                    </div>
+
+                {% endfor %}
+            </div>
+
+            {# Кнопки добавления элемента в коллекцию #}
+            <div class="card-footer border-light bg-body d-flex justify-content-between align-items-end">
+
+                <button id="filterCollection_add" type="button"
+                        class="btn btn-sm btn-outline-primary border-0"
+                        data-prototype="filterCollection_prototype"
+                        data-index="{{ form.filters.count }}">
+
+                <span class="svg-icon svg-icon-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect opacity="0.5" x="11" y="18" width="12" height="2" rx="1" transform="rotate(-90 11 18)"
+                              fill="currentColor">
+                    </rect>
+                        <rect x="6" y="11" width="12" height="2" rx="1" fill="currentColor"></rect>
+                    </svg>
+                </span>
+                    Добавить фильтр
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+

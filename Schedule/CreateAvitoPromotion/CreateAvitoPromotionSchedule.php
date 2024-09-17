@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,19 +19,35 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Schedule\CreateAvitoPromotion;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Core\Schedule\ScheduleInterface;
+use DateInterval;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+/**
+ * Рендерим фид для Авито и кешируем его
+ */
+#[AutoconfigureTag('baks.schedule')]
+final class CreateAvitoPromotionSchedule implements ScheduleInterface
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    /** Возвращает класс сообщение */
+    public function getMessage(): object
+    {
+        return new CreateAvitoPromotionMessage();
+    }
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
-
-
+    /**
+     * Интервал повтора
+     * @see https://www.php.net/manual/en/dateinterval.createfromdatestring.php
+     */
+    public function getInterval(): DateInterval
+    {
+        return DateInterval::createFromDateString('1 day');
+    }
 }

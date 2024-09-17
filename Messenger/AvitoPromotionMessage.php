@@ -23,15 +23,40 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion;
+namespace BaksDev\Avito\Promotion\Messenger;
 
-use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
+use BaksDev\Avito\Promotion\Type\Event\AvitoPromotionEventUid;
 
-class BaksDevAvitoPromotionBundle extends AbstractBundle
+final readonly class AvitoPromotionMessage
 {
-    public const NAMESPACE = __NAMESPACE__.'\\';
+    public function __construct(
+        private AvitoPromotionUid $id,
+        private AvitoPromotionEventUid $event,
+        private ?AvitoPromotionEventUid $last = null,
+    ) {}
 
-    public const PATH = __DIR__.DIRECTORY_SEPARATOR;
+    /**
+     * Идентификатор
+     */
+    public function getId(): AvitoPromotionUid
+    {
+        return $this->id;
+    }
 
+    /**
+     * Идентификатор текущего события
+     */
+    public function getCurrentEvent(): AvitoPromotionEventUid
+    {
+        return $this->event;
+    }
 
+    /**
+     * Идентификатор предыдущего события
+     */
+    public function getPreviousEvent(): ?AvitoPromotionEventUid
+    {
+        return $this->last;
+    }
 }
