@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2024.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -47,12 +47,12 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
 
     public function profile(UserProfile|UserProfileUid|string $profile): self
     {
-        if ($profile instanceof UserProfile)
+        if($profile instanceof UserProfile)
         {
             $profile = $profile->getId();
         }
 
-        if (is_string($profile))
+        if(is_string($profile))
         {
             $profile = new UserProfileUid($profile);
         }
@@ -64,7 +64,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
 
     public function findWithPaginator(): PaginatorInterface
     {
-        if (false === $this->profile)
+        if(false === $this->profile)
         {
             throw new InvalidArgumentException('Invalid Argument profile');
         }
@@ -87,7 +87,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
                 'avito_promotion',
                 AvitoPromotionEvent::class,
                 'avito_promotion_event',
-                'avito_promotion_event.id = avito_promotion.event'
+                'avito_promotion_event.id = avito_promotion.event',
             );
 
         $dbal
@@ -99,7 +99,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
             'avito_promotion_event',
             CategoryProduct::class,
             'category',
-            'category.id = avito_promotion_event.category'
+            'category.id = avito_promotion_event.category',
         );
 
         /** События категории */
@@ -124,9 +124,9 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
             "
 			CASE
 			   WHEN category_cover.name IS NOT NULL THEN
-					CONCAT ( '/upload/" . $dbal->table(CategoryProductCover::class) . "' , '/', category_cover.name)
+					CONCAT ( '/upload/".$dbal->table(CategoryProductCover::class)."' , '/', category_cover.name)
 			   ELSE NULL
-			END AS cover"
+			END AS cover",
         );
 
         /** Перевод категории */
@@ -145,7 +145,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
 
     public function find(): array|false
     {
-        if (false === $this->profile)
+        if(false === $this->profile)
         {
             throw new InvalidArgumentException('Invalid Argument profile');
         }
@@ -168,7 +168,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
                 'avito_promotion',
                 AvitoPromotionEvent::class,
                 'avito_promotion_event',
-                'avito_promotion_event.id = avito_promotion.event'
+                'avito_promotion_event.id = avito_promotion.event',
             );
 
         $dbal
@@ -180,7 +180,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
             'avito_promotion_event',
             CategoryProduct::class,
             'category',
-            'category.id = avito_promotion_event.category'
+            'category.id = avito_promotion_event.category',
         );
 
         /** События категории */
@@ -205,9 +205,9 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
             "
 			CASE
 			   WHEN category_cover.name IS NOT NULL THEN
-					CONCAT ( '/upload/" . $dbal->table(CategoryProductCover::class) . "' , '/', category_cover.name)
+					CONCAT ( '/upload/".$dbal->table(CategoryProductCover::class)."' , '/', category_cover.name)
 			   ELSE NULL
-			END AS cover"
+			END AS cover",
         );
 
         /** Перевод категории */
@@ -223,7 +223,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
 
         $result = $dbal->fetchAllAssociative();
 
-        if (empty($result))
+        if(empty($result))
         {
             return false;
         }

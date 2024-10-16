@@ -37,7 +37,7 @@ final class AvitoPromotionDeleteForm extends AbstractType
         $builder->add('delete_item', SubmitType::class, [
             'label' => 'Delete',
             'label_html' => true,
-            'attr' => ['class' => 'btn-danger']
+            'attr' => ['class' => 'btn-danger'],
         ]);
     }
 

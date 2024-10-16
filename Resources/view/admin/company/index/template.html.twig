@@ -7,18 +7,18 @@
 
 {# ---- CSS ------------------------------------------------------------ #}
 {% block title %}
-	{{ 'page.index'|trans }}
+    {{ 'page.index'|trans }}
 {% endblock %}
 
 {# ---- CSS ------------------------------------------------------------ #}
 {% block stylesheets %}
-	<link href="/assets/plugins/nice-select2/nice-select2.min.css" rel="stylesheet">
-	<link href="/assets/plugins/datepicker/datepicker.min.css" rel="stylesheet">
+    <link href="/assets/plugins/nice-select2/nice-select2.min.css" rel="stylesheet">
+    <link href="/assets/plugins/datepicker/datepicker.min.css" rel="stylesheet">
 {% endblock %}
 
 {# ---- КОНТЕНТ-БЛОК ------------------------------------------------------------ #}
 {% block content %}
-	{{ include(_self|replace({ "template.html.twig": baks_settings.device~"/content.html.twig" })) }}
+    {{ include(_self|replace({ "template.html.twig": baks_settings.device~"/content.html.twig" })) }}
 {% endblock %}
 
 {% block javascript %}

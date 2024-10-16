@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2024.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -97,10 +97,10 @@ final class AvitoPromotionForm extends AbstractType
                 'choices' => $this->categoryChoice
                     ->onlyActive()
                     ->findAll(),
-                'choice_value' => function (?CategoryProductUid $type) {
+                'choice_value' => function(?CategoryProductUid $type) {
                     return $type;
                 },
-                'choice_label' => function (CategoryProductUid $type) {
+                'choice_label' => function(CategoryProductUid $type) {
                     return $type->getOptions();
                 },
                 'label' => 'Категория',
@@ -126,13 +126,13 @@ final class AvitoPromotionForm extends AbstractType
 
         $builder->get('preProperty')->addModelTransformer(
             new CallbackTransformer(
-                function (?string $field) {
+                function(?string $field) {
                     return $field instanceof CategoryProductSectionFieldUid ? $field->getValue() : $field;
                 },
-                function (?string $field) {
+                function(?string $field) {
                     return $field ? new CategoryProductSectionFieldUid($field) : null;
-                }
-            )
+                },
+            ),
         );
 
         $builder->add('preValue', HiddenType::class);
@@ -141,7 +141,7 @@ final class AvitoPromotionForm extends AbstractType
 
         /** ******** События формы ******* */
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function(FormEvent $event) use ($options) {
 
             /** @var AvitoPromotionDTO $avitoPromotionDTO */
             $avitoPromotionDTO = $event->getData();
@@ -197,7 +197,7 @@ final class AvitoPromotionForm extends AbstractType
         });
 
         $builder->get('preProperty')
-            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+            ->addEventListener(FormEvents::POST_SUBMIT, function(FormEvent $event) {
 
                 $form = $event->getForm();
                 $parent = $event->getForm()->getParent();
@@ -220,10 +220,10 @@ final class AvitoPromotionForm extends AbstractType
 
                     $parent->add('preProperty', ChoiceType::class, [
                         'choices' => $productProperties,
-                        'choice_value' => function (?CategoryProductSectionFieldUid $property) {
+                        'choice_value' => function(?CategoryProductSectionFieldUid $property) {
                             return $property?->getValue();
                         },
-                        'choice_label' => function (CategoryProductSectionFieldUid $property) {
+                        'choice_label' => function(CategoryProductSectionFieldUid $property) {
                             return $property->getAttr();
                         },
                         //                        'label' => 'Свойство продукта',
@@ -242,10 +242,10 @@ final class AvitoPromotionForm extends AbstractType
                         //                        $parentData->setPreProperty($CategoryProductSectionFieldUid);
 
                         $fields = $productProperties->filter(
-                            function (CategoryProductSectionFieldUid $element) use ($CategoryProductSectionFieldUid) {
+                            function(CategoryProductSectionFieldUid $element) use ($CategoryProductSectionFieldUid) {
 
                                 return $element->equals($CategoryProductSectionFieldUid);
-                            }
+                            },
                         );
 
 
@@ -271,13 +271,13 @@ final class AvitoPromotionForm extends AbstractType
                                     'label' => false,
                                     'required' => false,
                                     'mapped' => false,
-                                ]
+                                ],
                             );
 
                             $form->getParent()->add('predicatePrototype', ChoiceType::class, [
                                 'choices' => ['И' => 'AND', 'ИЛИ' => 'OR'],
-                                'choice_value' => fn (?string $value) => $value ?? null,
-                                'choice_label' => fn (string $key, string $value) => $value,
+                                'choice_value' => fn(?string $value) => $value ?? null,
+                                'choice_label' => fn(string $key, string $value) => $value,
                                 'empty_data' => 'OR',
                                 'label' => false,
                                 'expanded' => false,
@@ -293,7 +293,7 @@ final class AvitoPromotionForm extends AbstractType
         $builder->add('avito_promotion_add', SubmitType::class, [
             'label' => 'Save',
             'label_html' => true,
-            'attr' => ['class' => 'btn-primary']
+            'attr' => ['class' => 'btn-primary'],
         ]);
     }
 

@@ -1,4 +1,26 @@
 <?php
+/*
+ *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is furnished
+ *  to do so, subject to the following conditions:
+ *  
+ *  The above copyright notice and this permission notice shall be included in all
+ *  copies or substantial portions of the Software.
+ *  
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ *
+ */
 
 declare(strict_types=1);
 
@@ -63,7 +85,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 
     public function category(CategoryProductUid|string $category): self
     {
-        if (is_string($category))
+        if(is_string($category))
         {
             $category = new CategoryProductUid($category);
         }
@@ -77,34 +99,34 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
     {
         $this->filters = $filters;
 
-        foreach ($filters as $filter)
+        foreach($filters as $filter)
         {
-            if ($filter->type === null)
+            if($filter->type === null)
             {
                 return $this;
             }
 
-            if ($filter->type === 'OFFER')
+            if($filter->type === 'OFFER')
             {
                 $this->offerFilters = [];
 
                 $this->offerFilters[] = $filter;
             }
 
-            if ($filter->type === 'VARIATION')
+            if($filter->type === 'VARIATION')
             {
                 $this->variationFilters = [];
 
                 $this->variationFilters[] = $filter;
             }
-            if ($filter->type === 'MODIFICATION')
+            if($filter->type === 'MODIFICATION')
             {
                 $this->modificationFilters = [];
 
                 $this->modificationFilters[] = $filter;
             }
 
-            if ($filter->type === 'PROPERTY')
+            if($filter->type === 'PROPERTY')
             {
                 $this->propertyFilters = [];
 
@@ -117,12 +139,12 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 
     public function profile(UserProfile|UserProfileUid|string $profile): self
     {
-        if ($profile instanceof UserProfile)
+        if($profile instanceof UserProfile)
         {
             $profile = $profile->getId();
         }
 
-        if (is_string($profile))
+        if(is_string($profile))
         {
             $profile = new UserProfileUid($profile);
         }
@@ -153,22 +175,22 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
     public function execute(): array|false
     {
 
-        if ($this->category === false)
+        if($this->category === false)
         {
             throw new InvalidArgumentException('Invalid Argument category');
         }
 
-        if ($this->filters === false)
+        if($this->filters === false)
         {
             throw new InvalidArgumentException('Invalid Argument filters');
         }
 
-        if ($this->profile === false)
+        if($this->profile === false)
         {
             throw new InvalidArgumentException('Invalid Argument profile');
         }
 
-        if ($this->date === false)
+        if($this->date === false)
         {
             throw new InvalidArgumentException('Invalid Argument date');
         }
@@ -187,8 +209,8 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 
         /** Активное событие заказа */
         $dbal
-//            ->addSelect('orders_event.created AS order_created')
-//            ->addSelect('orders_event.id AS order_event')
+            //            ->addSelect('orders_event.created AS order_created')
+            //            ->addSelect('orders_event.id AS order_event')
             ->join(
                 'orders',
                 OrderEvent::class,
@@ -198,7 +220,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                     orders_event.status = :status AND
                     orders_event.created > :date
                     /** orders_event.created + INTERVAL \'7 days\' > CURRENT_DATE */
-                    '
+                    ',
             )
             ->setParameter('status', OrderStatusCompleted::STATUS, OrderStatus::TYPE)
             ->setParameter('date', $date);
@@ -211,20 +233,20 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 OrderProduct::class,
                 'orders_product',
                 '
-                    orders_product.event = orders_event.id'
+                    orders_product.event = orders_event.id',
             );
 
         /** Количество заказа */
         $dbal
             ->addSelect('COUNT(orders_price.*) AS orders_count')
             ->addSelect('SUM(orders_price.total) AS orders_total')
-//            ->addSelect('orders_price.total AS orders_total')
+            //            ->addSelect('orders_price.total AS orders_total')
             ->leftJoin(
                 'orders_product',
                 OrderPrice::class,
                 'orders_price',
                 '
-                    orders_price.product = orders_product.id'
+                    orders_price.product = orders_product.id',
             );
 
         /**
@@ -235,7 +257,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 'orders_product',
                 ProductEvent::class,
                 'product_event',
-                'product_event.id = orders_product.product'
+                'product_event.id = orders_product.product',
             );
 
         /** Получаем название с учетом настроек локализации */
@@ -245,7 +267,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
-                'product_trans.event = product_event.id AND product_trans.local = :local'
+                'product_trans.event = product_event.id AND product_trans.local = :local',
             );
 
         /** Основной артикул товара */
@@ -254,7 +276,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 'product_event',
                 ProductInfo::class,
                 'product_info',
-                'product_info.product = product_event.main'
+                'product_info.product = product_event.main',
             );
 
         /**
@@ -268,7 +290,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 '
                     product_category.event = product_event.id AND 
                     product_category.root IS TRUE AND
-                    product_category.category = :category'
+                    product_category.category = :category',
             );
 
         /** Только совпадения с категорией из фильтра */
@@ -280,7 +302,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 'product_category',
                 CategoryProduct::class,
                 'category',
-                'category.id = product_category.category'
+                'category.id = product_category.category',
             );
 
         /**
@@ -295,14 +317,14 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 'product_offer',
                 '
                     product_offer.event = product_event.id AND 
-                    product_offer.id = orders_product.offer'
+                    product_offer.id = orders_product.offer',
             );
 
         /** Выражение для фильтра по Offer */
         $offerFilter = $this->getOffer('product_offer.category_offer', 'product_offer.value');
 
 
-        if (false === is_null($offerFilter))
+        if(false === is_null($offerFilter))
         {
             $dbal->where($offerFilter);
         }
@@ -319,13 +341,13 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 'product_variation',
                 '
                     product_variation.offer = product_offer.id AND
-                    product_variation.id = orders_product.variation'
+                    product_variation.id = orders_product.variation',
             );
 
         /** Выражение для фильтра по Variation */
         $variationFilter = $this->getVariation('product_variation.category_variation', 'product_variation.value');
 
-        if (false === is_null($variationFilter))
+        if(false === is_null($variationFilter))
         {
             $dbal->where($variationFilter);
         }
@@ -342,13 +364,13 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 'product_modification',
                 '
                     product_modification.variation = product_variation.id AND
-                    product_modification.id = orders_product.modification'
+                    product_modification.id = orders_product.modification',
             );
 
         /** Выражение для фильтра по Modification */
         $modificationFilter = $this->getModification('product_modification.category_modification', 'product_modification.value');
 
-        if (false === is_null($modificationFilter))
+        if(false === is_null($modificationFilter))
         {
             $dbal->where($modificationFilter);
         }
@@ -356,10 +378,10 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
         /** Выражение для фильтра по Property */
         $propertyFilters = $this->getProperties('product_property.field', 'product_property.value', 'product_property.event');
 
-        if (false == is_null($propertyFilters))
+        if(false == is_null($propertyFilters))
         {
             // OR (одно из совпадений) //
-            if (false == is_null($propertyFilters->or))
+            if(false == is_null($propertyFilters->or))
             {
 
                 $dbal
@@ -369,32 +391,32 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                         'orders_product',
                         ProductProperty::class,
                         'product_property',
-                        $propertyFilters->or
+                        $propertyFilters->or,
                     );
             }
 
             // AND (несколько совпадений)
-            if (false == is_null($propertyFilters->and))
+            if(false == is_null($propertyFilters->and))
             {
                 /**
                  * @var object{
                  *      key: string,
                  *      condition: string } $propertyFilter
                  */
-                foreach ($propertyFilters->and as $propertyFilter)
+                foreach($propertyFilters->and as $propertyFilter)
                 {
 
                     $key = $propertyFilter->key;
                     $condition = $propertyFilter->condition;
-                    $alias = 'product_property_' . $key;
+                    $alias = 'product_property_'.$key;
 
                     $dbal
-                        ->addSelect($alias . '.value' . ' AS product_property_value')
+                        ->addSelect($alias.'.value'.' AS product_property_value')
                         ->join(
                             'orders_product',
                             ProductProperty::class,
                             $alias,
-                            $condition
+                            $condition,
                         );
                 }
             }
@@ -419,7 +441,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 					   THEN product_info.article
 					   
 					   ELSE NULL
-					END AS product_article"
+					END AS product_article",
         );
 
         /**
@@ -429,7 +451,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             'orders_product',
             ProductPrice::class,
             'product_price',
-            'product_price.event = orders_product.product'
+            'product_price.event = orders_product.product',
         );
 
         /**
@@ -439,7 +461,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             'product_offer',
             ProductOfferPrice::class,
             'product_offer_price',
-            'product_offer_price.offer = product_offer.id'
+            'product_offer_price.offer = product_offer.id',
         );
 
         /**
@@ -449,7 +471,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             'product_variation',
             ProductVariationPrice::class,
             'product_variation_price',
-            'product_variation_price.variation = product_variation.id'
+            'product_variation_price.variation = product_variation.id',
         );
 
         /**
@@ -459,7 +481,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             'product_modification',
             ProductModificationPrice::class,
             'product_modification_price',
-            'product_modification_price.modification = product_modification.id'
+            'product_modification_price.modification = product_modification.id',
         );
 
         /** Наличие продукта */
@@ -467,13 +489,13 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
          * Наличие и резерв торгового предложения
          */
         $dbal
-//            ->addSelect('product_offer_quantity.quantity AS quantity')
-//            ->addSelect('product_offer_quantity.reserve AS reserve')
+            //            ->addSelect('product_offer_quantity.quantity AS quantity')
+            //            ->addSelect('product_offer_quantity.reserve AS reserve')
             ->leftJoin(
                 'product_offer',
                 ProductOfferQuantity::class,
                 'product_offer_quantity',
-                'product_offer_quantity.offer = product_offer.id'
+                'product_offer_quantity.offer = product_offer.id',
             );
 
         /**
@@ -483,14 +505,14 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             'product_variation',
             ProductVariationQuantity::class,
             'product_variation_quantity',
-            'product_variation_quantity.variation = product_variation.id'
+            'product_variation_quantity.variation = product_variation.id',
         );
 
         $dbal->leftJoin(
             'product_modification',
             ProductModificationQuantity::class,
             'product_modification_quantity',
-            'product_modification_quantity.modification = product_modification.id'
+            'product_modification_quantity.modification = product_modification.id',
         );
 
         //        $dbal->addSelect(
@@ -539,7 +561,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             ->enableCache('orders-order', 3600)
             ->fetchAllAssociative();
 
-        if (empty($result))
+        if(empty($result))
         {
             return false;
         }
@@ -550,7 +572,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
     private function getOffer(string $properAlias, string $valueAlias): string|null
     {
 
-        if (false === $this->offerFilters)
+        if(false === $this->offerFilters)
         {
             return null;
         }
@@ -563,7 +585,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
     private function getVariation(string $properAlias, string $valueAlias): string|null
     {
 
-        if (false === $this->variationFilters)
+        if(false === $this->variationFilters)
         {
             return null;
         }
@@ -576,7 +598,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
     private function getModification(string $properAlias, string $valueAlias): string|null
     {
 
-        if (false === $this->modificationFilters)
+        if(false === $this->modificationFilters)
         {
             return null;
         }
@@ -598,9 +620,9 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
          *      'property': string,
          *      'predicate': string } $filter
          */
-        foreach ($filters as $filter)
+        foreach($filters as $filter)
         {
-            if (null === $condition)
+            if(null === $condition)
             {
                 $condition = "(%s = '%s' AND %s = '%s')";
                 $condition = sprintf($condition, $properAlias, $filter->property, $valueAlias, $filter->value);
@@ -624,7 +646,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
      */
     private function getProperties(string $properAlias, string $valueAlias, ?string $eventAlias = null): object|null
     {
-        if (false === $this->propertyFilters)
+        if(false === $this->propertyFilters)
         {
             return null;
         }
@@ -642,15 +664,15 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
          *      'property': string,
          *      'predicate': string } $filter
          */
-        foreach ($this->propertyFilters as $key => $filter)
+        foreach($this->propertyFilters as $key => $filter)
         {
 
             // одно из совпадений
             // формируем строку с выражением для одного джойна (выражение чувствительно к количеству фильтров)
-            if ($filter->predicate === 'OR')
+            if($filter->predicate === 'OR')
             {
 
-                if (null === $propertyFilters->or) // формируем первую часть выражения
+                if(null === $propertyFilters->or) // формируем первую часть выражения
                 {
                     $condition = "%s = '%s' AND (%s = '%s'";
                     $condition = sprintf($condition, $properAlias, $filter->property, $valueAlias, $filter->value);
@@ -659,7 +681,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 }
                 else // формируем следующие части выражения
                 {
-                    $condition = $propertyFilters->or . " %s %s = '%s'";
+                    $condition = $propertyFilters->or." %s %s = '%s'";
 
                     $condition = sprintf($condition, 'OR', $valueAlias, $filter->value);
 
@@ -667,23 +689,23 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 }
 
                 // дополняем выражение при обработке последнего фильтра
-                if ($key === $count - 1)
+                if($key === $count - 1)
                 {
-                    $end = $propertyFilters->or . ') AND ' . $eventAlias . ' = orders_product.product';
+                    $end = $propertyFilters->or.') AND '.$eventAlias.' = orders_product.product';
                     $propertyFilters->or = $end;
                 }
 
                 // дополняем выражение в конце, если фильтр только одни
-                if ($count < 1)
+                if($count < 1)
                 {
-                    $end = $propertyFilters->or . ')';
+                    $end = $propertyFilters->or.')';
                     $propertyFilters->or = $end;
                 }
             }
 
             // несколько совпадений
             // формируем массив выражений для циклических джойнов
-            if ($filter->predicate === 'AND')
+            if($filter->predicate === 'AND')
             {
                 $property = new \stdClass();
 
@@ -691,20 +713,20 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 $property->key = $unique;
 
                 // Генерируем уникальные алиасы свойств
-                $uniquePropertyAlias = str_replace('.', '_' . $unique . '.', $properAlias);
-                $uniqueValueAlias = str_replace('.', '_'  . $unique . '.', $valueAlias);
-                $uniqueEventAlias = str_replace('.', '_' . $unique . '.', $eventAlias);
+                $uniquePropertyAlias = str_replace('.', '_'.$unique.'.', $properAlias);
+                $uniqueValueAlias = str_replace('.', '_'.$unique.'.', $valueAlias);
+                $uniqueEventAlias = str_replace('.', '_'.$unique.'.', $eventAlias);
 
                 $condition = "%s = '%s' AND %s = '%s'";
 
                 $condition = sprintf($condition, $uniquePropertyAlias, $filter->property, $uniqueValueAlias, $filter->value);
-                $property->condition = $condition . ' AND ' . $uniqueEventAlias . ' = orders_product.product';
+                $property->condition = $condition.' AND '.$uniqueEventAlias.' = orders_product.product';
 
                 $propertyFilters->and[] = $property;
             }
         }
 
-//        dd($propertyFilters);
+        //        dd($propertyFilters);
         return $propertyFilters;
     }
 }

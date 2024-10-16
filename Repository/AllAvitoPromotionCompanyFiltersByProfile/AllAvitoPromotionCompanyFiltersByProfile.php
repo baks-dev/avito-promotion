@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2024.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,12 +60,12 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
 
     public function profile(UserProfile|UserProfileUid|string $profile): self
     {
-        if ($profile instanceof UserProfile)
+        if($profile instanceof UserProfile)
         {
             $profile = $profile->getId();
         }
 
-        if (is_string($profile))
+        if(is_string($profile))
         {
             $profile = new UserProfileUid($profile);
         }
@@ -91,7 +91,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
      */
     public function execute(): array|false
     {
-        if (false === $this->profile)
+        if(false === $this->profile)
         {
             throw new InvalidArgumentException('Invalid Argument profile');
         }
@@ -117,7 +117,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                 'avito_promotion',
                 AvitoPromotionEvent::class,
                 'avito_promotion_event',
-                'avito_promotion_event.id = avito_promotion.event'
+                'avito_promotion_event.id = avito_promotion.event',
             )
             ->addGroupBy('avito_promotion_event.id');
 
@@ -126,7 +126,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
             ->setParameter('profile', $this->profile, UserProfileUid::TYPE);
 
         /** Компания, попадающая в указанный период */
-        if (true === $this->active)
+        if(true === $this->active)
         {
             $dbal->andWhere("avito_promotion_event.date_end > CURRENT_DATE");
         }
@@ -137,7 +137,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                 'avito_promotion_event',
                 AvitoToken::class,
                 'avito_token',
-                'avito_promotion_event.profile = :profile'
+                'avito_promotion_event.profile = :profile',
             )
             ->setParameter('profile', $this->profile, UserProfileUid::TYPE);
 
@@ -172,7 +172,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                 'avito_promotion_event',
                 AvitoPromotionFilter::class,
                 'avito_promotion_filter',
-                'avito_promotion_filter.event = avito_promotion_event.id'
+                'avito_promotion_filter.event = avito_promotion_event.id',
             );
 
         /** Offer */
@@ -181,7 +181,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                 'avito_promotion_filter',
                 CategoryProductOffers::class,
                 'category_offer',
-                'category_offer.id = avito_promotion_filter.property'
+                'category_offer.id = avito_promotion_filter.property',
             );
 
         /** Variation */
@@ -190,7 +190,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                 'avito_promotion_filter',
                 CategoryProductVariation::class,
                 'product_variation_field',
-                'product_variation_field.id = avito_promotion_filter.property'
+                'product_variation_field.id = avito_promotion_filter.property',
             );
 
         /** Modification */
@@ -199,7 +199,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                 'avito_promotion_filter',
                 CategoryProductModification::class,
                 'product_modification_field',
-                'product_modification_field.id = avito_promotion_filter.property'
+                'product_modification_field.id = avito_promotion_filter.property',
             );
 
         /** Property */
@@ -208,7 +208,7 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                 'avito_promotion_filter',
                 CategoryProductSectionField::class,
                 'product_category_section_field',
-                'product_category_section_field.const = avito_promotion_filter.property'
+                'product_category_section_field.const = avito_promotion_filter.property',
             );
 
         $dbal->addSelect(
@@ -230,12 +230,12 @@ final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotio
                         'predicate', avito_promotion_filter.predicate
                     )
                 )
-            AS filters"
+            AS filters",
         );
 
         $result = $dbal->fetchAllAssociative();
 
-        if (empty($result))
+        if(empty($result))
         {
             return false;
         }
