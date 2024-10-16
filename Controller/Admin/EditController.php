@@ -50,6 +50,7 @@ final class EditController extends AbstractController
         #[MapEntity] AvitoPromotionEvent $event,
         AvitoPromotionHandler $handler,
     ): Response {
+
         $editDTO = new AvitoPromotionDTO();
 
         $event->getDto($editDTO);
@@ -68,7 +69,6 @@ final class EditController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid() && $form->has('avito_promotion_add'))
         {
-
             $this->refreshTokenForm($form);
 
             $result = $handler->handle($editDTO);

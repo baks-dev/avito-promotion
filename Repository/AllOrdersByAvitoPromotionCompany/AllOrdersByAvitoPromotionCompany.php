@@ -86,20 +86,28 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 
             if ($filter->type === 'OFFER')
             {
+                $this->offerFilters = [];
+
                 $this->offerFilters[] = $filter;
             }
 
             if ($filter->type === 'VARIATION')
             {
+                $this->variationFilters = [];
+
                 $this->variationFilters[] = $filter;
             }
             if ($filter->type === 'MODIFICATION')
             {
+                $this->modificationFilters = [];
+
                 $this->modificationFilters[] = $filter;
             }
 
             if ($filter->type === 'PROPERTY')
             {
+                $this->propertyFilters = [];
+
                 $this->propertyFilters[] = $filter;
             }
         }
@@ -679,12 +687,13 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             {
                 $property = new \stdClass();
 
-                $property->key = $filter->value;
+                $unique = uniqid();
+                $property->key = $unique;
 
                 // Генерируем уникальные алиасы свойств
-                $uniquePropertyAlias = str_replace('.', '_' . $filter->value . '.', $properAlias);
-                $uniqueValueAlias = str_replace('.', '_' . $filter->value . '.', $valueAlias);
-                $uniqueEventAlias = str_replace('.', '_' . $filter->value . '.', $eventAlias);
+                $uniquePropertyAlias = str_replace('.', '_' . $unique . '.', $properAlias);
+                $uniqueValueAlias = str_replace('.', '_'  . $unique . '.', $valueAlias);
+                $uniqueEventAlias = str_replace('.', '_' . $unique . '.', $eventAlias);
 
                 $condition = "%s = '%s' AND %s = '%s'";
 
@@ -695,6 +704,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             }
         }
 
+//        dd($propertyFilters);
         return $propertyFilters;
     }
 }

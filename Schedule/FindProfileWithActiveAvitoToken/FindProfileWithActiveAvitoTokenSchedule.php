@@ -24,7 +24,7 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Schedule\CreateAvitoPromotion;
+namespace BaksDev\Avito\Promotion\Schedule\FindProfileWithActiveAvitoToken;
 
 use BaksDev\Core\Schedule\ScheduleInterface;
 use DateInterval;
@@ -34,12 +34,12 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
  * Рендерим фид для Авито и кешируем его
  */
 #[AutoconfigureTag('baks.schedule')]
-final class CreateAvitoPromotionSchedule implements ScheduleInterface
+final class FindProfileWithActiveAvitoTokenSchedule implements ScheduleInterface
 {
     /** Возвращает класс сообщение */
     public function getMessage(): object
     {
-        return new CreateAvitoPromotionMessage();
+        return new FindProfileWithActiveAvitoTokenMessage();
     }
 
     /**

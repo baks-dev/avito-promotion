@@ -40,6 +40,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see AvitoProductPromotionDTO */
 #[ORM\Entity]
+#[ORM\Index(columns: ['article'])]
+#[ORM\Index(columns: ['offer'])]
+#[ORM\Index(columns: ['variation'])]
+#[ORM\Index(columns: ['modification'])]
 #[ORM\Index(columns: ['company'])]
 #[ORM\Index(columns: ['profile'])]
 #[ORM\Table(name: 'avito_promotion_product')]
@@ -66,22 +70,23 @@ class AvitoProductPromotion extends EntityState
     #[ORM\Column(type: ProductModificationConst::TYPE, nullable: true)]
     private ?ProductModificationConst $modification = null;
 
-    /** Константа модификации множественного варианта */
+    /** Константа свойства продукта */
     #[ORM\Column(type: CategoryProductSectionFieldUid::TYPE, nullable: true)]
     private ?CategoryProductSectionFieldUid $property = null;
 
-    /**  */
+    /** Рекламная компания */
     #[ORM\Column(type: AvitoPromotionUid::TYPE, nullable: false)]
     private AvitoPromotionUid $company;
 
-    /**  */
+    /** Профиль пользователя */
     #[ORM\Column(type: UserProfileUid::TYPE, nullable: false)]
     private UserProfileUid $profile;
 
-    /**  */
+    /** Рекламный бюджет на продукт */
     #[ORM\Column(type: Types::INTEGER, nullable: false)]
     private int $budget;
 
+    /** Дата создания/обновления рекламного продукта */
     #[Assert\NotBlank]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     private \DateTimeImmutable $created;

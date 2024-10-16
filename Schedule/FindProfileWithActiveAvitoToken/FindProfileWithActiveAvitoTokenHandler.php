@@ -24,16 +24,16 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Schedule\CreateAvitoPromotion;
+namespace BaksDev\Avito\Promotion\Schedule\FindProfileWithActiveAvitoToken;
 
-use BaksDev\Avito\Promotion\Messenger\Promotion\FindAvitoPromotionCompany\FindAvitoPromotionCompanyMessage;
+use BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoProductPromotion\CreateAvitoProductPromotionMessage;
 use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-final readonly class CreateAvitoPromotionHandler
+final readonly class FindProfileWithActiveAvitoTokenHandler
 {
     private LoggerInterface $logger;
 
@@ -45,26 +45,26 @@ final readonly class CreateAvitoPromotionHandler
         $this->logger = $avitoBoardLogger;
     }
 
-    public function __invoke(CreateAvitoPromotionMessage $message): void
+    public function __invoke(FindProfileWithActiveAvitoTokenMessage $message): void
     {
         /** Получаем все активные профили, у которых активный токен Авито */
         $profiles = $this->allProfilesByToken->findProfilesByActiveToken();
 
-        if (false === $profiles)
+        if(false === $profiles)
         {
             $this->logger->warning(
                 'Профили с активными токенами Авито не найдены',
-                [__FILE__ . ':' . __LINE__]
+                [__FILE__.':'.__LINE__],
             );
 
             return;
         }
 
-        foreach ($profiles as $profile)
+        foreach($profiles as $profile)
         {
             $this->messageDispatch->dispatch(
-                message: new FindAvitoPromotionCompanyMessage($profile),
-                transport: (string)$profile
+                message: new CreateAvitoProductPromotionMessage($profile),
+                transport: (string) $profile,
             );
         }
     }

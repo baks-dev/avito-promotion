@@ -45,7 +45,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\Index(columns: ['profile'])]
 #[ORM\Index(columns: ['category'])]
-#[ORM\UniqueConstraint(name: 'ean', columns: ['id', 'category'])]
 #[ORM\Table(name: 'avito_promotion_event')]
 class AvitoPromotionEvent extends EntityEvent
 {
@@ -88,16 +87,25 @@ class AvitoPromotionEvent extends EntityEvent
     #[ORM\Column(type: Types::TEXT, nullable: false)]
     private string $name;
 
+    /**
+     * Шаг бюджета
+     */
     #[Assert\NotBlank]
-    #[Assert\Range(min: 0, max: 100)]
+    #[Assert\Range(min: 1, max: 100)]
     #[ORM\Column(type: Types::INTEGER, nullable: false)]
     private ?int $budget = null;
 
+    /**
+     * Ограничение бюджета
+     */
     #[Assert\NotBlank]
-    #[Assert\Range(min: 0, max: 1000)]
+    #[Assert\Range(min: 101, max: 1000)]
     #[ORM\Column(type: Types::INTEGER, nullable: false)]
     private ?int $budgetLimit = null;
 
+    /**
+     * Дата окончания рекламной компании
+     */
     #[Assert\NotBlank]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     private ?\DateTimeImmutable $dateEnd = null;
@@ -123,9 +131,6 @@ class AvitoPromotionEvent extends EntityEvent
         $this->filters = new ArrayCollection();
     }
 
-    /**
-     * Используется при модификации - создания нового события
-     */
     public function __clone(): void
     {
         $this->id = clone $this->id;
@@ -141,9 +146,6 @@ class AvitoPromotionEvent extends EntityEvent
         return $this->id;
     }
 
-    /**
-     * Присваивает корень событию (обязательный метод для использования в AbstractHandler)
-     */
     public function setMain(AvitoPromotion|AvitoPromotionUid $main): void
     {
         $this->main = $main instanceof AvitoPromotion ? $main->getId() : $main;
@@ -154,9 +156,6 @@ class AvitoPromotionEvent extends EntityEvent
         return $this->main;
     }
 
-    /**
-     * Магический метод гидрирования DTO с помощью рефлексии
-     */
     public function getDto($dto): mixed
     {
         if ($dto instanceof AvitoPromotionEventInterface)
@@ -167,9 +166,6 @@ class AvitoPromotionEvent extends EntityEvent
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
     }
 
-    /**
-     * Гидрирует событие значениями из ДТО
-     */
     public function setEntity($dto): mixed
     {
         if ($dto->getFilters()->isEmpty())

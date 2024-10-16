@@ -1,6 +1,6 @@
 {% trans_default_domain 'avito-promotion.admin' %}
 
-<div class="d-flex justify-content-between align-items-center">
+<div class="w-50 d-flex justify-content-between align-items-center">
 
     <div class="me-3">
         <button id="delete-avito_promotion_form_filters_{{ key }}" type="button"
@@ -12,21 +12,26 @@
         </button>
     </div>
 
-    <div class="title-predicate">
-        <i class="me-3">
-            {{ title.predicate == 'OR' ? 'ИЛИ' : 'И' }}
-        </i>
-    </div>
+    <div class="w-100 d-flex justify-content-around">
 
-    <div class="w-100">
-        <span>
-            <strong>ФИЛЬТР № {{ key + 1 }}:</strong>
-            {{ title.property_name }} -> {{ title.value |trans([], title.domain) }}
-        </span>
-        {# @TODO тут не работет рендер #}
-        {{ title.value|call_twig_func(title.type~'_render') }}
-    </div>
+        <div class="title-predicate me-3" style="width: 40px;">
+            <span class="badge text-bg-primary">
+                {{ title.predicate == 'OR' ? 'ИЛИ' : 'И' }}
+            </span>
+        </div>
 
+        <div class="w-75 text-start">
+            <span>
+                <small>{{ title.property_name }}</small>
+                &#8658;
+                <strong> {{ title.value |trans([], title.domain) }}</strong>
+            </span>
+
+            {#              рендер изображения #}
+            {#                     {{ title.value|call_twig_func(title.type~'_render') }} #}
+        </div>
+
+    </div>
 </div>
 
 

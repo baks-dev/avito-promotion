@@ -40,6 +40,7 @@ final class AvitoProductPromotionHandler extends AbstractHandler
             'offer' => $command->getOffer(),
             'variation' => $command->getVariation(),
             'modification' => $command->getModification(),
+            'profile' => $command->getProfile(),
         ]);
 
         /** Валидация всех объектов */

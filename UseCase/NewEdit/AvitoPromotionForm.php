@@ -65,16 +65,19 @@ final class AvitoPromotionForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 
-        $builder->add('name', TextType::class);
+        $builder->add('name', TextType::class, [
+            'label' => false,
+            'required' => true,
+        ]);
 
         $builder->add('budget', IntegerType::class, [
-            'attr' => ['max' => 100, 'min' => 0],
+            'attr' => ['max' => 100, 'min' => 1],
             'label' => false,
             'required' => true,
         ]);
 
         $builder->add('budgetLimit', IntegerType::class, [
-            'attr' => ['max' => 1000, 'min' => 0],
+            'attr' => ['max' => 1000, 'min' => 101],
             'label' => false,
             'required' => true,
         ]);
@@ -144,33 +147,33 @@ final class AvitoPromotionForm extends AbstractType
             $avitoPromotionDTO = $event->getData();
             $avitoPromotionDTO->setProfile($this->userProfileTokenStorage->getProfile());
 
-            if ($avitoPromotionDTO->getCategory())
+            if($avitoPromotionDTO->getCategory())
             {
                 $category = $this->categoryChoice->category($avitoPromotionDTO->getCategory())
                     ->onlyActive()
                     ->find();
 
-                if (false !== $category)
+                if(false !== $category)
                 {
                     $avitoPromotionDTO->setCategoryName($category->getOptions());
                 }
             }
 
             // формируем массив для отображения описания элементов коллекции в шаблоне
-            if (false === $avitoPromotionDTO->getFilters()->isEmpty())
+            if(false === $avitoPromotionDTO->getFilters()->isEmpty())
             {
 
-                if ($category = $avitoPromotionDTO->getCategory())
+                if($category = $avitoPromotionDTO->getCategory())
                 {
                     // находим свойства продукта по категории
                     $productProperties = $this->getProductProperties($category);
 
-                    foreach ($avitoPromotionDTO->getFilters() as $filter)
+                    foreach($avitoPromotionDTO->getFilters() as $filter)
                     {
-                        $filterProperty = (string)$filter->getProperty()->getValue();
+                        $filterProperty = (string) $filter->getProperty()->getValue();
 
                         // находим совпадение по идентификатору из фильтра
-                        if ($match = $productProperties->get($filterProperty))
+                        if($match = $productProperties->get($filterProperty))
                         {
                             $type = $this->fieldsChoice->getChoice($match->getProperty());
 
@@ -199,7 +202,7 @@ final class AvitoPromotionForm extends AbstractType
                 $form = $event->getForm();
                 $parent = $event->getForm()->getParent();
 
-                if (!$parent)
+                if(!$parent)
                 {
                     return;
                 }
@@ -210,7 +213,7 @@ final class AvitoPromotionForm extends AbstractType
                 /** @var CategoryProductUid|null $categoryProductUid */
                 $categoryProductUid = $parent->get('category')->getData();
 
-                if ($categoryProductUid)
+                if($categoryProductUid)
                 {
                     /** Свойства продукта по категории */
                     $productProperties = $this->getProductProperties($categoryProductUid);
@@ -223,7 +226,7 @@ final class AvitoPromotionForm extends AbstractType
                         'choice_label' => function (CategoryProductSectionFieldUid $property) {
                             return $property->getAttr();
                         },
-//                        'label' => 'Свойство продукта',
+                        //                        'label' => 'Свойство продукта',
                         'expanded' => false,
                         'multiple' => false,
                         'required' => false,
@@ -233,7 +236,7 @@ final class AvitoPromotionForm extends AbstractType
                     /** @var CategoryProductSectionFieldUid|null $CategoryProductSectionFieldUid */
                     $CategoryProductSectionFieldUid = $form->getData();
 
-                    if ($CategoryProductSectionFieldUid)
+                    if($CategoryProductSectionFieldUid)
                     {
 
                         //                        $parentData->setPreProperty($CategoryProductSectionFieldUid);
@@ -246,7 +249,7 @@ final class AvitoPromotionForm extends AbstractType
                         );
 
 
-                        if ($fields->isEmpty())
+                        if($fields->isEmpty())
                         {
                             return;
                         }
@@ -257,7 +260,7 @@ final class AvitoPromotionForm extends AbstractType
                         /** @var FieldsChoiceInterface $FieldChoice */
                         $FieldChoice = $this->fieldsChoice->getChoice($fieldElement->getProperty());
 
-                        if ($FieldChoice)
+                        if($FieldChoice)
                         {
                             //                            $parentData->setPreValue($fieldElement->getProperty());
 
@@ -319,9 +322,9 @@ final class AvitoPromotionForm extends AbstractType
         /** @var ArrayCollection<CategoryProductSectionFieldUid> $productFields */
         $productFields = new ArrayCollection();
 
-        if ($productProperties)
+        if($productProperties)
         {
-            foreach ($productProperties as $productProperty)
+            foreach($productProperties as $productProperty)
             {
                 $productFields->set($productProperty->getValue(), $productProperty);
             }
@@ -333,14 +336,14 @@ final class AvitoPromotionForm extends AbstractType
             ->findAllCategoryProductSectionField();
 
         /** Если нет свойств и ТП - отображаем пустой выпадающий список */
-        if ($productOffer === false && $productProperties === false)
+        if($productOffer === false && $productProperties === false)
         {
             $productFields->clear();
 
             return $productFields;
         }
 
-        if ($productOffer)
+        if($productOffer)
         {
             $productFields->set($productOffer->getValue(), $productOffer);
 
@@ -349,7 +352,7 @@ final class AvitoPromotionForm extends AbstractType
                 ->offer($productOffer->getValue())
                 ->findAllCategoryProductSectionField();
 
-            if ($productVariation)
+            if($productVariation)
             {
                 $productFields->set($productVariation->getValue(), $productVariation);
 
@@ -358,7 +361,7 @@ final class AvitoPromotionForm extends AbstractType
                     ->variation($productVariation->getValue())
                     ->findAllCategoryProductSectionField();
 
-                if ($productModification)
+                if($productModification)
                 {
                     $productFields->set($productModification->getValue(), $productModification);
                 }

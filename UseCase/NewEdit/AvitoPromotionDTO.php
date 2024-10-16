@@ -66,10 +66,12 @@ final class AvitoPromotionDTO implements AvitoPromotionEventInterface
     private ?string $name = null;
 
     /** Шаг бюджета */
+    #[Assert\Range(min: 1, max: 100)]
     #[Assert\NotBlank]
     private int $budget;
 
     /** Ограничение бюджета */
+    #[Assert\Range(min: 101, max: 1000)]
     #[Assert\NotBlank]
     private int $budgetLimit;
 

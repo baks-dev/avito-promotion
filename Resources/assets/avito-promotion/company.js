@@ -20,17 +20,20 @@
  *  THE SOFTWARE.
  */
 
-executeFunc(function initAvitoPromotion() {
+executeFunc(function initAvitoPromotion()
+{
 
     const avitoPromotionForm = document.forms.avito_promotion_form;
 
     let categoryElement = document.getElementById('avito_promotion_form_category');
 
-    if (categoryElement === null) {
+    if(categoryElement === null)
+    {
         return false;
     }
 
-    categoryElement.addEventListener('change', function (event) {
+    categoryElement.addEventListener('change', function(event)
+    {
 
         document.getElementById('categoryName').innerHTML = '';
 
@@ -53,12 +56,14 @@ executeFunc(function initAvitoPromotion() {
 
     const currentDeleteBtns = document.getElementById('filterCollection').querySelectorAll('.del-item-filter');
 
-    if (currentDeleteBtns) {
+    if(currentDeleteBtns)
+    {
         deleteItem(currentDeleteBtns)
     }
 
     /** Инициируем календарь */
-    document.querySelectorAll('.js-datepicker').forEach((datepicker) => {
+    document.querySelectorAll('.js-datepicker').forEach((datepicker) =>
+    {
         MCDatepicker.create({
             el: '#' + datepicker.id,
             bodyType: 'modal', // ‘modal’, ‘inline’, or ‘permanent’.
@@ -78,11 +83,15 @@ executeFunc(function initAvitoPromotion() {
     return true;
 });
 
-function addItem() {
+function addItem()
+{
 
+    // селект с предикатом
     const predicateSelect = document.getElementById('avito_promotion_form_predicatePrototype');
 
-    if (predicateSelect) {
+    // при смене свойства категории назначаем текущее значение из селекта
+    if(predicateSelect)
+    {
         predicateSelect.value = predicateData
 
         // predicateSelect.disabled = true
@@ -95,12 +104,14 @@ function addItem() {
     itemKey = this.dataset.index
 
     // проверка на наличие ранее удаленных элементов
-    if (deleteItemsStorage.size > 0) {
+    if(deleteItemsStorage.size > 0)
+    {
 
         let last = '';
 
         // получаем последний индекс удаленного элемента
-        deleteItemsStorage.forEach(function (value) {
+        deleteItemsStorage.forEach(function(value)
+        {
 
             last = value;
 
@@ -128,12 +139,12 @@ function addItem() {
     // добавляем текущее значение к кнопке для отслеживания увеличения элементов коллекции
     this.setAttribute('data-index', index)
 
-    // let count = filterCollectionBlock.getElementsByClassName('item-filter').length;
-
-    let limit = 4;
+    // ЛИМИТ ЭЛЕМЕНТОВ КОЛЛЕКЦИИ
+    const limit = 8;
 
     // ограничение максимального количество элементов коллекции
-    if (parseInt(this.dataset.index) > limit) {
+    if(parseInt(this.dataset.index) > limit)
+    {
 
         this.setAttribute('data-index', limit)
 
@@ -144,17 +155,17 @@ function addItem() {
     prototypeContent = prototypeContent.replace(/__filters__/g, itemKey);
 
     const parser = new DOMParser();
-    const newPrototypeResult = parser.parseFromString(prototypeContent, 'text/html');
+    const result = parser.parseFromString(prototypeContent, 'text/html');
 
     // ---добавление новых элементов из ответа сервера
-    let prototypePreProperty = newPrototypeResult.getElementById('prototypeProperty').querySelector('input');
+    let prototypePreProperty = result.getElementById('prototypeProperty').querySelector('input');
 
     prototypePreProperty.setAttribute('value', currentPropertyData)
 
-    let prototypePreValue = newPrototypeResult.getElementById('prototypeValue').querySelector('input');
+    let prototypePreValue = result.getElementById('prototypeValue').querySelector('input');
     prototypePreValue.setAttribute('value', preValueData)
 
-    let prototypePredicate = newPrototypeResult.getElementById('prototypePredicate').querySelector('input');
+    let prototypePredicate = result.getElementById('prototypePredicate').querySelector('input');
     prototypePredicate.setAttribute('value', predicateData)
     // ---
 
@@ -181,7 +192,8 @@ function addItem() {
     let categoryTitle = document.getElementById('categoryName');
 
     // меняем название категории на текущее значение из списка
-    if (categorySelect.querySelector(`[value="${categoryData}"]`).innerHTML) {
+    if(categorySelect.querySelector(`[value="${categoryData}"]`).innerHTML)
+    {
         categoryTitle.innerHTML = categorySelect.querySelector(`[value="${categoryData}"]`).innerHTML;
     }
 
@@ -196,11 +208,14 @@ function addItem() {
 
 //-------------------------------------
 
-function deleteItem(buttons) {
+function deleteItem(buttons)
+{
 
-    buttons.forEach(function (btn) {
+    buttons.forEach(function(btn)
+    {
 
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function()
+        {
 
             // элемент для удаления
             const itemForDelete = document.getElementById(btn.id.replace(/delete-/g, ''));
@@ -213,7 +228,8 @@ function deleteItem(buttons) {
             deleteItemsStorage.set('key' + deleteIndex, deleteIndex)
 
             // если элемент удалился - получаем текущий индекс коллекции и уменьшаем его
-            if (itemForDelete) {
+            if(itemForDelete)
+            {
 
                 itemForDelete.remove()
 
@@ -229,7 +245,8 @@ function deleteItem(buttons) {
 
 //-------------------------------------
 
-function titleItem() {
+function titleItem()
+{
 
     const titleTemplate = document.getElementById('title_prototype');
 
@@ -241,7 +258,8 @@ function titleItem() {
     // название preProperty
     const prePropertySelect = document.getElementById('avito_promotion_form_preProperty');
 
-    if (prePropertySelect.querySelector(`[value="${currentPropertyData}"]`).innerHTML) {
+    if(prePropertySelect.querySelector(`[value="${currentPropertyData}"]`).innerHTML)
+    {
         newTitle = newTitle.replace(/__title__property__/g, prePropertySelect.querySelector(`[value="${currentPropertyData}"]`).innerHTML)
     }
 
@@ -254,12 +272,15 @@ function titleItem() {
     const preValueForm = document.getElementById('avito_promotion_form_preValue');
 
     // checkbox
-    if (preValueForm.value) {
+    if(preValueForm.value)
+    {
 
         // значение для шипов
-        if (preValueForm.value === '1') {
+        if(preValueForm.value === '1')
+        {
             newTitle = newTitle.replace(/__title__value__/g, 'есть');
-        } else {
+        } else
+        {
             newTitle = newTitle.replace(/__title__value__/g, preValueForm.value);
         }
 
@@ -269,7 +290,8 @@ function titleItem() {
     const preValue = preValueForm.querySelector(`[value="${preValueData}"]`);
 
     // input
-    if (preValue.value) {
+    if(preValue.value)
+    {
         let parent = preValueForm.querySelector(`[value="${preValueData}"]`).parentElement
 
         newTitle = newTitle.replace(/__title__value__/g, parent.querySelector('label').innerHTML)
@@ -278,7 +300,8 @@ function titleItem() {
     }
 
     // select
-    if (preValueForm.querySelector(`[value="${preValueData}"]`).innerHTML) {
+    if(preValueForm.querySelector(`[value="${preValueData}"]`).innerHTML)
+    {
         newTitle = newTitle.replace(/__title__value__/g, preValueForm.querySelector(`[value="${preValueData}"]`).innerHTML)
 
         return newTitle;
@@ -287,7 +310,8 @@ function titleItem() {
 
 //-------------------------------------
 
-async function changeCategory(form) {
+async function changeCategory(form)
+{
 
     const data = new FormData(form);
 
@@ -309,52 +333,59 @@ async function changeCategory(form) {
         body: data
     })
 
-        .then((response) => {
-            if (response.status !== 200) {
+        .then((response) =>
+        {
+            if(response.status !== 200)
+            {
                 return false;
             }
 
             return response.text();
         })
 
-        .then((data) => {
-            if (data) {
+        .then((data) =>
+        {
+            if(data)
+            {
 
                 // удаление элементов коллекции
-                if (!currentCategory || categoryData !== currentCategory) {
+                if(!currentCategory || categoryData !== currentCategory)
+                {
                     let currentFilterCollection = document.getElementById('filterCollection').querySelectorAll('.item-filter')
 
-                    if (currentFilterCollection.length > 0) {
-                        currentFilterCollection.forEach(function (item) {
+                    if(currentFilterCollection.length > 0)
+                    {
+                        currentFilterCollection.forEach(function(item)
+                        {
                             document.getElementById('filterCollection_add').dataset.index = 0
                             item.remove()
                         });
                     }
                 }
 
-                const parser = new DOMParser();
-                const result = parser.parseFromString(data, 'text/html');
+                const result = parseFormData(data);
 
                 let currentPreValue = document.getElementById('avito_promotion_form_preValue');
 
-                if (currentPreValue.type !== 'hidden') {
+                if(currentPreValue.type !== 'hidden')
+                {
                     document.getElementById('avito_promotion_form_preValue').replaceWith(result.getElementById('avito_promotion_form_preValue'))
                 }
-
-                let newDiv = result.getElementById('preProperty');
 
                 let current = document.getElementById('avito_promotion_form_preProperty');
 
                 // select из события POST_SUBMIT
                 let postSubmit = result.getElementById('avito_promotion_form_preProperty');
 
-                if (postSubmit) {
+                if(postSubmit)
+                {
 
                     // заменяем текущий элемент с id avito_promotion_form_preProperty на новый
                     current.replaceWith(postSubmit);
                 }
 
-                postSubmit.addEventListener('change', function (event) {
+                postSubmit.addEventListener('change', function(event)
+                {
                     document.getElementById('preValueContainer').remove();
                     document.getElementById('predicatePrototypeContainer').remove();
 
@@ -367,7 +398,8 @@ async function changeCategory(form) {
 
 //-------------------------------------
 
-async function changePreProperty(form) {
+async function changePreProperty(form)
+{
     disabledElementsForm(form);
 
     const data = new FormData(form);
@@ -388,29 +420,33 @@ async function changePreProperty(form) {
         body: data // body data type must match "Content-Type" header
     })
 
-        .then((response) => {
-            if (response.status !== 200) {
+        .then((response) =>
+        {
+            if(response.status !== 200)
+            {
                 return false;
             }
 
             return response.text();
         })
 
-        .then((data) => {
-            if (data) {
-
-                const parser = new DOMParser();
-                const result = parser.parseFromString(data, 'text/html');
+        .then((data) =>
+        {
+            if(data)
+            {
+                const result = parseFormData(data);
 
                 // preValue из POST_SUBMIT
                 let postSubmit = result.getElementById('preValue');
 
-                if (postSubmit) {
+                if(postSubmit)
+                {
                     // заменяем текущий элемент с id avito_promotion_form_preProperty на новый
                     document.getElementById('preValue').replaceWith(postSubmit);
                 }
 
-                postSubmit.addEventListener('change', function (event) {
+                postSubmit.addEventListener('change', function(event)
+                {
 
                     changePreValue(document.forms.avito_promotion_form);
                 })
@@ -418,7 +454,8 @@ async function changePreProperty(form) {
                 // predicatePrototype из POST_SUBMIT
                 let postSubmitPredicate = result.getElementById('predicatePrototype');
 
-                if (postSubmitPredicate) {
+                if(postSubmitPredicate)
+                {
                     // заменяем текущий элемент с id на новый
                     document.getElementById('predicatePrototype').replaceWith(postSubmitPredicate);
                 }
@@ -426,7 +463,8 @@ async function changePreProperty(form) {
                 const form = new FormData(document.forms.avito_promotion_form);
                 predicateData = form.get('avito_promotion_form[predicatePrototype]');
 
-                postSubmitPredicate.addEventListener('change', function (event) {
+                postSubmitPredicate.addEventListener('change', function(event)
+                {
 
                     changePredicate(document.forms.avito_promotion_form);
                 })
@@ -436,30 +474,45 @@ async function changePreProperty(form) {
 
 //-------------------------------------
 
-function changePredicate(form) {
-    const data = new FormData(form);
-
-    predicateData = data.get('avito_promotion_form[predicatePrototype]');
-}
-
-function changePreValue(form) {
+function changePreValue(form)
+{
     const data = new FormData(form);
 
     // Удаляем токен из формы
     data.delete(form.name + '[_token]');
 
     preValueData = data.get('avito_promotion_form[preValue]');
-    console.log(preValueData)
 
     // значение для шипов
-    if (preValueData === '1') {
+    if(preValueData === '1')
+    {
         preValueData = 'true'
     }
 
-    if (preValueData) {
+    if(preValueData)
+    {
         document.getElementById('filterCollection_add').disabled = false
         enableElementsForm(form);
-    } else {
+    } else
+    {
         document.getElementById('filterCollection_add').disabled = true
     }
+}
+
+//-------------------------------------
+
+function changePredicate(form)
+{
+    const data = new FormData(form);
+
+    predicateData = data.get('avito_promotion_form[predicatePrototype]');
+}
+
+//-------------------------------------
+
+function parseFormData(data)
+{
+
+    const parser = new DOMParser();
+    return parser.parseFromString(data, 'text/html');
 }

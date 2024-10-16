@@ -73,42 +73,50 @@
 
         <div class="tab-pane fade show" id="tab_filter" role="tabpanel">
 
-            <div class="d-flex mb-1 gap-2 w-50">
-                {{ form_label(form.category, 'Категория') }}
-                {{ form_widget(form.category, {
-                    placeholder: 'Выберите категорию...',
-                    attr: { 'data-select' : 'select2', class:  'mb-0'},
-                }) }}
+            <div class="d-flex mb-1 gap-2 justify-content-between">
+                <div class="w-50">
+                    <div>
+                        {{ form_label(form.category, 'Категория') }}
+                    </div>
+
+                    {{ form_widget(form.category, {
+                        placeholder: 'Выберите категорию...',
+                        attr: { 'data-select' : 'select2', class:  'mb-0'},
+                    }) }}
+                </div>
             </div>
 
-            <div id="prototypeElements" class="d-flex gap-3">
+            <div id="prototypeElements" class="d-flex gap-2">
 
-                <div id="preProperty" class="w-100">
+               <div id="preProperty" class="w-50">
                     <div id="prePropertyContainer" class="mb-2 mt-2">
                         {{ form_row(form.preProperty, {
-                            placeholder: 'Выберите свойство категории...',
+                            placeholder: 'Выберите свойство продукта...',
                             attr: { 'data-select' : 'select2', class:  'mb-0'},
                             label: 'Свойство продукта',
                         }) }}
                     </div>
                 </div>
 
-                <div id="preValue" class="w-50">
-                    <div id="preValueContainer" class="mb-2 mt-2">
-                        {{ form_widget(form.preValue, {
-                            placeholder: 'Выберите значение...',
-                            attr: { 'data-select' : 'select2', class:  'mb-0'},
-                            label: 'Значение',
-                        }) }}
-                    </div>
-                </div>
+                <div class="d-flex ">
 
-                <div id="predicatePrototype" class="w-10">
-                    <div id="predicatePrototypeContainer" class="mb-2 mt-2">
-                        {{ form_row(form.predicatePrototype, {
-                            placeholder: 'Выберите параметр...',
-                            attr: { 'data-select' : 'select2', class:  'mb-0'},
-                        }) }}
+                    <div id="preValue" class="w-100">
+                        <div id="preValueContainer" class="mb-2 mt-2 me-2">
+                            {{ form_widget(form.preValue, {
+                                placeholder: 'Выберите значение...',
+                                attr: { 'data-select' : 'select2', class:  'mb-0'},
+                                label: 'Значение',
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div id="predicatePrototype" class="w-50">
+                        <div id="predicatePrototypeContainer" class="mb-2 mt-2">
+                            {{ form_row(form.predicatePrototype, {
+                                placeholder: 'Выберите параметр...',
+                                attr: { 'data-select' : 'select2', class:  'mb-0'},
+                            }) }}
+                        </div>
                     </div>
                 </div>
 

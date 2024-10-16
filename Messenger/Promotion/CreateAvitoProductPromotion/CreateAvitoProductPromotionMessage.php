@@ -23,11 +23,11 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Messenger\Promotion\FindAvitoPromotionCompany;
+namespace BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoProductPromotion;
 
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-final readonly class FindAvitoPromotionCompanyMessage
+final readonly class CreateAvitoProductPromotionMessage
 {
     /**
      * Идентификатор

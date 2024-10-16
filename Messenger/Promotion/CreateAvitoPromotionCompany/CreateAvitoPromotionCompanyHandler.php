@@ -44,14 +44,26 @@ final readonly class CreateAvitoPromotionCompanyHandler
         LoggerInterface $avitoBoardLogger,
         private EntityManagerInterface $em,
         private CreatePromotionCompanyRequest $request,
+        private MessageDispatchInterface $messageDispatch
     ) {
         $this->logger = $avitoBoardLogger;
     }
 
-    public function __invoke(AvitoProductPromotionMessage $message, MessageDispatchInterface $messageDispatch): void
+    public function __invoke(AvitoProductPromotionMessage $message): void
     {
+        /** @var AvitoProductPromotion $promotionProduct */
         $promotionProduct = $this->em->getRepository(AvitoProductPromotion::class)
             ->find($message->getId());
+
+        if($promotionProduct === null)
+        {
+            $this->logger->critical(
+                'Ошибка получения рекламного продукта ' . $promotionProduct->getArticle(),
+                [__FILE__ . ':' . __LINE__]
+            );
+
+            return;
+        }
 
         // id созданной компании
         $created = $this->request
@@ -65,8 +77,8 @@ final readonly class CreateAvitoPromotionCompanyHandler
                 [__FILE__ . ':' . __LINE__]
             );
 
-            $messageDispatch->dispatch(
-                message: new AvitoProductPromotionMessage($promotionProduct->getProfile()),
+            $this->messageDispatch->dispatch(
+                message: $message,
                 stamps: [new DelayStamp(3600000)], // задержка 1 час для повторного запроса на создание компании
                 transport: (string) $promotionProduct->getProfile(),
             );

@@ -51,6 +51,7 @@ final class DeleteController extends AbstractController
         #[MapEntity] AvitoPromotionEvent $event,
         AvitoPromotionDeleteHandler $handler
     ): Response {
+
         $deleteDTO = new AvitoPromotionDeleteDTO();
 
         /** Гидрируем ДТО из события */

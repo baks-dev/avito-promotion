@@ -64,14 +64,9 @@ final class NewController extends AbstractController
 
         $form->handleRequest($request);
 
-
         if ($form->isSubmitted() && $form->isValid() && $form->has('avito_promotion_add'))
         {
-            dump($request->request);
-            dump($newDTO);
-
             $this->refreshTokenForm($form);
-
 
             $result = $handler->handle($newDTO);
 

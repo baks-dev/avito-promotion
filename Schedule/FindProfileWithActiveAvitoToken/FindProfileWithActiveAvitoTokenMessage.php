@@ -24,6 +24,6 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Schedule\CreateAvitoPromotion;
+namespace BaksDev\Avito\Promotion\Schedule\FindProfileWithActiveAvitoToken;
 
-final class CreateAvitoPromotionMessage {}
+final class FindProfileWithActiveAvitoTokenMessage {}

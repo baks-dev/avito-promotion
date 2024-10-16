@@ -1,27 +1,27 @@
 page:
   index: 'Promotion service settings for Avito'
-  new: 'Add promotion services for Avito'
-  edit: 'Edit promotion services for Avito'
-  delete: 'Delete promotion services for Avito'
+  new: 'Add an advertising company for Avito'
+  edit: 'Edit advertising campaign for Avito'
+  delete: 'Delete advertising campaign for Avito'
 
 breadcrumb:
   index: 'Promotion service settings for Avito'
-  new: 'Add promotion services for Avito'
-  edit: 'Edit promotion services for Avito'
-  delete: 'Delete promotion services for Avito'
+  new: 'Add an advertising company for Avito'
+  edit: 'Edit advertising campaign for Avito'
+  delete: 'Delete advertising campaign for Avito'
 
 success:
-  new: 'Promotion service settings for Avito have been successfully added'
-  edit: 'Promotion service settings for Avito have been successfully updated'
-  delete: 'Promotion service settings for Avito have been successfully deleted'
-  restore: 'Promotion service settings for Avito have been successfully restored'
+  new: 'An advertising campaign for Avito has been successfully created'
+  edit: 'Advertising campaign for Avito has been successfully changed'
+  delete: 'The advertising campaign for Avito was successfully deleted'
+  restore: 'The advertising campaign for Avito has been successfully restored'
 
 danger:
-  new: '%s: Error adding promotion services for Avito'
-  edit: '%s: Error when updating promotion services for Avito'
-  delete: '%s: Error updating promotion services for Avito'
-  restore: '%s: Error while restoring promotion services for Avito'
+  new: '%s: Error adding an advertising company for Avito'
+  edit: '%s: Error when changing the advertising campaign for Avito'
+  delete: '%s: Error when deleting an advertising campaign for Avito'
+  restore: '%s: Error while restoring the advertising campaign for Avito'
 
 form:
   delete:
-    h4: 'Are you sure you want to remove promotion services for Avito?'
+    h4: 'Are you sure you want to remove the advertising campaign for Avito?'
