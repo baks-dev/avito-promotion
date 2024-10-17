@@ -25,23 +25,12 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use BaksDev\Avito\Promotion\BaksDevAvitoPromotionBundle;
+use Symfony\Config\TwigConfig;
 
-return static function(ContainerConfigurator $configurator) {
+return static function(TwigConfig $twig) {
 
-    $services = $configurator->services()
-        ->defaults()
-        ->autowire()
-        ->autoconfigure();
-
-    $NAMESPACE = BaksDevAvitoPromotionBundle::NAMESPACE;
-    $PATH = BaksDevAvitoPromotionBundle::PATH;
-
-    $services->load($NAMESPACE, $PATH)
-        ->exclude([
-            $PATH.'{Entity,Resources,Type}',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
-        ]);
-
+    $twig->path(
+        BaksDevAvitoPromotionBundle::PATH.implode(DIRECTORY_SEPARATOR, ['Resources', 'view', '']),
+        'avito-promotion',
+    );
 };
