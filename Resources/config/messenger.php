@@ -24,24 +24,27 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use BaksDev\Avito\Promotion\BaksDevAvitoPromotionBundle;
+use Symfony\Config\FrameworkConfig;
 
-return static function(ContainerConfigurator $configurator) {
+return static function(FrameworkConfig $framework) {
 
-    $services = $configurator->services()
-        ->defaults()
-        ->autowire()
-        ->autoconfigure();
+    $messenger = $framework->messenger();
 
-    $NAMESPACE = BaksDevAvitoPromotionBundle::NAMESPACE;
-    $PATH = BaksDevAvitoPromotionBundle::PATH;
+    $messenger
+        ->transport('avito-promotion')
+        ->dsn('redis://%env(REDIS_PASSWORD)%@%env(REDIS_HOST)%:%env(REDIS_PORT)%?auto_setup=true')
+        ->options(['stream' => 'avito-promotion'])
+        ->failureTransport('failed-avito-promotion')
+        ->retryStrategy()
+        ->maxRetries(3)
+        ->delay(1000)
+        ->maxDelay(0)
+        ->multiplier(3)
+        ->service(null);
 
-    $services->load($NAMESPACE, $PATH)
-        ->exclude([
-            $PATH.'{Entity,Resources,Type}',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
-        ]);
+    $failure = $framework->messenger();
 
+    $failure->transport('failed-avito-promotion')
+        ->dsn('%env(MESSENGER_TRANSPORT_DSN)%')
+        ->options(['queue_name' => 'failed-avito-promotion']);
 };

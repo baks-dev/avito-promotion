@@ -1,17 +1,17 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
- *  
+ *  Copyright 2023.  Baks.dev <admin@baks.dev>
+ *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *  
+ *
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *  
+ *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -19,29 +19,44 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
-namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+declare(strict_types=1);
 
-use BaksDev\Avito\Promotion\BaksDevAvitoPromotionBundle;
+namespace BaksDev\Avito\Promotion\Messenger;
 
-return static function(ContainerConfigurator $configurator) {
+use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
+use BaksDev\Avito\Promotion\Type\Event\AvitoPromotionEventUid;
 
-    $services = $configurator->services()
-        ->defaults()
-        ->autowire()
-        ->autoconfigure();
+final readonly class AvitoPromotionMessage
+{
+    public function __construct(
+        private AvitoPromotionUid $id,
+        private AvitoPromotionEventUid $event,
+        private ?AvitoPromotionEventUid $last = null,
+    ) {}
 
-    $NAMESPACE = BaksDevAvitoPromotionBundle::NAMESPACE;
-    $PATH = BaksDevAvitoPromotionBundle::PATH;
+    /**
+     * Идентификатор
+     */
+    public function getId(): AvitoPromotionUid
+    {
+        return $this->id;
+    }
 
-    $services->load($NAMESPACE, $PATH)
-        ->exclude([
-            $PATH.'{Entity,Resources,Type}',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
-        ]);
+    /**
+     * Идентификатор текущего события
+     */
+    public function getCurrentEvent(): AvitoPromotionEventUid
+    {
+        return $this->event;
+    }
 
-};
+    /**
+     * Идентификатор предыдущего события
+     */
+    public function getPreviousEvent(): ?AvitoPromotionEventUid
+    {
+        return $this->last;
+    }
+}

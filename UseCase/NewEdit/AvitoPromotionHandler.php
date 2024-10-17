@@ -22,26 +22,37 @@
  *
  */
 
-namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+declare(strict_types=1);
 
-use BaksDev\Avito\Promotion\BaksDevAvitoPromotionBundle;
+namespace BaksDev\Avito\Promotion\UseCase\NewEdit;
 
-return static function(ContainerConfigurator $configurator) {
+use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
+use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
+use BaksDev\Avito\Promotion\Messenger\AvitoPromotionMessage;
+use BaksDev\Core\Entity\AbstractHandler;
 
-    $services = $configurator->services()
-        ->defaults()
-        ->autowire()
-        ->autoconfigure();
+final class AvitoPromotionHandler extends AbstractHandler
+{
+    public function handle(AvitoPromotionDTO $command): AvitoPromotion|string
+    {
+        $this->setCommand($command);
 
-    $NAMESPACE = BaksDevAvitoPromotionBundle::NAMESPACE;
-    $PATH = BaksDevAvitoPromotionBundle::PATH;
+        $this->preEventPersistOrUpdate(AvitoPromotion::class, AvitoPromotionEvent::class);
 
-    $services->load($NAMESPACE, $PATH)
-        ->exclude([
-            $PATH.'{Entity,Resources,Type}',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
-        ]);
+        /** Валидация всех объектов */
+        if($this->validatorCollection->isInvalid())
+        {
+            return $this->validatorCollection->getErrorUniqid();
+        }
 
-};
+        $this->flush();
+
+        /** Отправляем сообщение в шину */
+        $this->messageDispatch->dispatch(
+            message: new AvitoPromotionMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
+            transport: 'avito-promotion',
+        );
+
+        return $this->main;
+    }
+}

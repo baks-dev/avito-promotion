@@ -1,0 +1,22 @@
+# Роль
+ROLE_AVITO_PROMOTION:
+  header: 'Настройки услуг продвижения Авито'
+  name: 'Настройки услуг продвижения Авито'
+  desc: 'Настройки услуг продвижения Авито'
+
+# Правила
+ROLE_AVITO_PROMOTION_INDEX:
+  name: 'Просмотр'
+  desc: ''
+
+ROLE_AVITO_PROMOTION_NEW:
+  name: 'Добавить'
+  desc: ''
+
+ROLE_AVITO_PROMOTION_EDIT:
+  name: 'Редактировать'
+  desc: ''
+
+ROLE_AVITO_PROMOTION_DELETE:
+  name: 'Удалить'
+  desc: ''

@@ -22,26 +22,35 @@
  *
  */
 
-namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+namespace BaksDev\Avito\Promotion\UseCase\Delete;
 
-use BaksDev\Avito\Promotion\BaksDevAvitoPromotionBundle;
+use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
+use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
+use BaksDev\Avito\Promotion\Messenger\AvitoPromotionMessage;
+use BaksDev\Core\Entity\AbstractHandler;
 
-return static function(ContainerConfigurator $configurator) {
+class AvitoPromotionDeleteHandler extends AbstractHandler
+{
+    public function handle(AvitoPromotionDeleteDTO $command): AvitoPromotion|string
+    {
+        $this->setCommand($command);
 
-    $services = $configurator->services()
-        ->defaults()
-        ->autowire()
-        ->autoconfigure();
+        $this->preEventRemove(AvitoPromotion::class, AvitoPromotionEvent::class);
 
-    $NAMESPACE = BaksDevAvitoPromotionBundle::NAMESPACE;
-    $PATH = BaksDevAvitoPromotionBundle::PATH;
+        /** Валидация всех объектов */
+        if($this->validatorCollection->isInvalid())
+        {
+            return $this->validatorCollection->getErrorUniqid();
+        }
 
-    $services->load($NAMESPACE, $PATH)
-        ->exclude([
-            $PATH.'{Entity,Resources,Type}',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
-        ]);
+        $this->flush();
 
-};
+        /** Отправляем сообщение в шину */
+        $this->messageDispatch->dispatch(
+            message: new AvitoPromotionMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
+            transport: 'avito-promotion',
+        );
+
+        return $this->main;
+    }
+}

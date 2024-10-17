@@ -1,0 +1,22 @@
+# Role
+ROLE_AVITO_PROMOTION:
+  header: 'Avito promotion Settings'
+  name: 'Avito promotion Settings'
+  desc: 'Avito promotion Settings'
+
+# Rules
+ROLE_AVITO_PROMOTION_INDEX:
+  name: 'View'
+  desc: ''
+
+ROLE_AVITO_PROMOTION_NEW:
+  name: 'Add'
+  desc: ''
+
+ROLE_AVITO_PROMOTION_EDIT:
+  name: 'Edit'
+  desc: ''
+
+ROLE_AVITO_PROMOTION_DELETE:
+  name: 'Delete'
+  desc: ''

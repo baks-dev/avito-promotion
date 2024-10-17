@@ -1,0 +1,37 @@
+{% trans_default_domain("avito-promotion.admin") %}
+
+<tr class="vertical-middle">
+
+    <td class="text-nowrap">
+        {# Пользовательское меню редактирования продукта #}
+        {{ include(_self|replace({ "card.html.twig": "_usecase.html.twig" })) }}
+    </td>
+
+    <td class="ps-5">
+        <div class="d-flex align-items-center">
+
+            {# Обложка #}
+            {{ include(_self|replace({ "card.html.twig": "_cover.html.twig" })) }}
+
+            <div>
+
+                {# Название #}
+                <a href="{{ path('avito-promotion:admin.company.edit', { id: item.event }) }}"
+                   class="fw-bolder text-decoration-none mb-1 "
+                   data-bs-toggle="modal"
+                   data-bs-target="#modal"
+                >
+                    {{ item.promo_name }}
+                </a>
+
+                {# Описание #}
+                {% if item.category_description %}
+                    <div class="text-muted fw-bolder">
+                        {{ item.category_description }}
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </td>
+</tr>

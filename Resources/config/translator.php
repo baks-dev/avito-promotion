@@ -25,23 +25,11 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use BaksDev\Avito\Promotion\BaksDevAvitoPromotionBundle;
+use Symfony\Config\FrameworkConfig;
 
-return static function(ContainerConfigurator $configurator) {
+return static function(FrameworkConfig $config) {
 
-    $services = $configurator->services()
-        ->defaults()
-        ->autowire()
-        ->autoconfigure();
-
-    $NAMESPACE = BaksDevAvitoPromotionBundle::NAMESPACE;
-    $PATH = BaksDevAvitoPromotionBundle::PATH;
-
-    $services->load($NAMESPACE, $PATH)
-        ->exclude([
-            $PATH.'{Entity,Resources,Type}',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Message.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*DTO.php',
-            $PATH.'**'.DIRECTORY_SEPARATOR.'*Test.php',
-        ]);
-
+    $config
+        ->translator()
+        ->paths([BaksDevAvitoPromotionBundle::PATH.implode(DIRECTORY_SEPARATOR, ['Resources', 'translations', ''])]);
 };
