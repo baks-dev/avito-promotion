@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllProductCategoryWithAvitoPromotionCompanyFilters;
@@ -34,7 +33,7 @@ use BaksDev\Products\Category\Entity\Event\CategoryProductEvent;
 use BaksDev\Products\Category\Entity\Info\CategoryProductInfo;
 use BaksDev\Products\Category\Entity\Trans\CategoryProductTrans;
 
-final class AllProductCategoryWithAvitoPromotionCompanyFilters implements AllProductCategoryWithAvitoPromotionCompanyFiltersInterface
+final class AllProductCategoryWithAvitoPromotionCompanyFiltersRepository implements AllProductCategoryWithAvitoPromotionCompanyFiltersInterface
 {
     private bool $active = false;
 

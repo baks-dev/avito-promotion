@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -51,7 +50,7 @@ final readonly class FindProfileWithActiveAvitoTokenHandler
         /** Получаем все активные профили, у которых активный токен Авито */
         $profiles = $this->allProfilesByToken->findProfilesByActiveToken();
 
-        if(false === $profiles)
+        if(false === $profiles->valid())
         {
             $this->logger->warning(
                 'Профили с активными токенами Авито не найдены',

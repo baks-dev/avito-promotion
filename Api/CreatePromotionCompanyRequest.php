@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -27,36 +26,66 @@ declare(strict_types=1);
 namespace BaksDev\Avito\Promotion\Api;
 
 use BaksDev\Avito\Api\AvitoApi;
-use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
-use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
+use BaksDev\Reference\Money\Type\Money;
+use DateInterval;
+use DateTimeImmutable;
+use DateTimeInterface;
+use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
 #[Autoconfigure(public: true)]
 final class CreatePromotionCompanyRequest extends AvitoApi
 {
+    private string|false $article = false;
+    private Money|false $budget = false;
+
+    public function article(string $article): self
+    {
+        $this->article = $article;
+
+        return $this;
+    }
+
+    public function budget(Money $budget): self
+    {
+        $this->budget = $budget;
+
+        return $this;
+    }
+
     /**
      * Создание новой кампании
      *
      * @see https://developers.avito.ru/api-catalog/autostrategy/documentation#operation/createAutostrategyCampaign
      */
-    public function create(AvitoProductPromotion $product): int|false
+    public function create(): int|false
     {
         if($this->isExecuteEnvironment() === false)
         {
             return false;
         }
 
-        $dto = new AvitoProductPromotionDTO();
-        $product->getDto($dto);
+        if($this->article === false)
+        {
+            throw new InvalidArgumentException('Invalid Argument $article');
+        }
+
+        if($this->budget === false)
+        {
+            throw new InvalidArgumentException('Invalid Argument budget');
+        }
+
+        $from = (new DateTimeImmutable())->setTime(0, 0);
+        $to = $from->add(DateInterval::createFromDateString('1 day'));
 
         $body = [
             'description' => 'максимум продаж',
-            'startTime' => $dto->getCreated()->format('Y-m-d\TH:i:s\Z'),
-            'finishTime' => $dto->getCreated()->modify('+1 day')->format('Y-m-d\TH:i:s\Z'),
-            'budget' => $dto->getBudget(),
+            'startTime' => $from->format(DateTimeInterface::ATOM),
+            'finishTime' => $to->format(DateTimeInterface::ATOM),
+            'budget' => (int) $this->budget->getValue(),
             'campaignType' => 'AS',
-            'title' => $dto->getArticle(),
-            'items' => [$dto->getArticle()],
+            'title' => $this->article,
+            'items' => [$this->article],
         ];
 
         $request = $this->tokenHttpClient()->request(
@@ -64,14 +93,18 @@ final class CreatePromotionCompanyRequest extends AvitoApi
             '/autostrategy/v1/campaign/create',
             [
                 'json' => $body,
-            ],
+            ]
         );
 
         if($request->getStatusCode() !== 200)
         {
             $this->logger->critical(
-                'Ошибка '.$request->getStatusCode().' при создании рекламной компании для продукта с артикулом'.$dto->getArticle(),
-                [__FILE__.':'.__LINE__],
+                sprintf(
+                    'Ошибка %s при создании рекламной компании для продукта с артикулом %s',
+                    $request->getStatusCode(),
+                    $this->article
+                ),
+                [__FILE__.':'.__LINE__]
             );
 
             return false;

@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -27,61 +26,68 @@ declare(strict_types=1);
 namespace BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoPromotionCompany;
 
 use BaksDev\Avito\Promotion\Api\CreatePromotionCompanyRequest;
-use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
 use BaksDev\Avito\Promotion\Messenger\Promotion\AvitoProductPromotionMessage;
+use BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotion\CurrentAvitoPromotionInterface;
+use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
+use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use BaksDev\Reference\Money\Type\Money;
+use DateInterval;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 #[AsMessageHandler]
 final readonly class CreateAvitoPromotionCompanyHandler
 {
-    protected LoggerInterface $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
-        LoggerInterface $avitoPromotionLogger,
-        private EntityManagerInterface $em,
+        LoggerInterface $avitoBoardLogger,
+        private CurrentAvitoPromotionInterface $CurrentAvitoPromotion,
         private CreatePromotionCompanyRequest $request,
-        private MessageDispatchInterface $messageDispatch,
+        private MessageDispatchInterface $messageDispatch
     )
     {
-        $this->logger = $avitoPromotionLogger;
+        $this->logger = $avitoBoardLogger;
     }
 
+    /**
+     * Метод создает рекламную компанию Avito на указанное объявление
+     */
     public function __invoke(AvitoProductPromotionMessage $message): void
     {
-        /** @var AvitoProductPromotion $promotionProduct */
-        $promotionProduct = $this->em->getRepository(AvitoProductPromotion::class)
-            ->find($message->getId());
+        $promotionProduct = $this->CurrentAvitoPromotion->find($message->getId());
 
-        if($promotionProduct === null)
+        if(false === $promotionProduct)
         {
-            $this->logger->critical(
-                'Ошибка получения рекламного продукта '.$promotionProduct->getArticle(),
-                [__FILE__.':'.__LINE__],
-            );
-
             return;
         }
 
+        $avitoProductPromotionDTO = new AvitoProductPromotionDTO();
+        $promotionProduct->getDto($avitoProductPromotionDTO);
+
+        $budget = new Money($avitoProductPromotionDTO->getBudget());
+
         // id созданной компании
         $created = $this->request
-            ->profile($promotionProduct->getProfile())
-            ->create($promotionProduct);
+            ->profile($avitoProductPromotionDTO->getProfile())
+            ->article($avitoProductPromotionDTO->getArticle())
+            ->budget($budget)
+            ->create();
 
         if(false === $created)
         {
             $this->logger->critical(
-                'Ошибка при создании рекламной компании для продукта с артикулом'.$promotionProduct->getArticle(),
-                [__FILE__.':'.__LINE__],
+                sprintf('avito-promotion: Ошибка при создании рекламной компании для продукта с артикулом %s', $avitoProductPromotionDTO->getArticle()),
+                [__FILE__.':'.__LINE__]
             );
 
-            $this->messageDispatch->dispatch(
+            $this->messageDispatch
+                ->dispatch(
                 message: $message,
-                stamps: [new DelayStamp(3600000)], // задержка 1 час для повторного запроса на создание компании
-                transport: (string) $promotionProduct->getProfile(),
+                // задержка 1 час для повторного запроса на создание компании
+                stamps: [new MessageDelay(DateInterval::createFromDateString('1 hour'))],
+                transport: (string) $avitoProductPromotionDTO->getProfile(),
             );
         }
     }

@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -51,14 +50,16 @@ final class IndexController extends AbstractController
         int $page = 0,
     ): Response
     {
-
         // Поиск
         $search = new SearchDTO();
-        $searchForm = $this->createForm(SearchForm::class, $search, [
-            'action' => $this->generateUrl('avito-promotion:admin.company.index'),
-        ]);
-
-        $searchForm->handleRequest($request);
+        $searchForm = $this
+            ->createForm(
+                type: SearchForm::class,
+                data: $search,
+                options: [
+                    'action' => $this->generateUrl('avito-promotion:admin.company.index')
+                ])
+            ->handleRequest($request);
 
         $profile = $this->getCurrentProfileUid();
 

@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -37,6 +36,7 @@ final class AvitoProductPromotionHandler extends AbstractHandler
         $this->setCommand($command);
 
         $entity = $this->prePersistOrUpdate(AvitoProductPromotion::class, [
+            'product' => $command->getProduct(),
             'offer' => $command->getOffer(),
             'variation' => $command->getVariation(),
             'modification' => $command->getModification(),

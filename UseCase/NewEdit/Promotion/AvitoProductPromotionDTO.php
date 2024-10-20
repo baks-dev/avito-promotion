@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -30,29 +29,31 @@ use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotionInterface;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
 use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
+use BaksDev\Products\Product\Entity\Product;
+use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
 use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\ConstId\ProductModificationConst;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use DateTimeImmutable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see AvitoProductPromotion */
 final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 {
-    /**
-     * Идентификатор события
-     */
+    /** Идентификатор события */
     #[Assert\Uuid]
     private ?AvitoProductPromotionUid $id = null;
 
-    /** Артикул продукта (уникальное) */
+    /** ID продукта (не уникальное) */
     #[Assert\NotBlank]
-    private string $article;
+    #[Assert\Uuid]
+    private ProductUid $product;
 
     #[Assert\NotBlank]
     #[Assert\Uuid]
     /** Константа ТП */
-    private ProductOfferConst $offer;
+    private ?ProductOfferConst $offer = null;
 
     #[Assert\Uuid]
     /** Константа множественного варианта */
@@ -66,18 +67,26 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
     /** Константа модификации множественного варианта */
     private ?CategoryProductSectionFieldUid $property = null;
 
-    /**  */
-    #[Assert\Uuid]
-    private ?AvitoPromotionUid $company = null;
+    /** Артикул продукта */
+    #[Assert\NotBlank]
+    private string $article;
 
+    /** Рекламная компания */
+    #[Assert\Uuid]
+    #[Assert\NotBlank]
+    private AvitoPromotionUid $company;
+
+    /** Профиль пользователя */
     #[Assert\NotBlank]
     private UserProfileUid $profile;
 
+    /** Рекламный бюджет на продукт */
     #[Assert\NotBlank]
     private int $budget;
 
+    /** Дата создания рекламного продукта */
     #[Assert\NotBlank]
-    private \DateTimeImmutable $created;
+    private DateTimeImmutable $created;
 
     public function __construct()
     {
@@ -89,14 +98,34 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->id;
     }
 
+    public function getProduct(): ProductUid
+    {
+        return $this->product;
+    }
+
+    public function setProduct(Product|ProductUid|string $product): void
+    {
+        if($product instanceof Product)
+        {
+            $product = $product->getId();
+        }
+
+        if (is_string($product))
+        {
+            $product = new ProductUid($product);
+        }
+
+        $this->product = $product;
+    }
+
     public function getOffer(): ProductOfferConst
     {
         return $this->offer;
     }
 
-    public function setOffer(ProductOfferConst|string $offer): void
+    public function setOffer(ProductOfferConst|string|null $offer): void
     {
-        if(is_string($offer))
+        if (is_string($offer))
         {
             $offer = new ProductOfferConst($offer);
         }
@@ -111,7 +140,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setVariation(ProductVariationConst|string|null $variation): void
     {
-        if(is_string($variation))
+        if (is_string($variation))
         {
             $variation = new ProductVariationConst($variation);
         }
@@ -126,7 +155,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setModification(ProductModificationConst|string|null $modification): void
     {
-        if(is_string($modification))
+        if (is_string($modification))
         {
             $modification = new ProductModificationConst($modification);
         }
@@ -141,22 +170,12 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setProperty(CategoryProductSectionFieldUid|string|null $property): void
     {
-        if(is_string($property))
+        if (is_string($property))
         {
             $property = new CategoryProductSectionFieldUid($property);
         }
 
         $this->property = $property;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(?string $status): void
-    {
-        $this->status = $status;
     }
 
     public function getArticle(): string
@@ -169,14 +188,14 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         $this->article = $article;
     }
 
-    public function getCompany(): ?AvitoPromotionUid
+    public function getCompany(): AvitoPromotionUid
     {
         return $this->company;
     }
 
-    public function setCompany(AvitoPromotionUid|string|null $company): void
+    public function setCompany(AvitoPromotionUid|string $company): void
     {
-        if(is_string($company))
+        if (is_string($company))
         {
             $company = new AvitoPromotionUid($company);
         }
@@ -194,16 +213,16 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         $this->budget = $budget;
     }
 
-    public function getCreated(): \DateTimeImmutable
+    public function getCreated(): DateTimeImmutable
     {
         return $this->created;
     }
 
-    public function setCreated(\DateTimeImmutable|string $created): void
+    public function setCreated(DateTimeImmutable|string $created): void
     {
-        if(is_string($created))
+        if (is_string($created))
         {
-            $created = new \DateTimeImmutable($created);
+            $created = new DateTimeImmutable($created);
         }
 
         $this->created = $created;
@@ -216,12 +235,13 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setProfile(UserProfileUid|string $profile): void
     {
-        if(is_string($profile))
+        if (is_string($profile))
         {
             $profile = new UserProfileUid($profile);
         }
 
         $this->profile = $profile;
     }
+
 
 }

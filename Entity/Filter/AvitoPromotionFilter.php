@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Entity\Filter;
@@ -34,7 +33,6 @@ use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
-#[ORM\Index(columns: ['event'])]
 #[ORM\Index(columns: ['property'])]
 #[ORM\Table(name: 'avito_promotion_filter')]
 class AvitoPromotionFilter extends EntityEvent

@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -38,13 +37,10 @@ use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Entity\Category\ProductCategory;
 use BaksDev\Products\Product\Entity\Event\ProductEvent;
 use BaksDev\Products\Product\Entity\Info\ProductInfo;
-use BaksDev\Products\Product\Entity\Offers\Price\ProductOfferPrice;
 use BaksDev\Products\Product\Entity\Offers\ProductOffer;
 use BaksDev\Products\Product\Entity\Offers\Quantity\ProductOfferQuantity;
-use BaksDev\Products\Product\Entity\Offers\Variation\Modification\Price\ProductModificationPrice;
 use BaksDev\Products\Product\Entity\Offers\Variation\Modification\ProductModification;
 use BaksDev\Products\Product\Entity\Offers\Variation\Modification\Quantity\ProductModificationQuantity;
-use BaksDev\Products\Product\Entity\Offers\Variation\Price\ProductVariationPrice;
 use BaksDev\Products\Product\Entity\Offers\Variation\ProductVariation;
 use BaksDev\Products\Product\Entity\Offers\Variation\Quantity\ProductVariationQuantity;
 use BaksDev\Products\Product\Entity\Price\ProductPrice;
@@ -52,31 +48,34 @@ use BaksDev\Products\Product\Entity\Property\ProductProperty;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
 use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use DateInterval;
+use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use InvalidArgumentException;
 
-final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotionCompanyInterface
+final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvitoPromotionCompanyInterface
 {
     private UserProfileUid|false $profile = false;
 
     private array|false $filters = false;
 
-    private array|false $offerFilters = false;
+    private array|null $offerFilters = null;
 
-    private array|false $variationFilters = false;
+    private array|null $variationFilters = null;
 
-    private array|false $modificationFilters = false;
+    private array|null $modificationFilters = null;
 
-    private array|false $propertyFilters = false;
+    private array|null $propertyFilters = null;
 
     private CategoryProductUid|false $category = false;
 
-    private string|false $date = false;
+    private DateInterval|false $date = false;
 
     public function __construct(
         private readonly DBALQueryBuilder $DBALQueryBuilder,
     ) {}
 
-    public function date(string $date): self
+    public function date(DateInterval $date): self
     {
         $this->date = $date;
 
@@ -108,28 +107,20 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 
             if($filter->type === 'OFFER')
             {
-                $this->offerFilters = [];
-
                 $this->offerFilters[] = $filter;
             }
 
             if($filter->type === 'VARIATION')
             {
-                $this->variationFilters = [];
-
                 $this->variationFilters[] = $filter;
             }
             if($filter->type === 'MODIFICATION')
             {
-                $this->modificationFilters = [];
-
                 $this->modificationFilters[] = $filter;
             }
 
             if($filter->type === 'PROPERTY')
             {
-                $this->propertyFilters = [];
-
                 $this->propertyFilters[] = $filter;
             }
         }
@@ -158,18 +149,10 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
      * @return array{
      *   "orders_product": string,
      *   "orders_count": int,
-     *   "orders_total": int,
-     *   "product_name": string,
-     *   "product_offer_value": string,
      *   "product_offer_const": string,
-     *   "product_variation_value": string,
      *   "product_variation_const": string,
-     *   "product_modification_value": string,
      *   "product_modification_const": string,
-     *   "product_property_value": string,
-     *   "product_property_const": string,
      *   "product_article": string,
-     *   "product_stock": int
      *  }|false
      */
     public function execute(): array|false
@@ -204,8 +187,7 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             ->from(Order::class, 'orders');
 
         /** Заказы со смещением, заданным в date */
-        $date = new \DateTimeImmutable($this->date);
-        $date = $date->format('Y-m-d H:i:s');
+        $date = (new DateTimeImmutable())->sub($this->date);
 
         /** Активное событие заказа */
         $dbal
@@ -218,12 +200,11 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                 '
                     orders_event.id = orders.event AND
                     orders_event.status = :status AND
-                    orders_event.created > :date
-                    /** orders_event.created + INTERVAL \'7 days\' > CURRENT_DATE */
-                    ',
+                    orders_event.created >= :date
+                ',
             )
             ->setParameter('status', OrderStatusCompleted::STATUS, OrderStatus::TYPE)
-            ->setParameter('date', $date);
+            ->setParameter('date', $date, Types::DATE_IMMUTABLE);
 
         /** Продукт заказа */
         $dbal
@@ -238,9 +219,9 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 
         /** Количество заказа */
         $dbal
-            ->addSelect('COUNT(orders_price.*) AS orders_count')
-            ->addSelect('SUM(orders_price.total) AS orders_total')
-            //            ->addSelect('orders_price.total AS orders_total')
+            //->addSelect('COUNT(orders_price.*) AS orders_count')
+            //->addSelect('orders_price.total AS orders_total')
+            ->addSelect('SUM(orders_price.total) AS orders_count')
             ->leftJoin(
                 'orders_product',
                 OrderPrice::class,
@@ -262,13 +243,14 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
 
         /** Получаем название с учетом настроек локализации */
         $dbal
-            ->addSelect('product_trans.name AS product_name')
+            //            ->addSelect('product_trans.name AS product_name')
             ->leftJoin(
                 'product_event',
                 ProductTrans::class,
                 'product_trans',
                 'product_trans.event = product_event.id AND product_trans.local = :local',
             );
+
 
         /** Основной артикул товара */
         $dbal
@@ -309,7 +291,6 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
          * Offer
          */
         $dbal
-            ->addSelect('product_offer.value as product_offer_value')
             ->addSelect('product_offer.const as product_offer_const')
             ->join(
                 'product_event',
@@ -321,19 +302,30 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             );
 
         /** Выражение для фильтра по Offer */
-        $offerFilter = $this->getOffer('product_offer.category_offer', 'product_offer.value');
-
-
-        if(false === is_null($offerFilter))
+        if($this->offerFilters)
         {
-            $dbal->where($offerFilter);
+            /**
+             * @var object{
+             *     'type': string,
+             *      'value': string,
+             *      'property': string,
+             *      'predicate': string } $offer
+             */
+            foreach($this->offerFilters as $offer)
+            {
+                $uniqueProperty = uniqid('property', false);
+                $uniqueValue = uniqid('value', false);
+
+                $dbal->orWhere("product_offer.category_offer = :$uniqueProperty AND product_offer.value = :$uniqueValue");
+                $dbal->setParameter($uniqueProperty, $offer->property);
+                $dbal->setParameter($uniqueValue, $offer->value);
+            }
         }
 
         /**
          * Variation
          */
         $dbal
-            ->addSelect('product_variation.value as product_variation_value')
             ->addSelect('product_variation.const as product_variation_const')
             ->join(
                 'product_offer',
@@ -345,18 +337,30 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             );
 
         /** Выражение для фильтра по Variation */
-        $variationFilter = $this->getVariation('product_variation.category_variation', 'product_variation.value');
-
-        if(false === is_null($variationFilter))
+        if($this->variationFilters)
         {
-            $dbal->where($variationFilter);
+            /**
+             * @var object{
+             *     'type': string,
+             *      'value': string,
+             *      'property': string,
+             *      'predicate': string } $variation
+             */
+            foreach($this->variationFilters as $variation)
+            {
+                $uniqueProperty = uniqid('property', false);
+                $uniqueValue = uniqid('value', false);
+
+                $dbal->orWhere("product_variation.category_variation = :$uniqueProperty AND product_variation.value = :$uniqueValue");
+                $dbal->setParameter($uniqueProperty, $variation->property);
+                $dbal->setParameter($uniqueValue, $variation->value);
+            }
         }
 
         /**
          * Modification
          */
         $dbal
-            ->addSelect('product_modification.value as product_modification_value')
             ->addSelect('product_modification.const as product_modification_const')
             ->join(
                 'product_variation',
@@ -368,59 +372,135 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             );
 
         /** Выражение для фильтра по Modification */
-        $modificationFilter = $this->getModification('product_modification.category_modification', 'product_modification.value');
-
-        if(false === is_null($modificationFilter))
+        if($this->modificationFilters)
         {
-            $dbal->where($modificationFilter);
+            /**
+             * @var object{
+             *     'type': string,
+             *      'value': string,
+             *      'property': string,
+             *      'predicate': string } $modification
+             */
+            foreach($this->modificationFilters as $modification)
+            {
+                $uniqueProperty = uniqid('property', false);
+                $uniqueValue = uniqid('value', false);
+
+                $dbal->orWhere("product_modification.category_modification = :$uniqueProperty AND product_modification.value = :$uniqueValue");
+                $dbal->setParameter($uniqueProperty, $modification->property);
+                $dbal->setParameter($uniqueValue, $modification->value);
+            }
         }
 
-        /** Выражение для фильтра по Property */
-        $propertyFilters = $this->getProperties('product_property.field', 'product_property.value', 'product_property.event');
+        /** Фильтр по Property */
+        $filtersOR = null;
 
-        if(false == is_null($propertyFilters))
+        /**
+         * @var object{
+         *     'type': string,
+         *      'value': string,
+         *      'property': string,
+         *      'predicate': string } $property
+         */
+        foreach($this->propertyFilters as $property)
         {
-            // OR (одно из совпадений) //
-            if(false == is_null($propertyFilters->or))
+
+            /**
+             * Ожидаемое поведение при предикате AND (И)
+             *
+             * Если значения выбраны в рамках одного свойства - результатом будет пустой массив
+             *
+             * Пример:
+             * Свойство: Тип автомобиля
+             * Значения: легковой, автобус
+             *
+             * Результат: не может быть товара, со свойствами Тип автомобиля -> легковой И автобус
+             *
+             * Если значения выбраны в рамках разных свойств - результатом будет массив товаров с указанными свойствами
+             *
+             * Пример:
+             * Свойство: Тип автомобиля
+             * Значения: автобус
+             * Свойство: Сезонность
+             * Значения: зимние
+             *
+             * Результат: Товар со свойствами Тип автомобиля -> автобус И зимние
+             */
+            if($property->predicate === 'AND')
             {
+                $uniqueTable = uniqid('t', false);
+                $uniqueField = uniqid('f', false);
+                $uniqueValue = uniqid('v', false);
 
                 $dbal
-                    ->addSelect('product_property.value AS product_property_value')
-                    ->addSelect('product_property.field AS product_property_const')
+                    //->addSelect('product_property_'.$uniqueTable.'.value'.' AS product_property_value')
                     ->join(
                         'orders_product',
                         ProductProperty::class,
-                        'product_property',
-                        $propertyFilters->or,
+                        'product_property_'.$uniqueTable,
+                        '
+                            product_property_'.$uniqueTable.'.field = :'.$uniqueField.' AND 
+                            product_property_'.$uniqueTable.'.value = :'.$uniqueValue.' AND
+                            product_property_'.$uniqueTable.'.event = orders_product.product'
                     );
+
+                $dbal->setParameter($uniqueField, $property->property);
+                $dbal->setParameter($uniqueValue, $property->value);
             }
 
-            // AND (несколько совпадений)
-            if(false == is_null($propertyFilters->and))
+            /**
+             * Парсинг фильтров с предикатом OR для объединения нескольких свойств с одинаковыми значениями product_property.field, но разными значениями product_property.value
+             *
+             * Пример выражения для объединения таблиц:
+             *
+             * - несколько свойств с одинаковыми значениями product_property.field, но разными значениями product_property.value:
+             * (product_property.field = :field AND (product_property.value = :bus OR product_property.value = :passenger) AND
+             * product_property.event = orders_product.product) OR
+             *
+             * - одно свойство:
+             * (product_property.field = :field AND (product_property.value = :winter) AND product_property.event = orders_product.product)
+             */
+            if($property->predicate === 'OR')
             {
-                /**
-                 * @var object{
-                 *      key: string,
-                 *      condition: string } $propertyFilter
-                 */
-                foreach($propertyFilters->and as $propertyFilter)
-                {
+                $uniqueField = uniqid('f', false);
+                $uniqueValue = uniqid('v', false);
 
-                    $key = $propertyFilter->key;
-                    $condition = $propertyFilter->condition;
-                    $alias = 'product_property_'.$key;
+                $filtersOR[] = '(product_property.field = :'.$uniqueField.' AND product_property.value = :'.$uniqueValue.')';
 
-                    $dbal
-                        ->addSelect($alias.'.value'.' AS product_property_value')
-                        ->join(
-                            'orders_product',
-                            ProductProperty::class,
-                            $alias,
-                            $condition,
-                        );
-                }
+                $dbal->setParameter($uniqueField, $property->property);
+                $dbal->setParameter($uniqueValue, $property->value);
             }
         }
+
+
+        /**
+         * Ожидаемое поведение при предикате OR (ИЛИ)
+         *
+         * Будут найдены товары, включающие любое значение свойства, независимо от принадлежности значения конкретному свойству
+         *
+         * Пример:
+         * Свойство: Тип автомобиля
+         * Значения: легковой, автобус, зимние
+         * Свойство: Сезонность
+         * Значения: зимние
+         *
+         * Результат: Товары со значениями свойств Тип автомобиля -> автобус ИЛИ Тип автомобиля -> автобус ИЛИ Сезонность -> зимние
+         */
+        if($filtersOR)
+        {
+            $conditionOR = '('.implode(' OR ', $filtersOR).') AND product_property.event = orders_product.product';
+
+            $dbal
+                //->addSelect('product_property.value AS product_property_value')
+                //->addSelect('product_property.field AS product_property_const')
+                ->join(
+                    'orders_product',
+                    ProductProperty::class,
+                    'product_property',
+                    $conditionOR,
+                );
+        }
+
 
         /**
          * Артикул продукта
@@ -455,37 +535,6 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
         );
 
         /**
-         * Цена торгового предо жения
-         */
-        $dbal->leftJoin(
-            'product_offer',
-            ProductOfferPrice::class,
-            'product_offer_price',
-            'product_offer_price.offer = product_offer.id',
-        );
-
-        /**
-         * Цена множественного варианта
-         */
-        $dbal->leftJoin(
-            'product_variation',
-            ProductVariationPrice::class,
-            'product_variation_price',
-            'product_variation_price.variation = product_variation.id',
-        );
-
-        /**
-         * Цена модификации множественного варианта
-         */
-        $dbal->leftJoin(
-            'product_modification',
-            ProductModificationPrice::class,
-            'product_modification_price',
-            'product_modification_price.modification = product_modification.id',
-        );
-
-        /** Наличие продукта */
-        /**
          * Наличие и резерв торгового предложения
          */
         $dbal
@@ -515,25 +564,6 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
             'product_modification_quantity.modification = product_modification.id',
         );
 
-        //        $dbal->addSelect(
-        //            '
-        //            CASE
-        //			   WHEN product_modification_quantity.quantity > 0 AND product_modification_quantity.quantity > product_modification_quantity.reserve
-        //			   THEN (product_modification_quantity.quantity - product_modification_quantity.reserve)
-        //
-        //			   WHEN product_variation_quantity.quantity > 0 AND product_variation_quantity.quantity > product_variation_quantity.reserve
-        //			   THEN (product_variation_quantity.quantity - product_variation_quantity.reserve)
-        //
-        //			   WHEN product_offer_quantity.quantity > 0 AND product_offer_quantity.quantity > product_offer_quantity.reserve
-        //			   THEN (product_offer_quantity.quantity - product_offer_quantity.reserve)
-        //
-        //			   WHEN product_price.quantity > 0 AND product_price.quantity > product_price.reserve
-        //			   THEN (product_price.quantity - product_price.reserve)
-        //
-        //			   ELSE 0
-        //			END AS product_stock'
-        //        );
-
         /** Только заказы, у которых есть остатки */
         $dbal->andWhere('
             (
@@ -552,14 +582,21 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
                  
                    ELSE 0
                 END
-            ) != 0
+            ) > 0
         ');
+
+
+        /** DEBUG */
+        //        $dbal
+        //            ->addSelect('product_offer.value as product_offer_value')
+        //            ->addSelect('product_variation.value as product_variation_value')
+        //            ->addSelect('product_modification.value as product_modification_value')
+        //        ;
+
 
         $dbal->allGroupByExclude();
 
-        $result = $dbal
-            ->enableCache('orders-order', 3600)
-            ->fetchAllAssociative();
+        $result = $dbal->fetchAllAssociative();
 
         if(empty($result))
         {
@@ -567,166 +604,5 @@ final class AllOrdersByAvitoPromotionCompany implements AllOrdersByAvitoPromotio
         }
 
         return $result;
-    }
-
-    private function getOffer(string $properAlias, string $valueAlias): string|null
-    {
-
-        if(false === $this->offerFilters)
-        {
-            return null;
-        }
-
-        $condition = $this->OR($this->offerFilters, $properAlias, $valueAlias);
-
-        return $condition;
-    }
-
-    private function getVariation(string $properAlias, string $valueAlias): string|null
-    {
-
-        if(false === $this->variationFilters)
-        {
-            return null;
-        }
-
-        $condition = $this->OR($this->variationFilters, $properAlias, $valueAlias);
-
-        return $condition;
-    }
-
-    private function getModification(string $properAlias, string $valueAlias): string|null
-    {
-
-        if(false === $this->modificationFilters)
-        {
-            return null;
-        }
-
-        $condition = $this->OR($this->modificationFilters, $properAlias, $valueAlias);
-
-        return $condition;
-    }
-
-    /** Объединяющее условие для джойна - применяется в рамках одной таблицы */
-    private function OR(array $filters, string $properAlias, string $valueAlias): string
-    {
-        $condition = null;
-
-        /**
-         * @var object{
-         *     'type': string,
-         *      'value': string,
-         *      'property': string,
-         *      'predicate': string } $filter
-         */
-        foreach($filters as $filter)
-        {
-            if(null === $condition)
-            {
-                $condition = "(%s = '%s' AND %s = '%s')";
-                $condition = sprintf($condition, $properAlias, $filter->property, $valueAlias, $filter->value);
-            }
-            else
-            {
-                $condition .= " %s (%s = '%s' AND %s = '%s')";
-
-                $condition = sprintf($condition, 'OR', $properAlias, $filter->property, $valueAlias, $filter->value);
-            }
-        }
-
-        return $condition;
-    }
-
-    /**
-     * @return object{
-     *  or: string|null,
-     *  and: array|null
-     * }
-     */
-    private function getProperties(string $properAlias, string $valueAlias, ?string $eventAlias = null): object|null
-    {
-        if(false === $this->propertyFilters)
-        {
-            return null;
-        }
-
-        $count = count($this->propertyFilters);
-
-        $propertyFilters = new \stdClass();
-        $propertyFilters->or = null;
-        $propertyFilters->and = null;
-
-        /**
-         * @var object{
-         *     'type': string,
-         *      'value': string,
-         *      'property': string,
-         *      'predicate': string } $filter
-         */
-        foreach($this->propertyFilters as $key => $filter)
-        {
-
-            // одно из совпадений
-            // формируем строку с выражением для одного джойна (выражение чувствительно к количеству фильтров)
-            if($filter->predicate === 'OR')
-            {
-
-                if(null === $propertyFilters->or) // формируем первую часть выражения
-                {
-                    $condition = "%s = '%s' AND (%s = '%s'";
-                    $condition = sprintf($condition, $properAlias, $filter->property, $valueAlias, $filter->value);
-
-                    $propertyFilters->or = $condition;
-                }
-                else // формируем следующие части выражения
-                {
-                    $condition = $propertyFilters->or." %s %s = '%s'";
-
-                    $condition = sprintf($condition, 'OR', $valueAlias, $filter->value);
-
-                    $propertyFilters->or = $condition;
-                }
-
-                // дополняем выражение при обработке последнего фильтра
-                if($key === $count - 1)
-                {
-                    $end = $propertyFilters->or.') AND '.$eventAlias.' = orders_product.product';
-                    $propertyFilters->or = $end;
-                }
-
-                // дополняем выражение в конце, если фильтр только одни
-                if($count < 1)
-                {
-                    $end = $propertyFilters->or.')';
-                    $propertyFilters->or = $end;
-                }
-            }
-
-            // несколько совпадений
-            // формируем массив выражений для циклических джойнов
-            if($filter->predicate === 'AND')
-            {
-                $property = new \stdClass();
-
-                $unique = uniqid();
-                $property->key = $unique;
-
-                // Генерируем уникальные алиасы свойств
-                $uniquePropertyAlias = str_replace('.', '_'.$unique.'.', $properAlias);
-                $uniqueValueAlias = str_replace('.', '_'.$unique.'.', $valueAlias);
-                $uniqueEventAlias = str_replace('.', '_'.$unique.'.', $eventAlias);
-
-                $condition = "%s = '%s' AND %s = '%s'";
-
-                $condition = sprintf($condition, $uniquePropertyAlias, $filter->property, $uniqueValueAlias, $filter->value);
-                $property->condition = $condition.' AND '.$uniqueEventAlias.' = orders_product.product';
-
-                $propertyFilters->and[] = $property;
-            }
-        }
-
-        //        dd($propertyFilters);
-        return $propertyFilters;
     }
 }

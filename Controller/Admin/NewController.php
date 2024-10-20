@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -55,15 +54,15 @@ final class NewController extends AbstractController
 
         $newDTO = new AvitoPromotionDTO();
 
-        $form = $this->createForm(
-            type: AvitoPromotionForm::class,
-            data: $newDTO,
-            options: [
-                'action' => $this->generateUrl('avito-promotion:admin.company.new'),
-            ],
-        );
-
-        $form->handleRequest($request);
+        $form = $this
+            ->createForm(
+                type: AvitoPromotionForm::class,
+                data: $newDTO,
+                options: [
+                    'action' => $this->generateUrl('avito-promotion:admin.company.new'),
+                ],
+            )
+            ->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid() && $form->has('avito_promotion_add'))
         {

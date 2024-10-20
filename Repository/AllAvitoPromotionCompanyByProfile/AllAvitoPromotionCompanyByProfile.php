@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyByProfile;
@@ -62,7 +61,7 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
         return $this;
     }
 
-    public function findWithPaginator(): PaginatorInterface
+    public function findPaginator(): PaginatorInterface
     {
         if(false === $this->profile)
         {

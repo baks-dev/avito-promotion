@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyFiltersByProfile;
@@ -41,7 +40,7 @@ use BaksDev\Users\Profile\UserProfile\Type\UserProfileStatus\Status\UserProfileS
 use BaksDev\Users\Profile\UserProfile\Type\UserProfileStatus\UserProfileStatus;
 use InvalidArgumentException;
 
-final class AllAvitoPromotionCompanyFiltersByProfile implements AllAvitoPromotionCompanyFiltersByProfileInterface
+final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvitoPromotionCompanyFiltersByProfileInterface
 {
     private UserProfileUid|false $profile = false;
 

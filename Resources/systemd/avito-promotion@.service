@@ -2,12 +2,12 @@
 
 # systemctl daemon-reload
 
-# systemctl enable baks-async@1.service
-# systemctl disable baks-async@1.service
+# systemctl enable avito-promotion@1.service
+# systemctl disable avito-promotion@1.service
 
-# systemctl start baks-async@1.service
-# systemctl restart baks-async@1.service
-# systemctl stop baks-async@1.service
+# systemctl start avito-promotion@1.service
+# systemctl restart avito-promotion@1.service
+# systemctl stop avito-promotion@1.service
 
 [Unit]
 Description=Symfony messenger avito-promotion %i

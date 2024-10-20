@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Controller\Admin;
@@ -56,17 +55,17 @@ final class EditController extends AbstractController
 
         $event->getDto($editDTO);
 
-        $form = $this->createForm(
-            type: AvitoPromotionForm::class,
-            data: $editDTO,
-            options: [
-                'action' => $this->generateUrl('avito-promotion:admin.company.edit', [
-                    'id' => $event->getEvent(),
-                ]),
-            ],
-        );
-
-        $form->handleRequest($request);
+        $form = $this
+            ->createForm(
+                type: AvitoPromotionForm::class,
+                data: $editDTO,
+                options: [
+                    'action' => $this->generateUrl('avito-promotion:admin.company.edit', [
+                        'id' => $event->getEvent(),
+                    ]),
+                ],
+            )
+            ->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid() && $form->has('avito_promotion_add'))
         {

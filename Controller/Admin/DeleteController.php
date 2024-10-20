@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Controller\Admin;
@@ -58,17 +57,17 @@ final class DeleteController extends AbstractController
         /** Гидрируем ДТО из события */
         $event->getDto($deleteDTO);
 
-        $form = $this->createForm(
-            type: AvitoPromotionDeleteForm::class,
-            data: $deleteDTO,
-            options: [
-                'action' => $this->generateUrl('avito-promotion:admin.company.delete', [
-                    'id' => $deleteDTO->getEvent(),
-                ]),
-            ],
-        );
-
-        $form->handleRequest($request);
+        $form = $this
+            ->createForm(
+                type: AvitoPromotionDeleteForm::class,
+                data: $deleteDTO,
+                options: [
+                    'action' => $this->generateUrl('avito-promotion:admin.company.delete', [
+                        'id' => $deleteDTO->getEvent(),
+                    ]),
+                ],
+            )
+            ->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid() && $form->has('delete_item'))
         {

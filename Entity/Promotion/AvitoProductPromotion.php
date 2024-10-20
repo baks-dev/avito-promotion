@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -30,10 +29,12 @@ use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
 use BaksDev\Core\Entity\EntityState;
 use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
+use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
 use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\ConstId\ProductModificationConst;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
@@ -41,12 +42,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /** @see AvitoProductPromotionDTO */
 #[ORM\Entity]
-#[ORM\Index(columns: ['article'])]
-#[ORM\Index(columns: ['offer'])]
-#[ORM\Index(columns: ['variation'])]
-#[ORM\Index(columns: ['modification'])]
-#[ORM\Index(columns: ['company'])]
-#[ORM\Index(columns: ['profile'])]
+#[ORM\UniqueConstraint(columns: ['profile', 'product', 'offer', 'variation', 'modification'])]
 #[ORM\Table(name: 'avito_promotion_product')]
 class AvitoProductPromotion extends EntityState
 {
@@ -56,12 +52,15 @@ class AvitoProductPromotion extends EntityState
     #[ORM\Column(type: AvitoProductPromotionUid::TYPE)]
     private AvitoProductPromotionUid $id;
 
-    #[ORM\Column(type: Types::STRING, nullable: false)]
-    private string $article;
+    /** ID продукта (не уникальное) */
+    #[Assert\NotBlank]
+    #[Assert\Uuid]
+    #[ORM\Column(type: ProductUid::TYPE, nullable: false)]
+    private ProductUid $product;
 
     /** Константа ТП */
-    #[ORM\Column(type: ProductOfferConst::TYPE, nullable: false)]
-    private ?ProductOfferConst $offer;
+    #[ORM\Column(type: ProductOfferConst::TYPE, nullable: true)]
+    private ?ProductOfferConst $offer = null;
 
     /** Константа множественного варианта */
     #[ORM\Column(type: ProductVariationConst::TYPE, nullable: true)]
@@ -75,6 +74,10 @@ class AvitoProductPromotion extends EntityState
     #[ORM\Column(type: CategoryProductSectionFieldUid::TYPE, nullable: true)]
     private ?CategoryProductSectionFieldUid $property = null;
 
+    /** Артикул продукта */
+    #[ORM\Column(type: Types::STRING, nullable: false)]
+    private string $article;
+
     /** Рекламная компания */
     #[ORM\Column(type: AvitoPromotionUid::TYPE, nullable: false)]
     private AvitoPromotionUid $company;
@@ -87,10 +90,10 @@ class AvitoProductPromotion extends EntityState
     #[ORM\Column(type: Types::INTEGER, nullable: false)]
     private int $budget;
 
-    /** Дата создания/обновления рекламного продукта */
+    /** Дата создания рекламного продукта */
     #[Assert\NotBlank]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
-    private \DateTimeImmutable $created;
+    private DateTimeImmutable $created;
 
     public function __construct()
     {
@@ -99,7 +102,7 @@ class AvitoProductPromotion extends EntityState
 
     public function __toString(): string
     {
-        return (string) $this->id;
+        return (string)$this->id;
     }
 
     public function getId(): AvitoProductPromotionUid
@@ -110,7 +113,7 @@ class AvitoProductPromotion extends EntityState
     /** Гидрирует переданную DTO, вызывая ее сеттеры */
     public function getDto($dto): mixed
     {
-        if($dto instanceof AvitoProductPromotionInterface)
+        if ($dto instanceof AvitoProductPromotionInterface)
         {
             return parent::getDto($dto);
         }
@@ -121,31 +124,11 @@ class AvitoProductPromotion extends EntityState
     /** Гидрирует сущность переданной DTO */
     public function setEntity($dto): mixed
     {
-        if($dto instanceof AvitoProductPromotionInterface || $dto instanceof self)
+        if ($dto instanceof AvitoProductPromotionInterface || $dto instanceof self)
         {
             return parent::setEntity($dto);
         }
 
         throw new InvalidArgumentException(sprintf('Class %s interface error', $dto::class));
-    }
-
-    public function getBudget(): int
-    {
-        return $this->budget;
-    }
-
-    public function getProfile(): UserProfileUid
-    {
-        return $this->profile;
-    }
-
-    public function getArticle(): string
-    {
-        return $this->article;
-    }
-
-    public function getCreated(): \DateTimeImmutable
-    {
-        return $this->created;
     }
 }

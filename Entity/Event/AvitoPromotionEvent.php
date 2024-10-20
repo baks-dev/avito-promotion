@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -34,6 +33,7 @@ use BaksDev\Avito\Promotion\Type\Event\AvitoPromotionEventUid;
 use BaksDev\Core\Entity\EntityEvent;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -44,7 +44,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /** @see AvitoPromotionDTO */
 #[ORM\Entity]
 #[ORM\Index(columns: ['profile'])]
-#[ORM\Index(columns: ['category'])]
 #[ORM\Table(name: 'avito_promotion_event')]
 class AvitoPromotionEvent extends EntityEvent
 {
@@ -91,24 +90,22 @@ class AvitoPromotionEvent extends EntityEvent
      * Шаг бюджета
      */
     #[Assert\NotBlank]
-    #[Assert\Range(min: 1, max: 100)]
     #[ORM\Column(type: Types::INTEGER, nullable: false)]
-    private ?int $budget = null;
+    private int $budget;
 
     /**
      * Ограничение бюджета
      */
     #[Assert\NotBlank]
-    #[Assert\Range(min: 101, max: 1000)]
-    #[ORM\Column(type: Types::INTEGER, nullable: false)]
-    private ?int $budgetLimit = null;
+    #[ORM\Column(name: 'budget_limit', type: Types::INTEGER, nullable: false)]
+    private int $budgetLimit;
 
     /**
      * Дата окончания рекламной компании
      */
     #[Assert\NotBlank]
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
-    private ?\DateTimeImmutable $dateEnd = null;
+    #[ORM\Column(name: 'date_end', type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    private ?DateTimeImmutable $dateEnd = null;
 
     /**
      * Коллекция свойств для фильтрации и применения услуг продвижения
@@ -127,7 +124,6 @@ class AvitoPromotionEvent extends EntityEvent
     {
         $this->id = new AvitoPromotionEventUid();
         $this->modify = new AvitoPromotionEventModify($this);
-
         $this->filters = new ArrayCollection();
     }
 

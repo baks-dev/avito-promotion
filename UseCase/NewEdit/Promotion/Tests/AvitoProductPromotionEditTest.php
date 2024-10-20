@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\Tests;
@@ -28,9 +27,13 @@ use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionHandler;
+use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
 use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst;
 use BaksDev\Products\Product\Type\Offers\Variation\Modification\ConstId\ProductModificationConst;
+use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use DateTimeImmutable;
+use DateTimeZone;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
@@ -53,9 +56,7 @@ class AvitoProductPromotionEditTest extends KernelTestCase
          * @var AvitoProductPromotion $productPromotion
          */
         $productPromotion = $em->getRepository(AvitoProductPromotion::class)->findOneBy([
-            'offer' => ProductOfferConst::TEST,
-            'variation' => ProductVariationConst::TEST,
-            'modification' => ProductModificationConst::TEST,
+            'profile' => UserProfileUid::TEST,
         ]);
 
         self::assertNotNull($productPromotion);
@@ -65,7 +66,7 @@ class AvitoProductPromotionEditTest extends KernelTestCase
         $productPromotion->getDto($editDTO);
 
         // обновляем дату
-        $editDTO->setCreated($created = new \DateTimeImmutable('now', new \DateTimeZone('UTC')));
+        $editDTO->setCreated($created = new DateTimeImmutable('now', new DateTimeZone('UTC')));
         self::assertSame($created, $editDTO->getCreated());
 
         // обновляем бюджет
@@ -86,7 +87,7 @@ class AvitoProductPromotionEditTest extends KernelTestCase
         $em = self::getContainer()->get(EntityManagerInterface::class);
 
         $avitoProductPromotions = $em->getRepository(AvitoProductPromotion::class)
-            ->findBy(['company' => AvitoPromotionUid::TEST]);
+            ->findBy(['profile' => UserProfileUid::TEST]);
 
         foreach($avitoProductPromotions as $promotion)
         {
