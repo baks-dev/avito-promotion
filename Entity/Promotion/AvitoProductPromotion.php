@@ -102,7 +102,7 @@ class AvitoProductPromotion extends EntityState
 
     public function __toString(): string
     {
-        return (string)$this->id;
+        return (string) $this->id;
     }
 
     public function getId(): AvitoProductPromotionUid
@@ -113,7 +113,7 @@ class AvitoProductPromotion extends EntityState
     /** Гидрирует переданную DTO, вызывая ее сеттеры */
     public function getDto($dto): mixed
     {
-        if ($dto instanceof AvitoProductPromotionInterface)
+        if($dto instanceof AvitoProductPromotionInterface)
         {
             return parent::getDto($dto);
         }
@@ -124,7 +124,7 @@ class AvitoProductPromotion extends EntityState
     /** Гидрирует сущность переданной DTO */
     public function setEntity($dto): mixed
     {
-        if ($dto instanceof AvitoProductPromotionInterface || $dto instanceof self)
+        if($dto instanceof AvitoProductPromotionInterface || $dto instanceof self)
         {
             return parent::setEntity($dto);
         }

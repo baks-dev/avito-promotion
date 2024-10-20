@@ -161,7 +161,6 @@ final readonly class CreateAvitoProductPromotionHandler
                 $dto->setBudget($budget);
 
 
-
                 $promotionProduct = $this->handler->handle($dto);
 
                 if(false === $promotionProduct instanceof AvitoProductPromotion)

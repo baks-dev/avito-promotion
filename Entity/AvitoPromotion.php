@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -68,13 +67,13 @@ class AvitoPromotion
         return $this->id;
     }
 
-    public function setEvent(AvitoPromotionEvent|AvitoPromotionEventUid $event): void
-    {
-        $this->event = $event instanceof AvitoPromotionEvent ? $event->getEvent() : $event;
-    }
-
     public function getEvent(): AvitoPromotionEventUid
     {
         return $this->event;
+    }
+
+    public function setEvent(AvitoPromotionEvent|AvitoPromotionEventUid $event): void
+    {
+        $this->event = $event instanceof AvitoPromotionEvent ? $event->getEvent() : $event;
     }
 }

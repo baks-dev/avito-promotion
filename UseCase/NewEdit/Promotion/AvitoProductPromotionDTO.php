@@ -93,11 +93,6 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         $this->id = clone new AvitoProductPromotionUid();
     }
 
-    public function getId(): ?AvitoProductPromotionUid
-    {
-        return $this->id;
-    }
-
     public function getProduct(): ProductUid
     {
         return $this->product;
@@ -110,12 +105,17 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
             $product = $product->getId();
         }
 
-        if (is_string($product))
+        if(is_string($product))
         {
             $product = new ProductUid($product);
         }
 
         $this->product = $product;
+    }
+
+    public function getId(): ?AvitoProductPromotionUid
+    {
+        return $this->id;
     }
 
     public function getOffer(): ProductOfferConst
@@ -125,7 +125,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setOffer(ProductOfferConst|string|null $offer): void
     {
-        if (is_string($offer))
+        if(is_string($offer))
         {
             $offer = new ProductOfferConst($offer);
         }
@@ -140,7 +140,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setVariation(ProductVariationConst|string|null $variation): void
     {
-        if (is_string($variation))
+        if(is_string($variation))
         {
             $variation = new ProductVariationConst($variation);
         }
@@ -155,7 +155,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setModification(ProductModificationConst|string|null $modification): void
     {
-        if (is_string($modification))
+        if(is_string($modification))
         {
             $modification = new ProductModificationConst($modification);
         }
@@ -170,7 +170,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setProperty(CategoryProductSectionFieldUid|string|null $property): void
     {
-        if (is_string($property))
+        if(is_string($property))
         {
             $property = new CategoryProductSectionFieldUid($property);
         }
@@ -195,7 +195,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setCompany(AvitoPromotionUid|string $company): void
     {
-        if (is_string($company))
+        if(is_string($company))
         {
             $company = new AvitoPromotionUid($company);
         }
@@ -220,7 +220,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setCreated(DateTimeImmutable|string $created): void
     {
-        if (is_string($created))
+        if(is_string($created))
         {
             $created = new DateTimeImmutable($created);
         }
@@ -235,7 +235,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
     public function setProfile(UserProfileUid|string $profile): void
     {
-        if (is_string($profile))
+        if(is_string($profile))
         {
             $profile = new UserProfileUid($profile);
         }

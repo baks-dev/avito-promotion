@@ -142,14 +142,14 @@ class AvitoPromotionEvent extends EntityEvent
         return $this->id;
     }
 
-    public function setMain(AvitoPromotion|AvitoPromotionUid $main): void
-    {
-        $this->main = $main instanceof AvitoPromotion ? $main->getId() : $main;
-    }
-
     public function getMain(): AvitoPromotionUid
     {
         return $this->main;
+    }
+
+    public function setMain(AvitoPromotion|AvitoPromotionUid $main): void
+    {
+        $this->main = $main instanceof AvitoPromotion ? $main->getId() : $main;
     }
 
     public function getDto($dto): mixed
