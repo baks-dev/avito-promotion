@@ -75,7 +75,7 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
     }
 
     /**
-     * Информация о рекламной компании
+     * Метод возвращает все активные на данный период рекламные компании профиля
      *
      * @return array{
      *   "promo_company": string,
@@ -116,15 +116,16 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                 'avito_promotion',
                 AvitoPromotionEvent::class,
                 'avito_promotion_event',
-                'avito_promotion_event.id = avito_promotion.event',
+                'avito_promotion_event.id = avito_promotion.event AND avito_promotion_event.profile = :profile',
             )
+            ->setParameter('profile', $this->profile, UserProfileUid::TYPE)
             ->addGroupBy('avito_promotion_event.id');
 
-        $dbal
-            ->where('avito_promotion_event.profile = :profile')
-            ->setParameter('profile', $this->profile, UserProfileUid::TYPE);
 
-        /** Компания, попадающая в указанный период */
+        /**
+         * Компания, попадающая в указанный период
+         */
+
         if(true === $this->active)
         {
             $dbal->andWhere("avito_promotion_event.date_end > CURRENT_DATE");
@@ -136,9 +137,9 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                 'avito_promotion_event',
                 AvitoToken::class,
                 'avito_token',
-                'avito_promotion_event.profile = :profile',
-            )
-            ->setParameter('profile', $this->profile, UserProfileUid::TYPE);
+                'avito_promotion_event.profile = avito_promotion_event.profile',
+            );
+
 
         /** Проверка активности токена для Авито */
         $dbal
@@ -151,6 +152,7 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                         avito_token_event.active = TRUE',
             );
 
+
         /** Проверка активности профиля */
         $dbal
             ->join(
@@ -161,9 +163,13 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                 users_profile_info.profile = avito_promotion_event.profile AND
                 users_profile_info.status = :status',
             )
+            ->setParameter(
+                'status',
+                UserProfileStatusActive::class,
+                UserProfileStatus::TYPE
+            )
             ->addGroupBy('users_profile_info.status');
 
-        $dbal->setParameter('status', new UserProfileStatus(UserProfileStatusActive::class), UserProfileStatus::TYPE);
 
         /** Получаем фильтры для каждой компании */
         $dbal
@@ -234,11 +240,7 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
 
         $result = $dbal->fetchAllAssociative();
 
-        if(empty($result))
-        {
-            return false;
-        }
+        return empty($result) ? false : $result;
 
-        return $result;
     }
 }

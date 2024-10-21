@@ -35,7 +35,7 @@ use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use InvalidArgumentException;
 
-final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompanyByProfileInterface
+final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromotionCompanyByProfileInterface
 {
     private UserProfileUid|false $profile = false;
 
@@ -63,86 +63,28 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
 
     public function findPaginator(): PaginatorInterface
     {
-        if(false === $this->profile)
-        {
-            throw new InvalidArgumentException('Invalid Argument profile');
-        }
-
-        $dbal = $this->DBALQueryBuilder
-            ->createQueryBuilder(self::class)
-            ->bindLocal();
-
-        /** Рекламные компании Авито */
-        $dbal
-            ->select('avito_promotion.id')
-            ->from(AvitoPromotion::class, 'avito_promotion');
-
-        /** Активное событие */
-        $dbal
-            ->addSelect('avito_promotion_event.id AS event')
-            ->addSelect('avito_promotion_event.name AS promo_name')
-            ->addSelect('avito_promotion_event.profile AS promo_profile')
-            ->join(
-                'avito_promotion',
-                AvitoPromotionEvent::class,
-                'avito_promotion_event',
-                'avito_promotion_event.id = avito_promotion.event',
-            );
-
-        $dbal
-            ->where('avito_promotion_event.profile = :profile')
-            ->setParameter('profile', $this->profile, UserProfileUid::TYPE);
-
-        /** Категория */
-        $dbal->join(
-            'avito_promotion_event',
-            CategoryProduct::class,
-            'category',
-            'category.id = avito_promotion_event.category',
-        );
-
-        /** События категории */
-        $dbal->join(
-            'category',
-            CategoryProductEvent::class,
-            'category_event',
-            'category_event.id = category.event',
-        );
-
-        /** Обложка */
-        $dbal->addSelect('category_cover.ext');
-        $dbal->addSelect('category_cover.cdn');
-        $dbal->leftJoin(
-            'category_event',
-            CategoryProductCover::class,
-            'category_cover',
-            'category_cover.event = category_event.id',
-        );
-
-        $dbal->addSelect(
-            "
-			CASE
-			   WHEN category_cover.name IS NOT NULL THEN
-					CONCAT ( '/upload/".$dbal->table(CategoryProductCover::class)."' , '/', category_cover.name)
-			   ELSE NULL
-			END AS cover",
-        );
-
-        /** Перевод категории */
-        $dbal->addSelect('category_trans.name as category_name');
-        $dbal->addSelect('category_trans.description as category_description');
-
-        $dbal->leftJoin(
-            'category_event',
-            CategoryProductTrans::class,
-            'category_trans',
-            'category_trans.event = category_event.id AND category_trans.local = :local',
-        );
+        $dbal = $this->QueryBuilder();
 
         return $this->pagination->fetchAllAssociative($dbal);
     }
 
     public function find(): array|false
+    {
+        $dbal = $this->QueryBuilder();
+
+        $dbal->setMaxResults(1000);
+
+        $result = $dbal->fetchAllAssociative();
+
+        if(empty($result))
+        {
+            return false;
+        }
+
+        return $result;
+    }
+
+    private function QueryBuilder(): DBALQueryBuilder
     {
         if(false === $this->profile)
         {
@@ -220,13 +162,6 @@ final class AllAvitoPromotionCompanyByProfile implements AllAvitoPromotionCompan
             'category_trans.event = category_event.id AND category_trans.local = :local',
         );
 
-        $result = $dbal->fetchAllAssociative();
-
-        if(empty($result))
-        {
-            return false;
-        }
-
-        return $result;
+        return $dbal;
     }
 }

@@ -114,6 +114,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
             {
                 $this->variationFilters[] = $filter;
             }
+
             if($filter->type === 'MODIFICATION')
             {
                 $this->modificationFilters[] = $filter;
@@ -505,24 +506,14 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         /**
          * Артикул продукта
          */
-        $dbal->addSelect(
-            "
-					CASE
-					   WHEN product_modification.article IS NOT NULL 
-					   THEN product_modification.article
-					   
-					   WHEN product_variation.article IS NOT NULL 
-					   THEN product_variation.article
-					   
-					   WHEN product_offer.article IS NOT NULL 
-					   THEN product_offer.article
-					   
-					   WHEN product_info.article IS NOT NULL 
-					   THEN product_info.article
-					   
-					   ELSE NULL
-					END AS product_article",
-        );
+        $dbal->addSelect("
+            COALESCE(
+                product_modification.article,
+                product_variation.article,
+                product_offer.article,
+                product_info.article
+            ) AS product_article
+        ");
 
         /**
          * Базовая Цена товара
@@ -598,11 +589,6 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
 
         $result = $dbal->fetchAllAssociative();
 
-        if(empty($result))
-        {
-            return false;
-        }
-
-        return $result;
+        return empty($result) ? false : $result;
     }
 }

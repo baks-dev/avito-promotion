@@ -70,13 +70,11 @@ final class AvitoPromotionForm extends AbstractType
         ]);
 
         $builder->add('budget', IntegerType::class, [
-            'attr' => ['max' => 100, 'min' => 1],
             'label' => false,
             'required' => true,
         ]);
 
         $builder->add('budgetLimit', IntegerType::class, [
-            'attr' => ['max' => 1000, 'min' => 101],
             'label' => false,
             'required' => true,
         ]);

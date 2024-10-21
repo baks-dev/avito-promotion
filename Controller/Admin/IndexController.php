@@ -52,6 +52,7 @@ final class IndexController extends AbstractController
     {
         // Поиск
         $search = new SearchDTO();
+
         $searchForm = $this
             ->createForm(
                 type: SearchForm::class,
@@ -65,7 +66,7 @@ final class IndexController extends AbstractController
 
         $allPromotion = $allPromotionByProfile
             ->profile($profile)
-            ->find();
+            ->findPaginator();
 
         return $this->render(
             [
