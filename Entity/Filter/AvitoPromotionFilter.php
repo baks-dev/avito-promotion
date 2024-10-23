@@ -78,6 +78,7 @@ class AvitoPromotionFilter extends EntityEvent
 
     public function __construct(AvitoPromotionEvent $event)
     {
+        $this->id = new AvitoPromotionFilterUid();
         $this->event = $event;
     }
 

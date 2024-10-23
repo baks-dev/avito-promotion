@@ -58,9 +58,7 @@ final class NewController extends AbstractController
             ->createForm(
                 type: AvitoPromotionForm::class,
                 data: $newDTO,
-                options: [
-                    'action' => $this->generateUrl('avito-promotion:admin.company.new'),
-                ],
+                options: ['action' => $this->generateUrl('avito-promotion:admin.company.new'),],
             )
             ->handleRequest($request);
 

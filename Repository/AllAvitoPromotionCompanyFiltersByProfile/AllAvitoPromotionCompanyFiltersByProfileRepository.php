@@ -118,8 +118,11 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                 'avito_promotion_event',
                 'avito_promotion_event.id = avito_promotion.event AND avito_promotion_event.profile = :profile',
             )
-            ->setParameter('profile', $this->profile, UserProfileUid::TYPE)
-            ->addGroupBy('avito_promotion_event.id');
+            ->setParameter(
+                'profile',
+                $this->profile,
+                UserProfileUid::TYPE
+            );
 
 
         /**

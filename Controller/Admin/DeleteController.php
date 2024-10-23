@@ -62,9 +62,10 @@ final class DeleteController extends AbstractController
                 type: AvitoPromotionDeleteForm::class,
                 data: $deleteDTO,
                 options: [
-                    'action' => $this->generateUrl('avito-promotion:admin.company.delete', [
-                        'id' => $deleteDTO->getEvent(),
-                    ]),
+                    'action' => $this->generateUrl(
+                        route: 'avito-promotion:admin.company.delete',
+                        parameters: ['id' => $deleteDTO->getEvent(),]
+                    ),
                 ],
             )
             ->handleRequest($request);

@@ -60,9 +60,11 @@ final class EditController extends AbstractController
                 type: AvitoPromotionForm::class,
                 data: $editDTO,
                 options: [
-                    'action' => $this->generateUrl('avito-promotion:admin.company.edit', [
-                        'id' => $event->getEvent(),
-                    ]),
+                    'action' => $this
+                        ->generateUrl(
+                            route: 'avito-promotion:admin.company.edit',
+                            parameters: ['id' => $event->getEvent(),]
+                        ),
                 ],
             )
             ->handleRequest($request);
