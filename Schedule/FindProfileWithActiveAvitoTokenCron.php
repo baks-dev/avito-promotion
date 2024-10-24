@@ -23,16 +23,16 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Schedule\FindProfileWithActiveAvitoToken;
+namespace BaksDev\Avito\Promotion\Schedule;
 
 use BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoProductPromotion\CreateAvitoProductPromotionMessage;
 use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
-#[AsMessageHandler]
-final readonly class FindProfileWithActiveAvitoTokenHandler
+#[AsCronTask('0 0 * * *', jitter: 60)]
+final readonly class FindProfileWithActiveAvitoTokenCron
 {
     private LoggerInterface $logger;
 
@@ -45,7 +45,7 @@ final readonly class FindProfileWithActiveAvitoTokenHandler
         $this->logger = $avitoPromotionLogger;
     }
 
-    public function __invoke(FindProfileWithActiveAvitoTokenMessage $message): void
+    public function __invoke(): void
     {
         /** Получаем все активные профили, у которых активный токен Авито */
         $profiles = $this->allProfilesByToken->findProfilesByActiveToken();

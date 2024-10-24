@@ -30,7 +30,6 @@ use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyFiltersByProfile\
 use BaksDev\Avito\Promotion\Repository\AllOrdersByAvitoPromotionCompany\AllOrdersByAvitoPromotionCompanyInterface;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionHandler;
-use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use DateInterval;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
@@ -42,22 +41,24 @@ final readonly class CreateAvitoProductPromotionHandler
     private LoggerInterface $logger;
 
     public function __construct(
+        private AllAvitoPromotionCompanyFiltersByProfileInterface $AvitoPromotionCompany,
+        private AllOrdersByAvitoPromotionCompanyInterface $OrdersByAvitoPromotionCompany,
+        private AvitoProductPromotionHandler $AvitoProductPromotionHandler,
         LoggerInterface $avitoPromotionLogger,
-        private AllAvitoPromotionCompanyFiltersByProfileInterface $allCompanies,
-        private AllOrdersByAvitoPromotionCompanyInterface $allOrders,
-        private AvitoProductPromotionHandler $handler,
-        private DeduplicatorInterface $deduplicator,
     )
     {
         $this->logger = $avitoPromotionLogger;
     }
 
+    /**
+     * Метод получает рекламные компании, анализирует продаже за неделю и создает рекламный продукт обновляя его бюджет
+     */
     public function __invoke(CreateAvitoProductPromotionMessage $message): void
     {
         $profile = $message->getProfile();
 
         /** Получаем все компании по профилю, активные на данный период */
-        $promoCompanies = $this->allCompanies
+        $promoCompanies = $this->AvitoPromotionCompany
             ->onlyActivePeriod()
             ->profile($profile)
             ->execute();
@@ -72,16 +73,12 @@ final readonly class CreateAvitoProductPromotionHandler
             return;
         }
 
-        $deduplicator = $this->deduplicator
-            ->namespace('avito-promotion')
-            ->expiresAfter(DateInterval::createFromDateString('1 day'));
-
         foreach($promoCompanies as $promoCompany)
         {
             $filters = json_decode($promoCompany['filters'], false, 512, JSON_THROW_ON_ERROR);
 
             /** Все заказы по фильтрам */
-            $orders = $this->allOrders
+            $orders = $this->OrdersByAvitoPromotionCompany
                 ->date(DateInterval::createFromDateString('1 week'))
                 ->category($promoCompany['promo_category'])
                 ->filters($filters)
@@ -102,48 +99,28 @@ final readonly class CreateAvitoProductPromotionHandler
                 continue;
             }
 
-            /** Получаем все заказы, попадающие под фильтр из рекламной компании */
+            /**
+             * Получаем все заказы, попадающие под фильтр из рекламной компании и создаем рекламный продукт с бюджетом
+             */
+
             foreach($orders as $order)
             {
-                // добавление заказа для отслеживания повторного обращения к нему из другой рекламной компании
-                $deduplicator->deduplication(
-                    [
-                        $order['orders_product'],
-                        $order['product_offer_const'],
-                        $order['product_variation_const'],
-                        $order['product_modification_const'],
-                        $profile,
-                        self::class
-                    ]
-                );
-
-                if($deduplicator->isExecuted())
-                {
-                    $this->logger->warning(
-                        sprintf(
-                            'Рекламный продукт с артикулом %s уже сохранен и используется другой в другой рекламной компании',
-                            $order['product_article']
-                        ),
-                        [__FILE__.':'.__LINE__],
-                    );
-
-                    continue;
-                }
-
-                $dto = new AvitoProductPromotionDTO();
+                $AvitoProductPromotionDTO = new AvitoProductPromotionDTO();
 
                 // уникальные идентификаторы записи AvitoProductPromotion
-                $dto->setProduct($order['orders_product']);
-                $dto->setOffer($order['product_offer_const']);
-                $dto->setVariation($order['product_variation_const']);
-                $dto->setModification($order['product_modification_const']);
-                $dto->setArticle($order['product_article']);
+                $AvitoProductPromotionDTO
+                    ->setProduct($order['orders_product'])
+                    ->setOffer($order['product_offer_const'])
+                    ->setVariation($order['product_variation_const'])
+                    ->setModification($order['product_modification_const'])
+                    ->setArticle($order['product_article']);
 
                 // информация для отправки на api Авито
-                $dto->setProperty($order['product_offer_const']);
-                $dto->setCreated(new DateTimeImmutable());
-                $dto->setCompany($promoCompany['promo_company']);
-                $dto->setProfile($profile);
+                $AvitoProductPromotionDTO
+                    ->setProperty($order['product_offer_const'])
+                    ->setCreated(new DateTimeImmutable())
+                    ->setCompany($promoCompany['promo_company'])
+                    ->setProfile($profile);
 
                 /**
                  * Применяем формулу расчета бюджета - Добавить к дневному бюджету процент на количество проданного товара
@@ -158,10 +135,13 @@ final readonly class CreateAvitoProductPromotionHandler
                     $budget = $promoCompany['promo_limit'];
                 }
 
-                $dto->setBudget($budget);
+                $AvitoProductPromotionDTO->setBudget($budget);
 
+                /**
+                 * Сохраняем рекламный продукт с указанным бюджетом
+                 */
 
-                $promotionProduct = $this->handler->handle($dto);
+                $promotionProduct = $this->AvitoProductPromotionHandler->handle($AvitoProductPromotionDTO);
 
                 if(false === $promotionProduct instanceof AvitoProductPromotion)
                 {
@@ -173,11 +153,7 @@ final readonly class CreateAvitoProductPromotionHandler
                         ),
                         [__FILE__.':'.__LINE__],
                     );
-
-                    continue;
                 }
-
-                $deduplicator->save();
             }
         }
     }

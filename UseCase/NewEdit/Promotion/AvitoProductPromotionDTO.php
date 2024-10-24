@@ -98,7 +98,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->product;
     }
 
-    public function setProduct(Product|ProductUid|string $product): void
+    public function setProduct(Product|ProductUid|string $product): self
     {
         if($product instanceof Product)
         {
@@ -111,6 +111,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->product = $product;
+
+        return $this;
     }
 
     public function getId(): ?AvitoProductPromotionUid
@@ -123,7 +125,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->offer;
     }
 
-    public function setOffer(ProductOfferConst|string|null $offer): void
+    public function setOffer(ProductOfferConst|string|null $offer): self
     {
         if(is_string($offer))
         {
@@ -131,6 +133,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->offer = $offer;
+
+        return $this;
     }
 
     public function getVariation(): ?ProductVariationConst
@@ -138,7 +142,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->variation;
     }
 
-    public function setVariation(ProductVariationConst|string|null $variation): void
+    public function setVariation(ProductVariationConst|string|null $variation): self
     {
         if(is_string($variation))
         {
@@ -146,6 +150,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->variation = $variation;
+
+        return $this;
     }
 
     public function getModification(): ?ProductModificationConst
@@ -153,7 +159,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->modification;
     }
 
-    public function setModification(ProductModificationConst|string|null $modification): void
+    public function setModification(ProductModificationConst|string|null $modification): self
     {
         if(is_string($modification))
         {
@@ -161,6 +167,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->modification = $modification;
+
+        return $this;
     }
 
     public function getProperty(): ?CategoryProductSectionFieldUid
@@ -168,7 +176,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->property;
     }
 
-    public function setProperty(CategoryProductSectionFieldUid|string|null $property): void
+    public function setProperty(CategoryProductSectionFieldUid|string|null $property): self
     {
         if(is_string($property))
         {
@@ -176,6 +184,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->property = $property;
+
+        return $this;
     }
 
     public function getArticle(): string
@@ -183,9 +193,11 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->article;
     }
 
-    public function setArticle(string $article): void
+    public function setArticle(string $article): self
     {
         $this->article = $article;
+
+        return $this;
     }
 
     public function getCompany(): AvitoPromotionUid
@@ -193,7 +205,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->company;
     }
 
-    public function setCompany(AvitoPromotionUid|string $company): void
+    public function setCompany(AvitoPromotionUid|string $company): self
     {
         if(is_string($company))
         {
@@ -201,6 +213,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->company = $company;
+
+        return $this;
     }
 
     public function getBudget(): int
@@ -208,9 +222,11 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->budget;
     }
 
-    public function setBudget(int $budget): void
+    public function setBudget(int $budget): self
     {
         $this->budget = $budget;
+
+        return $this;
     }
 
     public function getCreated(): DateTimeImmutable
@@ -218,7 +234,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->created;
     }
 
-    public function setCreated(DateTimeImmutable|string $created): void
+    public function setCreated(DateTimeImmutable|string $created): self
     {
         if(is_string($created))
         {
@@ -226,6 +242,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->created = $created;
+
+        return $this;
     }
 
     public function getProfile(): UserProfileUid
@@ -233,7 +251,7 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this->profile;
     }
 
-    public function setProfile(UserProfileUid|string $profile): void
+    public function setProfile(UserProfileUid|string $profile): self
     {
         if(is_string($profile))
         {
@@ -241,6 +259,8 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         }
 
         $this->profile = $profile;
+
+        return $this;
     }
 
 

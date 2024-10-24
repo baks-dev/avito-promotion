@@ -101,8 +101,8 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
         /** Рекламные компании Авито */
         $dbal
             ->select('avito_promotion.id AS promo_company')
-            ->from(AvitoPromotion::class, 'avito_promotion')
-            ->addGroupBy('avito_promotion.id');
+            ->from(AvitoPromotion::class, 'avito_promotion');
+
 
         /** Активное событие */
         $dbal
@@ -124,14 +124,13 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                 UserProfileUid::TYPE
             );
 
-
         /**
          * Компания, попадающая в указанный период
          */
 
         if(true === $this->active)
         {
-            $dbal->andWhere("avito_promotion_event.date_end > CURRENT_DATE");
+            $dbal->andWhere("avito_promotion_event.date_end >= CURRENT_DATE");
         }
 
         /** Проверка существования токена для Авито */
@@ -170,8 +169,7 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                 'status',
                 UserProfileStatusActive::class,
                 UserProfileStatus::TYPE
-            )
-            ->addGroupBy('users_profile_info.status');
+            );
 
 
         /** Получаем фильтры для каждой компании */
@@ -240,6 +238,8 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
                 )
             AS filters",
         );
+
+        $dbal->allGroupByExclude();
 
         $result = $dbal->fetchAllAssociative();
 

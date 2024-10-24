@@ -25,10 +25,12 @@ declare(strict_types=1);
 
 namespace BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoPromotionCompany;
 
+use BaksDev\Avito\Board\Api\GetIdByArticleRequest;
 use BaksDev\Avito\Promotion\Api\CreatePromotionCompanyRequest;
 use BaksDev\Avito\Promotion\Messenger\Promotion\AvitoProductPromotionMessage;
 use BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotion\CurrentAvitoPromotionInterface;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
+use BaksDev\Core\Deduplicator\DeduplicatorInterface;
 use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Reference\Money\Type\Money;
@@ -44,18 +46,30 @@ final readonly class CreateAvitoPromotionCompanyHandler
     public function __construct(
         LoggerInterface $avitoBoardLogger,
         private CurrentAvitoPromotionInterface $CurrentAvitoPromotion,
+        private GetIdByArticleRequest $GetIdByArticleRequest,
         private CreatePromotionCompanyRequest $request,
-        private MessageDispatchInterface $messageDispatch
+        private MessageDispatchInterface $messageDispatch,
+        private DeduplicatorInterface $deduplicator,
     )
     {
         $this->logger = $avitoBoardLogger;
     }
 
     /**
-     * Метод создает рекламную компанию Avito на указанное объявление
+     * Метод создает рекламную компанию Avito на указанное объявление с указанным бюджетом
      */
     public function __invoke(AvitoProductPromotionMessage $message): void
     {
+        $deduplicator = $this->deduplicator
+            ->namespace('avito-promotion')
+            ->expiresAfter(DateInterval::createFromDateString('1 day'))
+            ->deduplication([$message->getId(), self::class]);
+
+        if($deduplicator->isExecuted())
+        {
+            return;
+        }
+
         $promotionProduct = $this->CurrentAvitoPromotion->find($message->getId());
 
         if(false === $promotionProduct)
@@ -66,12 +80,28 @@ final readonly class CreateAvitoPromotionCompanyHandler
         $avitoProductPromotionDTO = new AvitoProductPromotionDTO();
         $promotionProduct->getDto($avitoProductPromotionDTO);
 
+        /** Получаем идентификатор объявления по артикулу */
+        $identifier = $this->GetIdByArticleRequest
+            ->profile($avitoProductPromotionDTO->getProfile())
+            ->find($avitoProductPromotionDTO->getArticle());
+
+
+        if(false === $identifier)
+        {
+            $this->logger->critical(
+                sprintf('avito-promotion: Не найден идентификатор объявления по артикулу %s', $avitoProductPromotionDTO->getArticle()),
+                [__FILE__.':'.__LINE__]
+            );
+
+            return;
+        }
+
         $budget = new Money($avitoProductPromotionDTO->getBudget());
 
-        // id созданной компании
         $created = $this->request
             ->profile($avitoProductPromotionDTO->getProfile())
             ->article($avitoProductPromotionDTO->getArticle())
+            ->identifier($identifier)
             ->budget($budget)
             ->create();
 
@@ -89,6 +119,15 @@ final readonly class CreateAvitoPromotionCompanyHandler
                     stamps: [new MessageDelay(DateInterval::createFromDateString('1 hour'))],
                     transport: (string) $avitoProductPromotionDTO->getProfile(),
                 );
+
+            return;
         }
+
+        $deduplicator->save();
+
+        $this->logger->info(
+            sprintf('Добавили рекламную компанию %s для артикула %s', $created, $avitoProductPromotionDTO->getArticle()),
+            [__FILE__.':'.__LINE__]
+        );
     }
 }

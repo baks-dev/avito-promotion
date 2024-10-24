@@ -29,7 +29,6 @@ use BaksDev\Avito\Api\AvitoApi;
 use BaksDev\Reference\Money\Type\Money;
 use DateInterval;
 use DateTimeImmutable;
-use DateTimeInterface;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
@@ -37,11 +36,21 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 final class CreatePromotionCompanyRequest extends AvitoApi
 {
     private string|false $article = false;
+
+    private int|false $identifier = false;
+
     private Money|false $budget = false;
 
     public function article(string $article): self
     {
         $this->article = $article;
+
+        return $this;
+    }
+
+    public function identifier(int $identifier): self
+    {
+        $this->identifier = $identifier;
 
         return $this;
     }
@@ -54,7 +63,7 @@ final class CreatePromotionCompanyRequest extends AvitoApi
     }
 
     /**
-     * Создание новой кампании
+     * Метод создает рекламную компанию и возвращает идентификатор компании
      *
      * @see https://developers.avito.ru/api-catalog/autostrategy/documentation#operation/createAutostrategyCampaign
      */
@@ -70,22 +79,29 @@ final class CreatePromotionCompanyRequest extends AvitoApi
             throw new InvalidArgumentException('Invalid Argument $article');
         }
 
+        if($this->identifier === false)
+        {
+            throw new InvalidArgumentException('Invalid Argument $identifier');
+        }
+
         if($this->budget === false)
         {
-            throw new InvalidArgumentException('Invalid Argument budget');
+            throw new InvalidArgumentException('Invalid Argument $budget');
         }
 
         $from = (new DateTimeImmutable())->setTime(0, 0);
         $to = $from->add(DateInterval::createFromDateString('1 day'));
 
         $body = [
-            'description' => 'максимум продаж',
-            'startTime' => $from->format(DateTimeInterface::ATOM),
-            'finishTime' => $to->format(DateTimeInterface::ATOM),
             'budget' => (int) $this->budget->getValue(),
             'campaignType' => 'AS',
+            'description' => 'максимум продаж',
+
+            'startTime' => $from->format('Y-m-d\TH:i:s\Z'),
+            'finishTime' => $to->format('Y-m-d\TH:i:s\Z'),
+
             'title' => $this->article,
-            'items' => [$this->article],
+            'items' => [$this->identifier],
         ];
 
         $request = $this->tokenHttpClient()->request(
@@ -96,43 +112,29 @@ final class CreatePromotionCompanyRequest extends AvitoApi
             ]
         );
 
+        $result = $request->toArray();
+
         if($request->getStatusCode() !== 200)
         {
             $this->logger->critical(
-                sprintf(
-                    'Ошибка %s при создании рекламной компании для продукта с артикулом %s',
-                    $request->getStatusCode(),
-                    $this->article
-                ),
-                [__FILE__.':'.__LINE__]
+                sprintf('avito-promotion: Ошибка при создании рекламной компании для продукта с артикулом %s', $this->article),
+                [__FILE__.':'.__LINE__, $result]
             );
 
             return false;
         }
 
-        $result = $request->toArray();
+        if(!isset($result['campaign']))
+        {
+            return false;
+        }
 
-        /**
-         * Созданная рекламная компания
-         *
-         * @var array{
-         *  "balance": int,
-         *  "budget": int,
-         *  "campaignId": int,
-         *  "campaignType": "AS",
-         *  "createTime": string,
-         *  "description": string,
-         *  "finishTime": string,
-         *  "itemsCount": int,
-         *  "startTime": string,
-         *  "statusId": int,
-         *  "title": string,
-         *  "updateTime": string,
-         *  "userId": int,
-         *  "version": int,
-         * } $created
-         */
         $created = current($result['campaign']);
+
+        if(!isset($created['campaignId']))
+        {
+            return false;
+        }
 
         return $created['campaignId'];
     }
