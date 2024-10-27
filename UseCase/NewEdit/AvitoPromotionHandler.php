@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -30,6 +29,9 @@ use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
 use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
 use BaksDev\Avito\Promotion\Messenger\AvitoPromotionMessage;
 use BaksDev\Core\Entity\AbstractHandler;
+use BaksDev\Core\Messenger\MessageDelay;
+use DateInterval;
+use Random\Randomizer;
 
 final class AvitoPromotionHandler extends AbstractHandler
 {
@@ -47,9 +49,15 @@ final class AvitoPromotionHandler extends AbstractHandler
 
         $this->flush();
 
+
         /** Отправляем сообщение в шину */
+
+        $Randomizer = new Randomizer();
+        $delay = sprintf('%s seconds', $Randomizer->getInt(1, 60));
+
         $this->messageDispatch->dispatch(
             message: new AvitoPromotionMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
+            stamps: [new MessageDelay(DateInterval::createFromDateString($delay))],
             transport: 'avito-promotion',
         );
 
