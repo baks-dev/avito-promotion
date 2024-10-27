@@ -96,6 +96,12 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
 
     public function filters(array $filters): self
     {
+
+        $this->offerFilters = null;
+        $this->variationFilters = null;
+        $this->modificationFilters = null;
+        $this->propertyFilters = null;
+
         $this->filters = $filters;
 
         foreach($filters as $filter)
