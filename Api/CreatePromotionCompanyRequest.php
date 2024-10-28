@@ -30,6 +30,7 @@ use BaksDev\Reference\Money\Type\Money;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use Prophecy\Exception\Exception;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
 #[Autoconfigure(public: true)]
@@ -104,15 +105,29 @@ final class CreatePromotionCompanyRequest extends AvitoApi
             'items' => [$this->identifier],
         ];
 
-        $request = $this->tokenHttpClient()->request(
-            'POST',
-            '/autostrategy/v1/campaign/create',
-            [
-                'json' => $body,
-            ]
-        );
 
-        $result = $request->toArray();
+        try
+        {
+            $request = $this->tokenHttpClient()->request(
+                'POST',
+                '/autostrategy/v1/campaign/create',
+                [
+                    'json' => $body,
+                ]
+            );
+
+            $result = $request->toArray(false);
+
+        }
+        catch(Exception $exception)
+        {
+            $this->logger->critical(
+                sprintf('avito-promotion: Ошибка при создании рекламной компании для продукта с артикулом %s', $this->article),
+                [__FILE__.':'.__LINE__, $exception]
+            );
+
+            return false;
+        }
 
         if($request->getStatusCode() !== 200)
         {

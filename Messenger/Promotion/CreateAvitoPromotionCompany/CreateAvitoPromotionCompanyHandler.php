@@ -77,6 +77,8 @@ final readonly class CreateAvitoPromotionCompanyHandler
             return;
         }
 
+        $deduplicator->save();
+
         $avitoProductPromotionDTO = new AvitoProductPromotionDTO();
         $promotionProduct->getDto($avitoProductPromotionDTO);
 
@@ -123,7 +125,6 @@ final readonly class CreateAvitoPromotionCompanyHandler
             return;
         }
 
-        $deduplicator->save();
 
         $this->logger->info(
             sprintf('Добавили рекламную компанию %s для артикула %s', $created, $avitoProductPromotionDTO->getArticle()),
