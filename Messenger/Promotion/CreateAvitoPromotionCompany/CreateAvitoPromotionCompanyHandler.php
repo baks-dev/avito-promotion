@@ -118,7 +118,7 @@ final readonly class CreateAvitoPromotionCompanyHandler
                 ->dispatch(
                     message: $message,
                     // задержка 1 час для повторного запроса на создание компании
-                    stamps: [new MessageDelay(DateInterval::createFromDateString('1 hour'))],
+                    stamps: [new MessageDelay('1 hour')],
                     transport: (string) $avitoProductPromotionDTO->getProfile(),
                 );
 

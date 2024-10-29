@@ -30,8 +30,6 @@ use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
 use BaksDev\Avito\Promotion\Messenger\AvitoPromotionMessage;
 use BaksDev\Core\Entity\AbstractHandler;
 use BaksDev\Core\Messenger\MessageDelay;
-use DateInterval;
-use Random\Randomizer;
 
 final class AvitoPromotionHandler extends AbstractHandler
 {
@@ -52,12 +50,9 @@ final class AvitoPromotionHandler extends AbstractHandler
 
         /** Отправляем сообщение в шину */
 
-        $Randomizer = new Randomizer();
-        $delay = sprintf('%s seconds', $Randomizer->getInt(1, 60));
-
         $this->messageDispatch->dispatch(
             message: new AvitoPromotionMessage($this->main->getId(), $this->main->getEvent(), $command->getEvent()),
-            stamps: [new MessageDelay(DateInterval::createFromDateString($delay))],
+            stamps: [new MessageDelay('3 seconds')],
             transport: 'avito-promotion',
         );
 
