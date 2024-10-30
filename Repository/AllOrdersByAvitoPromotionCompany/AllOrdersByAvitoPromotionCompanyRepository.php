@@ -31,7 +31,7 @@ use BaksDev\Orders\Order\Entity\Order;
 use BaksDev\Orders\Order\Entity\Products\OrderProduct;
 use BaksDev\Orders\Order\Entity\Products\Price\OrderPrice;
 use BaksDev\Orders\Order\Type\Status\OrderStatus;
-use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusCompleted;
+use BaksDev\Orders\Order\Type\Status\OrderStatus\OrderStatusCanceled;
 use BaksDev\Products\Category\Entity\CategoryProduct;
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use BaksDev\Products\Product\Entity\Category\ProductCategory;
@@ -96,7 +96,6 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
 
     public function filters(array $filters): self
     {
-
         $this->offerFilters = null;
         $this->variationFilters = null;
         $this->modificationFilters = null;
@@ -206,11 +205,11 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
                 'orders_event',
                 '
                     orders_event.id = orders.event AND
-                    orders_event.status = :status AND
-                    orders_event.created >= :date
+                    orders_event.status != :status AND
+                    DATE(orders_event.created) >= :date
                 ',
             )
-            ->setParameter('status', OrderStatusCompleted::STATUS, OrderStatus::TYPE)
+            ->setParameter('status', OrderStatusCanceled::class, OrderStatus::TYPE)
             ->setParameter('date', $date, Types::DATE_IMMUTABLE);
 
         /** Продукт заказа */
