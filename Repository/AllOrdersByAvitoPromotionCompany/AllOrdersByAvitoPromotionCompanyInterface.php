@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllOrdersByAvitoPromotionCompany;
@@ -38,22 +39,22 @@ interface AllOrdersByAvitoPromotionCompanyInterface
      *
      * @param array<int, object<'type', string, 'value', string, 'property', string, 'predicate', string >> $filters
      */
-    public function filters(array $filters): self;
+    public function byFilters(array $filters): self;
 
     /**
      * Смещение по времени, относительно текущей даты
      */
-    public function date(DateInterval $date): self;
+    public function byDate(DateInterval $date): self;
 
     /**
      * Категория товара
      */
-    public function category(CategoryProductUid|string $category): self;
+    public function forCategory(CategoryProductUid|string $category): self;
 
     /**
      * Профиль пользователя
      */
-    public function profile(UserProfile|UserProfileUid|string $profile): self;
+    public function forProfile(UserProfile|UserProfileUid|string $profile): self;
 
     /**
      * Заказы, попадающие под фильтр из рекламной компании
@@ -67,5 +68,5 @@ interface AllOrdersByAvitoPromotionCompanyInterface
      *   "product_article": string,
      *  }|false
      */
-    public function execute(): array|false;
+    public function find(): array|false;
 }

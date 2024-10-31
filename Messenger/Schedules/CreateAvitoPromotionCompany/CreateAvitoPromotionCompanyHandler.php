@@ -19,15 +19,16 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoPromotionCompany;
+namespace BaksDev\Avito\Promotion\Messenger\Schedules\CreateAvitoPromotionCompany;
 
 use BaksDev\Avito\Board\Api\GetIdByArticleRequest;
 use BaksDev\Avito\Promotion\Api\CreatePromotionCompanyRequest;
-use BaksDev\Avito\Promotion\Messenger\Promotion\AvitoProductPromotionMessage;
+use BaksDev\Avito\Promotion\Messenger\Schedules\AvitoProductPromotionMessage;
 use BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotion\CurrentAvitoPromotionInterface;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
 use BaksDev\Core\Deduplicator\DeduplicatorInterface;
@@ -100,12 +101,19 @@ final readonly class CreateAvitoPromotionCompanyHandler
 
         $budget = new Money($avitoProductPromotionDTO->getBudget());
 
+        //        // @TODO удалить в проде
+        //        dump('Отправляем запрос на создание рекламной компании');
+        //        dump(__FILE__.':'.__LINE__);
+        //        dd('-----------');
+
         $created = $this->request
             ->profile($avitoProductPromotionDTO->getProfile())
             ->article($avitoProductPromotionDTO->getArticle())
             ->identifier($identifier)
             ->budget($budget)
             ->create();
+
+        dd($created);
 
         if(false === $created)
         {

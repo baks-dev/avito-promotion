@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -75,14 +76,14 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         private readonly DBALQueryBuilder $DBALQueryBuilder,
     ) {}
 
-    public function date(DateInterval $date): self
+    public function byDate(DateInterval $date): self
     {
         $this->date = $date;
 
         return $this;
     }
 
-    public function category(CategoryProductUid|string $category): self
+    public function forCategory(CategoryProductUid|string $category): self
     {
         if(is_string($category))
         {
@@ -94,7 +95,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         return $this;
     }
 
-    public function filters(array $filters): self
+    public function byFilters(array $filters): self
     {
         $this->offerFilters = null;
         $this->variationFilters = null;
@@ -134,7 +135,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         return $this;
     }
 
-    public function profile(UserProfile|UserProfileUid|string $profile): self
+    public function forProfile(UserProfile|UserProfileUid|string $profile): self
     {
         if($profile instanceof UserProfile)
         {
@@ -161,7 +162,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
      *   "product_article": string,
      *  }|false
      */
-    public function execute(): array|false
+    public function find(): array|false
     {
 
         if($this->category === false)

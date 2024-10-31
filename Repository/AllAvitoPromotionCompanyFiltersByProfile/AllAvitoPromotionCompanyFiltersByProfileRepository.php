@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyFiltersByProfile;
@@ -57,7 +58,7 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
         return $this;
     }
 
-    public function profile(UserProfile|UserProfileUid|string $profile): self
+    public function forProfile(UserProfile|UserProfileUid|string $profile): self
     {
         if($profile instanceof UserProfile)
         {
@@ -88,7 +89,7 @@ final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvi
      *   "filters": string,
      *  }|false
      */
-    public function execute(): array|false
+    public function find(): array|false
     {
         if(false === $this->profile)
         {

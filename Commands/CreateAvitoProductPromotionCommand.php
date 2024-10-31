@@ -19,13 +19,14 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
 namespace BaksDev\Avito\Promotion\Commands;
 
-use BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoProductPromotion\CreateAvitoProductPromotionMessage;
+use BaksDev\Avito\Promotion\Messenger\Schedules\CreateAvitoProductPromotion\CreateAvitoProductPromotionMessage;
 use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
