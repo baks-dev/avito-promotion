@@ -10,7 +10,7 @@
 # systemctl stop avito-promotion@1.service
 
 [Unit]
-Description=Symfony messenger avito-promotion %i
+Description=avito-promotion
 StartLimitBurst=5
 StartLimitIntervalSec=0
 
