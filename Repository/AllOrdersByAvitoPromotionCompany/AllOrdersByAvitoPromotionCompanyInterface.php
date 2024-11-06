@@ -25,8 +25,6 @@
 namespace BaksDev\Avito\Promotion\Repository\AllOrdersByAvitoPromotionCompany;
 
 use BaksDev\Products\Category\Type\Id\CategoryProductUid;
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use DateInterval;
 
 /**
@@ -51,10 +49,10 @@ interface AllOrdersByAvitoPromotionCompanyInterface
      */
     public function forCategory(CategoryProductUid|string $category): self;
 
-    /**
-     * Профиль пользователя
-     */
-    public function forProfile(UserProfile|UserProfileUid|string $profile): self;
+    //    /**
+    //     * Профиль пользователя
+    //     */
+    //    public function forProfile(UserProfile|UserProfileUid|string $profile): self;
 
     /**
      * Заказы, попадающие под фильтр из рекламной компании
@@ -68,5 +66,5 @@ interface AllOrdersByAvitoPromotionCompanyInterface
      *   "product_article": string,
      *  }|false
      */
-    public function find(): array|false;
+    public function findAll(): array|false;
 }

@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 namespace BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\Tests;
@@ -28,7 +29,6 @@ use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotionInterface;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionHandler;
-use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
 use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
 use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst;
@@ -80,9 +80,6 @@ class AvitoProductPromotionNewTest extends KernelTestCase
 
         $newDTO->setModification($modification = new ProductModificationConst());
         self::assertSame($modification, $newDTO->getModification());
-
-        $newDTO->setProperty($property = new CategoryProductSectionFieldUid());
-        self::assertSame($property, $newDTO->getProperty());
 
         $newDTO->setArticle('new_article');
         self::assertSame('new_article', $newDTO->getArticle());

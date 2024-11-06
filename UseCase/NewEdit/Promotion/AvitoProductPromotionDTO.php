@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -28,7 +29,6 @@ namespace BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion;
 use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotionInterface;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
-use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
 use BaksDev\Products\Product\Entity\Product;
 use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
@@ -62,10 +62,6 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
     #[Assert\Uuid]
     /** Константа модификации множественного варианта */
     private ?ProductModificationConst $modification = null;
-
-    #[Assert\Uuid]
-    /** Константа модификации множественного варианта */
-    private ?CategoryProductSectionFieldUid $property = null;
 
     /** Артикул продукта */
     #[Assert\NotBlank]
@@ -171,23 +167,6 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
         return $this;
     }
 
-    public function getProperty(): ?CategoryProductSectionFieldUid
-    {
-        return $this->property;
-    }
-
-    public function setProperty(CategoryProductSectionFieldUid|string|null $property): self
-    {
-        if(is_string($property))
-        {
-            $property = new CategoryProductSectionFieldUid($property);
-        }
-
-        $this->property = $property;
-
-        return $this;
-    }
-
     public function getArticle(): string
     {
         return $this->article;
@@ -262,6 +241,4 @@ final class AvitoProductPromotionDTO implements AvitoProductPromotionInterface
 
         return $this;
     }
-
-
 }

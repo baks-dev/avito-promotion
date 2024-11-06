@@ -27,12 +27,14 @@ declare(strict_types=1);
 namespace BaksDev\Avito\Promotion\Messenger\Schedules\CreateAvitoProductPromotion;
 
 use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
-use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyFiltersByProfile\AllAvitoPromotionCompanyFiltersByProfileInterface;
-use BaksDev\Avito\Promotion\Repository\AllOrdersByAvitoPromotionCompany\AllOrdersByAvitoPromotionCompanyInterface;
+use BaksDev\Avito\Promotion\Repository\CurrentAvitoProductPromotion\CurrentAvitoProductPromotionInterface;
+use BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotionByEvent\CurrentAvitoPromotionByEventInterface;
+use BaksDev\Avito\Promotion\UseCase\NewEdit\AvitoPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+
 
 #[AsMessageHandler]
 final readonly class CreateAvitoProductPromotionHandler
@@ -40,128 +42,107 @@ final readonly class CreateAvitoProductPromotionHandler
     private LoggerInterface $logger;
 
     public function __construct(
-        private AllAvitoPromotionCompanyFiltersByProfileInterface $AvitoPromotionCompany,
-        private AllOrdersByAvitoPromotionCompanyInterface $OrdersByAvitoPromotionCompany,
-        private AvitoProductPromotionHandler $AvitoProductPromotionHandler,
         LoggerInterface $avitoPromotionLogger,
+        private CurrentAvitoPromotionByEventInterface $currentAvitoPromotion,
+        private CurrentAvitoProductPromotionInterface $currentAvitoProductPromotion,
+        private AvitoProductPromotionHandler $avitoProductPromotionHandler,
     )
     {
         $this->logger = $avitoPromotionLogger;
     }
 
     /**
-     * Метод получает рекламные компании, анализирует продажи за неделю и создает рекламный продукт обновляя его бюджет
+     * Метод:
+     * - рассчитывает бюджет с учетом проданных товаров за период времени
+     * - создает или обновляет рекламный продукт с рассчитанным бюджетом и рекламной компанией
      */
     public function __invoke(CreateAvitoProductPromotionMessage $message): void
     {
-        $profile = $message->getProfile();
+        /** Получаем рекламную компанию */
+        $avitoPromotionCompany = $this->currentAvitoPromotion->find($message->getPromotion());
 
-        /** Получаем все компании по профилю, активные на данный период */
-        $promoCompanies = $this->AvitoPromotionCompany
-            ->forProfile($profile)
-            ->onlyActivePeriod()
-            ->find();
-
-        if(false === $promoCompanies)
+        if(false === $avitoPromotionCompany)
         {
-            $this->logger->warning(
-                sprintf('Действующие рекламные компании не найдены для профиля: %s', $profile),
-                [__FILE__.':'.__LINE__],
-            );
-
             return;
         }
 
-        foreach($promoCompanies as $promoCompany)
+        $avitoPromotionDTO = new AvitoPromotionDTO();
+        $avitoPromotionCompany->getDto($avitoPromotionDTO);
+
+        $profile = $avitoPromotionDTO->getProfile();
+
+        $avitoProductPromotionDTO = new AvitoProductPromotionDTO();
+
+        /** Получаем рекламный продукт по его уникальным идентификатором */
+        $avitoProductPromotion = $this->currentAvitoProductPromotion
+            ->forProfile($profile)
+            ->forProduct($message->getProduct())
+            ->forOffer($message->getOffer())
+            ->forVariation($message->getVariation())
+            ->forModification($message->getModification())
+            ->find();
+
+        /**
+         * INSERT
+         * подготавливаем DTO
+         */
+        if(false === $avitoProductPromotion)
         {
-            $filters = json_decode($promoCompany['filters'], false, 512, JSON_THROW_ON_ERROR);
+            $avitoProductPromotionDTO
+                ->setProfile($profile)
+                ->setProduct($message->getProduct())
+                ->setOffer($message->getOffer())
+                ->setVariation($message->getVariation())
+                ->setModification($message->getModification())
+                ->setArticle($message->getArticle())
+                ->setBudget($avitoPromotionDTO->getBudget())
+                ->setCreated(new \DateTimeImmutable());
+        }
 
-            /** Получаем все заказы, попадающие под фильтр из рекламной компании */
-            $orders = $this->OrdersByAvitoPromotionCompany
-                ->byDate(\DateInterval::createFromDateString('5 weeks')) // @TODO изменить на 1 week перед релизом
-                ->byFilters($filters)
-                ->forProfile($promoCompany['promo_profile'])
-                ->forCategory($promoCompany['promo_category'])
-                ->find();
+        /**
+         * UPDATE
+         * гидрируем DTO
+         */
+        if($avitoProductPromotion instanceof AvitoProductPromotion)
+        {
+            $avitoProductPromotion->getDto($avitoProductPromotionDTO);
+        }
 
-            dump($orders);
+        // идентификатор рекламной компании - всегда перезаписываем
+        $avitoProductPromotionDTO->setCompany($message->getPromotion());
 
-            if(false === $orders)
-            {
-                $this->logger->warning(
-                    sprintf(
-                        'Не найдено ни одного заказа по фильтрам, указанным в рекламной компании: ID %s | название %s',
-                        $promoCompany['promo_company'],
-                        $promoCompany['promo_name']
-                    ),
-                    [__FILE__.':'.__LINE__],
-                );
+        /**
+         * ФОРМУЛА: к дневному бюджету добавить процент на количество проданного товара
+         * - @var $dailyBudget - дневной бюджет из рекламной компании
+         * - @var $orderQuantity - количество заказов за один день
+         */
+        $dailyBudget = $avitoPromotionDTO->getBudget();
+        $orderQuantity = $message->getOrdersCount();
 
-                continue;
-            }
+        $formula = (int) round(($dailyBudget / 100 * $orderQuantity));
+        $promoBudget = $dailyBudget + $formula;
 
-            /**
-             *  Создаем рекламный продукт с бюджетом на каждый заказ из фильтра
-             */
-            foreach($orders as $order)
-            {
-                $AvitoProductPromotionDTO = new AvitoProductPromotionDTO();
+        // если превысили лимит - бюджет равен лимиту бюджета
+        if($promoBudget > $avitoPromotionCompany->getBudgetLimit())
+        {
+            $promoBudget = $avitoPromotionCompany->getBudgetLimit();
+        }
 
-                // уникальные идентификаторы записи AvitoProductPromotion
-                $AvitoProductPromotionDTO
-                    ->setArticle($order['product_article'])
-                    ->setProduct($order['orders_product'])
-                    ->setOffer($order['product_offer_const'])
-                    ->setVariation($order['product_variation_const'])
-                    ->setModification($order['product_modification_const']);
+        // рассчитанный бюджет для продукта
+        $avitoProductPromotionDTO->setBudget($promoBudget);
 
-                // информация для отправки на api Авито
-                $AvitoProductPromotionDTO
-                    ->setProperty($order['product_offer_const'])
-                    ->setCreated(new \DateTimeImmutable())
-                    ->setCompany($promoCompany['promo_company'])
-                    ->setProfile($profile);
+        $result = $this->avitoProductPromotionHandler->handle($avitoProductPromotionDTO);
 
-                /**
-                 * Применяем формулу расчета бюджета - Добавить к дневному бюджету процент на количество проданного товара
-                 */
-                $formula = (int) round(($promoCompany['promo_budget'] / 100 * $order['orders_count']));
-                $budget = $promoCompany['promo_budget'] + $formula;
-
-                // проверить что бюджет не превысил лимит
-                if($budget > $promoCompany['promo_limit'])
-                {
-                    // если превысили лимит - бюджет равен лимит
-                    $budget = $promoCompany['promo_limit'];
-                }
-
-                // @TODO удалить в проде
-                dump($budget);
-                dump(__FILE__.':'.__LINE__);
-
-                $AvitoProductPromotionDTO->setBudget($budget);
-
-                /**
-                 * Сохраняем рекламный продукт с указанным бюджетом
-                 */
-                $promotionProduct = $this->AvitoProductPromotionHandler->handle($AvitoProductPromotionDTO);
-
-                if(false === $promotionProduct instanceof AvitoProductPromotion)
-                {
-                    $this->logger->critical(
-                        sprintf(
-                            'avito-promotion: Ошибка %s при обновлении рекламного продукта: %s',
-                            $promotionProduct,
-                            $order['product_article']
-                        ),
-                        [__FILE__.':'.__LINE__],
-                    );
-                }
-            }
-
-            // @TODO удалить в проде
-            dump(__FILE__.':'.__LINE__);
-            dd('-----------');
+        if(false === $result instanceof AvitoProductPromotion)
+        {
+            $this->logger->critical(
+                sprintf(
+                    'avito-promotion: Ошибка %s при создании/обновлении рекламного продукта: %s',
+                    $result,
+                    $avitoProductPromotionDTO->getArticle()
+                ),
+                [self::class.':'.__LINE__],
+            );
         }
     }
 }

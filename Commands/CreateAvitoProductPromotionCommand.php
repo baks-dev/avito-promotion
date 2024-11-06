@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace BaksDev\Avito\Promotion\Commands;
 
-use BaksDev\Avito\Promotion\Messenger\Schedules\CreateAvitoProductPromotion\CreateAvitoProductPromotionMessage;
+use BaksDev\Avito\Promotion\Messenger\Schedules\FindAvitoPromotionCompanies\FindOrdersByAvitoPromotionCompanyMessage;
 use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
@@ -126,7 +126,7 @@ class CreateAvitoProductPromotionCommand extends Command
     {
         $this->io->note(sprintf('Обновляем рекламную компанию %s', $profile->getAttr()));
 
-        $this->messageDispatch->dispatch(new CreateAvitoProductPromotionMessage($profile));
+        $this->messageDispatch->dispatch(new FindOrdersByAvitoPromotionCompanyMessage($profile));
 
     }
 }

@@ -41,7 +41,7 @@ use BaksDev\Users\Profile\UserProfile\Type\UserProfileStatus\Status\UserProfileS
 use BaksDev\Users\Profile\UserProfile\Type\UserProfileStatus\UserProfileStatus;
 use InvalidArgumentException;
 
-final class AllAvitoPromotionCompanyFiltersByProfileRepository implements AllAvitoPromotionCompanyFiltersByProfileInterface
+final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromotionCompanyByProfileInterface
 {
     private UserProfileUid|false $profile = false;
 
