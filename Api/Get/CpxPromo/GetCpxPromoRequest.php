@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -33,6 +32,9 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 final class GetCpxPromoRequest extends AvitoApi
 {
     /**
+     * Метод позволяет получить детализированную информацию о действующих и доступных
+     * ценах целевого действия (в копейках), бюджетах (в копейках) и преимуществах перед конкурентами.
+     *
      * @see https://developers.avito.ru/api-catalog/cpxpromo/documentation#operation/getBids
      */
     public function get(int $itemId): array|false
@@ -42,18 +44,19 @@ final class GetCpxPromoRequest extends AvitoApi
             '/cpxpromo/1/getBids/'.$itemId,
         );
 
+        $result = $response->toArray(false);
+
         if($response->getStatusCode() !== 200)
         {
-            $this->logger->critical('avito-promotion:Ошибка получения детализированной информации о действующих и доступных ставках и бюджетах продукта: '.$itemId,
+            $this->logger->critical('avito-promotion: Ошибка получения детализированной информации о действующих и доступных ставках и бюджетах продукта: '.$itemId,
                 [
-                    __FILE__.':'.__LINE__,
-                    $response->getContent(false),
+                    self::class.':'.__LINE__,
+                    $result,
                 ]);
 
             return false;
         }
 
-        $result = $response->toArray(false);
 
         return $result;
     }

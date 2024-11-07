@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -74,18 +73,19 @@ final class ApplyAvitoPromotionsRequest extends AvitoApi
                 ],
             );
 
+        $result = $response->toArray(false);
+
         if($response->getStatusCode() !== 200)
         {
             $this->logger->critical('avito-promotion:Ошибка применение услуг продвижения для продукта: '.$itemId,
                 [
                     __FILE__.':'.__LINE__,
-                    $response->getContent(false),
+                    $result,
                 ]);
 
             return false;
         }
 
-        $result = $response->toArray(false);
 
         return $result;
     }
