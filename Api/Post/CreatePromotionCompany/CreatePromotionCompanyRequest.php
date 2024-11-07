@@ -19,18 +19,18 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Api;
+namespace BaksDev\Avito\Promotion\Api\CreatePromotionCompany;
 
 use BaksDev\Avito\Api\AvitoApi;
 use BaksDev\Reference\Money\Type\Money;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use Prophecy\Exception\Exception;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
 #[Autoconfigure(public: true)]
@@ -119,7 +119,7 @@ final class CreatePromotionCompanyRequest extends AvitoApi
             $result = $request->toArray(false);
 
         }
-        catch(Exception $exception)
+        catch(\Exception $exception)
         {
             $this->logger->critical(
                 sprintf('avito-promotion: Ошибка при создании рекламной компании для продукта с артикулом %s', $this->article),

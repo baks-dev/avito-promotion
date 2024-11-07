@@ -19,39 +19,18 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-declare(strict_types=1);
+namespace BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotionByEvent;
 
-namespace BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotion;
+use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
+use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 
-use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
-use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
-use BaksDev\Core\Doctrine\ORMQueryBuilder;
-
-
-final readonly class CurrentAvitoPromotionRepository implements CurrentAvitoPromotionInterface
+interface CurrentAvitoPromotionByEventInterface
 {
-    public function __construct(private ORMQueryBuilder $ORMQueryBuilder) {}
-
     /**
-     * Метод возвращает рекламную компанию по идентификатору
+     * Метод возвращает текущее событие для рекламной компании по идентификатору корня
      */
-    public function find(AvitoProductPromotionUid|string $promotion): AvitoProductPromotion|false
-    {
-        if(is_string($promotion))
-        {
-            $promotion = new AvitoProductPromotionUid($promotion);
-        }
-
-        $orm = $this->ORMQueryBuilder->createQueryBuilder(self::class);
-
-        $orm
-            ->select('promotion')
-            ->from(AvitoProductPromotion::class, 'promotion')
-            ->where('promotion.id = :promotion')
-            ->setParameter('promotion', $promotion, AvitoProductPromotionUid::TYPE);
-
-        return $orm->getOneOrNullResult() ?: false;
-    }
+    public function find(AvitoPromotionUid|string $main): AvitoPromotionEvent|false;
 }

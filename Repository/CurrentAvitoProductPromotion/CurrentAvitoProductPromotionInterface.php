@@ -19,17 +19,17 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-namespace BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotion;
+namespace BaksDev\Avito\Promotion\Repository\CurrentAvitoProductPromotion;
 
 use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
-use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
 
-interface CurrentAvitoPromotionInterface
+interface CurrentAvitoProductPromotionInterface
 {
     /**
-     * Метод возвращает рекламную компанию по идентификатору
+     * Метод возвращает продукт
      */
-    public function find(AvitoProductPromotionUid|string $promotion): AvitoProductPromotion|false;
+    public function find(): AvitoProductPromotion|false;
 }

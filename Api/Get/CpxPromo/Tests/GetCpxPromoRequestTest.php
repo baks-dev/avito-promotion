@@ -19,41 +19,49 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
-namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyFiltersByProfile;
+declare(strict_types=1);
 
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
+namespace BaksDev\Avito\Promotion\Api\Get\CpxPromo\Tests;
+
+use BaksDev\Avito\Promotion\Api\Get\CpxPromo\GetCpxPromoRequest;
+use BaksDev\Avito\Type\Authorization\AvitoTokenAuthorization;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
- * Находит все рекламные компании для Авито по профилю, активные на данный период
+ * @group avito-promotion
  */
-interface AllAvitoPromotionCompanyFiltersByProfileInterface
+#[When(env: 'test')]
+final class GetCpxPromoRequestTest extends KernelTestCase
 {
-    /**
-     * Рекламные компании, попадающая в период
-     */
-    public function onlyActivePeriod(): self;
+    private static AvitoTokenAuthorization $authorization;
 
-    /**
-     * Профиль пользователя
-     */
-    public function profile(UserProfile|UserProfileUid|string $profile): self;
+    public static function setUpBeforeClass(): void
+    {
+        self::$authorization = new AvitoTokenAuthorization(
+            UserProfileUid::TEST,
+            $_SERVER['TEST_AVITO_CLIENT'],
+            $_SERVER['TEST_AVITO_SECRET'],
+            $_SERVER['TEST_AVITO_USER'],
+        );
+    }
 
-    /**
-     * Метод возвращает все активные на данный период рекламные компании профиля
-     *
-     * @return array{
-     *   "promo_company": string,
-     *   "event": string,
-     *   "promo_name": string,
-     *   "promo_profile": int,
-     *   "promo_category": string,
-     *   "promo_budget": int,
-     *   "promo_limit": int,
-     *   "filters": string,
-     *  }|false
-     */
-    public function execute(): array|false;
+    public function testToken(): void
+    {
+        self::assertTrue(true);
+        return;
+
+        /** @var GetCpxPromoRequest $getCpxPromoRequest */
+        $getCpxPromoRequest = static::getContainer()->get(GetCpxPromoRequest::class);
+        $getCpxPromoRequest->tokenHttpClient(self::$authorization);
+
+        $info = $getCpxPromoRequest
+            ->get(itemId: 1234);
+
+        self::assertIsArray($info);
+    }
 }

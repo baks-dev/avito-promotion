@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -28,7 +29,6 @@ namespace BaksDev\Avito\Promotion\Entity\Promotion;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
 use BaksDev\Core\Entity\EntityState;
-use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
 use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\Offers\ConstId\ProductOfferConst;
 use BaksDev\Products\Product\Type\Offers\Variation\ConstId\ProductVariationConst;
@@ -69,10 +69,6 @@ class AvitoProductPromotion extends EntityState
     /** Константа модификации множественного варианта */
     #[ORM\Column(type: ProductModificationConst::TYPE, nullable: true)]
     private ?ProductModificationConst $modification = null;
-
-    /** Константа свойства продукта */
-    #[ORM\Column(type: CategoryProductSectionFieldUid::TYPE, nullable: true)]
-    private ?CategoryProductSectionFieldUid $property = null;
 
     /** Артикул продукта */
     #[ORM\Column(type: Types::STRING, nullable: false)]

@@ -19,18 +19,21 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
 
 namespace BaksDev\Avito\Promotion\Schedule;
 
-use BaksDev\Avito\Promotion\Messenger\Promotion\CreateAvitoProductPromotion\CreateAvitoProductPromotionMessage;
+use BaksDev\Avito\Promotion\Messenger\Schedules\FindOrdersByAvitoPromotionCompany\FindOrdersByAvitoPromotionCompanyMessage;
 use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
+use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
+/** @see FindOrdersByAvitoPromotionCompanyHandler */
 #[AsCronTask('0 0 * * *', jitter: 60)]
 final readonly class FindProfileWithActiveAvitoTokenCron
 {
@@ -63,7 +66,8 @@ final readonly class FindProfileWithActiveAvitoTokenCron
         foreach($profiles as $profile)
         {
             $this->messageDispatch->dispatch(
-                message: new CreateAvitoProductPromotionMessage($profile),
+                message: new FindOrdersByAvitoPromotionCompanyMessage($profile),
+                stamps: [new MessageDelay('5 minutes')],
                 transport: (string) $profile,
             );
         }

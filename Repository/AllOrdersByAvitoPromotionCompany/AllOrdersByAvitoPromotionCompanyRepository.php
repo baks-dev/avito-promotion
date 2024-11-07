@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 declare(strict_types=1);
@@ -46,8 +47,6 @@ use BaksDev\Products\Product\Entity\Offers\Variation\Quantity\ProductVariationQu
 use BaksDev\Products\Product\Entity\Price\ProductPrice;
 use BaksDev\Products\Product\Entity\Property\ProductProperty;
 use BaksDev\Products\Product\Entity\Trans\ProductTrans;
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use DateInterval;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -55,8 +54,6 @@ use InvalidArgumentException;
 
 final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvitoPromotionCompanyInterface
 {
-    private UserProfileUid|false $profile = false;
-
     private array|false $filters = false;
 
     private array|null $offerFilters = null;
@@ -75,14 +72,14 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         private readonly DBALQueryBuilder $DBALQueryBuilder,
     ) {}
 
-    public function date(DateInterval $date): self
+    public function byDate(DateInterval $date): self
     {
         $this->date = $date;
 
         return $this;
     }
 
-    public function category(CategoryProductUid|string $category): self
+    public function forCategory(CategoryProductUid|string $category): self
     {
         if(is_string($category))
         {
@@ -94,7 +91,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         return $this;
     }
 
-    public function filters(array $filters): self
+    public function byFilters(array $filters): self
     {
         $this->offerFilters = null;
         $this->variationFilters = null;
@@ -134,23 +131,6 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         return $this;
     }
 
-    public function profile(UserProfile|UserProfileUid|string $profile): self
-    {
-        if($profile instanceof UserProfile)
-        {
-            $profile = $profile->getId();
-        }
-
-        if(is_string($profile))
-        {
-            $profile = new UserProfileUid($profile);
-        }
-
-        $this->profile = $profile;
-
-        return $this;
-    }
-
     /**
      * @return array{
      *   "orders_product": string,
@@ -161,7 +141,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
      *   "product_article": string,
      *  }|false
      */
-    public function execute(): array|false
+    public function findAll(): array|false
     {
 
         if($this->category === false)
@@ -172,11 +152,6 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
         if($this->filters === false)
         {
             throw new InvalidArgumentException('Invalid Argument filters');
-        }
-
-        if($this->profile === false)
-        {
-            throw new InvalidArgumentException('Invalid Argument profile');
         }
 
         if($this->date === false)
@@ -206,8 +181,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
                 '
                     orders_event.id = orders.event AND
                     orders_event.status != :status AND
-                    DATE(orders_event.created) >= :date
-                ',
+                    DATE(orders_event.created) >= :date',
             )
             ->setParameter('status', OrderStatusCanceled::class, OrderStatus::TYPE)
             ->setParameter('date', $date, Types::DATE_IMMUTABLE);
@@ -506,7 +480,6 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
                     $conditionOR,
                 );
         }
-
 
         /**
          * Артикул продукта
