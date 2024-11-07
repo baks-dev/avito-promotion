@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -86,7 +85,7 @@ final readonly class FindOrdersByAvitoPromotionCompanyHandler
 
             /** Получаем все заказы, попадающие под фильтр из рекламной компании */
             $orders = $this->allOrdersByAvitoPromotionCompany
-                ->byDate(\DateInterval::createFromDateString('1 week'))
+                ->byDate(DateInterval::createFromDateString('1 week'))
                 ->byFilters($filters)
                 ->forCategory($promoCompany['promo_category'])
                 ->findAll();
@@ -115,7 +114,7 @@ final readonly class FindOrdersByAvitoPromotionCompanyHandler
                 {
                     $this->logger->warning(
                         sprintf(
-                            'Рекламный продукт с артикулом %s уже сохранен и используется другой в другой рекламной компании',
+                            'Рекламный продукт с артикулом %s уже сохранен и используется в другой рекламной компании',
                             $order['product_article']
                         ),
                         [__FILE__.':'.__LINE__],
