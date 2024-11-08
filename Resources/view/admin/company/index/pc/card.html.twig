@@ -34,4 +34,22 @@
 
         </div>
     </td>
+
+    <td class="w-30">
+        <div class="d-flex align-items-center gap-1">
+
+            {% if date(item.promo_date) > date() %}
+                <a href="{{ path('avito-promotion:admin.products.index', { company: item.id }) }}">
+                    продукты
+                </a>
+            {% else %}
+                <span class="badge text-bg-warning"
+                      style="font-size:smaller;"
+                >
+                    рекламная компания завершена
+                </span>
+            {% endif %}
+
+        </div>
+    </td>
 </tr>

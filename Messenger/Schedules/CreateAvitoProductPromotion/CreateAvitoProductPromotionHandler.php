@@ -95,8 +95,7 @@ final readonly class CreateAvitoProductPromotionHandler
                 ->setVariation($message->getVariation())
                 ->setModification($message->getModification())
                 ->setArticle($message->getArticle())
-                ->setBudget($avitoPromotionDTO->getBudget())
-                ->setCreated(new \DateTimeImmutable());
+                ->setBudget($avitoPromotionDTO->getBudget());
         }
 
         /**
@@ -107,9 +106,6 @@ final readonly class CreateAvitoProductPromotionHandler
         {
             $avitoProductPromotion->getDto($avitoProductPromotionDTO);
         }
-
-        // идентификатор рекламной компании - всегда перезаписываем
-        $avitoProductPromotionDTO->setCompany($message->getPromotion());
 
         /**
          * ФОРМУЛА: к дневному бюджету добавить процент на количество проданного товара
@@ -128,8 +124,11 @@ final readonly class CreateAvitoProductPromotionHandler
             $promoBudget = $avitoPromotionCompany->getBudgetLimit();
         }
 
-        // рассчитанный бюджет для продукта
-        $avitoProductPromotionDTO->setBudget($promoBudget);
+        /** Всегда перезаписываемые данные */
+        $avitoProductPromotionDTO
+            ->setBudget($promoBudget) // рассчитанный бюджет для продукта
+            ->setCompany($message->getPromotion()) // идентификатор рекламной компании
+            ->setCreated(new \DateTimeImmutable()); // дата
 
         $result = $this->avitoProductPromotionHandler->handle($avitoProductPromotionDTO);
 

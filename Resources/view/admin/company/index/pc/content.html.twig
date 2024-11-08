@@ -44,14 +44,14 @@
 
                 <tr>
                     <th>#</th>
-                    <th class='w-100'>Рекламные компании</th>
+                    <th class='w-75'>Рекламные компании</th>
+                    <th class="w-25">Рекламируемые продукты</th>
                 </tr>
 
                 </thead>
 
                 <tbody>
 
-                {#                {% for item in query.data %} #}
                 {# Рекламные компании  #}
                 {% for item in query %}
                     {{ include(_self|replace({ "content.html.twig": "card.html.twig" })) }}

@@ -188,7 +188,6 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
 
         /** Продукт заказа */
         $dbal
-            ->addSelect('orders_product.product AS orders_product')
             ->leftJoin(
                 'orders_event',
                 OrderProduct::class,
@@ -214,6 +213,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
          * Продукт
          */
         $dbal
+            ->addSelect('product_event.main AS orders_product')
             ->join(
                 'orders_product',
                 ProductEvent::class,

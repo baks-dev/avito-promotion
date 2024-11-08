@@ -33,16 +33,15 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
  * @group avito-promotion
- * @group avito-promotion-delete
  *
- * @depends BaksDev\Avito\Promotion\Controller\Admin\Tests\ProductsControllerTest::class
+ * @depends BaksDev\Avito\Promotion\UseCase\NewEdit\Tests\AvitoPromotionEditTest::class
  */
 #[When(env: 'test')]
-final class DeleteControllerTest extends WebTestCase
+final class ProductsControllerTest extends WebTestCase
 {
-    private const string ROLE = 'ROLE_AVITO_PROMOTION_DELETE';
+    private const string ROLE = 'ROLE_AVITO_PROMOTION_PRODUCTS';
 
-    private static string $url = '/admin/avito-promotion/company/delete/%s';
+    private static string $url = '/admin/avito-promotion/products/%s';
 
     public static function setUpBeforeClass(): void
     {
@@ -63,9 +62,9 @@ final class DeleteControllerTest extends WebTestCase
         self::assertNotNull($main);
 
         /**
-         * Подставляем активное событие в URL
+         * Подставляем корень в URL
          */
-        self::$url = sprintf(self::$url, $main->getEvent());
+        self::$url = sprintf(self::$url, $main->getId());
 
         $em->clear();
     }
