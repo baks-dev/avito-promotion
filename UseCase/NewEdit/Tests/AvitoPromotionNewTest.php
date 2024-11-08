@@ -25,10 +25,10 @@
 namespace BaksDev\Avito\Promotion\UseCase\NewEdit\Tests;
 
 use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
+use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
 use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEventInterface;
 use BaksDev\Avito\Promotion\Entity\Filter\AvitoPromotionFilterInterface;
 use BaksDev\Avito\Promotion\Entity\Modify\AvitoPromotionEventModify;
-use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\AvitoPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\AvitoPromotionHandler;
@@ -54,12 +54,20 @@ class AvitoPromotionNewTest extends KernelTestCase
         /** @var EntityManagerInterface $em */
         $em = self::getContainer()->get(EntityManagerInterface::class);
 
-        $avitoProductPromotions = $em->getRepository(AvitoProductPromotion::class)
-            ->findBy(['company' => AvitoPromotionUid::TEST]);
+        $avitoPromotion = $em->getRepository(AvitoPromotion::class)
+            ->findBy(['id' => AvitoPromotionUid::TEST]);
 
-        foreach($avitoProductPromotions as $promotion)
+        foreach($avitoPromotion as $promotion)
         {
             $em->remove($promotion);
+        }
+
+        $avitoPromotionEvent = $em->getRepository(AvitoPromotionEvent::class)
+            ->findBy(['main' => AvitoPromotionUid::TEST]);
+
+        foreach($avitoPromotionEvent as $event)
+        {
+            $em->remove($event);
         }
 
         $em->flush();
@@ -86,7 +94,7 @@ class AvitoPromotionNewTest extends KernelTestCase
         $newDTO->setBudgetLimit(1000);
         self::assertSame(1000, $newDTO->getBudgetLimit());
 
-        $newDTO->setDateEnd($date = new \DateTimeImmutable('now'));
+        $newDTO->setDateEnd($date = new \DateTimeImmutable('+1 day'));
         self::assertSame($date, $newDTO->getDateEnd());
 
         /** Фильтры для рекламной компании */

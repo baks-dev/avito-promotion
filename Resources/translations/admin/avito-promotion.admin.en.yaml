@@ -3,12 +3,14 @@ page:
   new: 'Add an advertising company for Avito'
   edit: 'Edit advertising campaign for Avito'
   delete: 'Delete advertising campaign for Avito'
+  products: 'List of advertised products'
 
 breadcrumb:
   index: 'Promotion service settings for Avito'
   new: 'Add an advertising company for Avito'
   edit: 'Edit advertising campaign for Avito'
   delete: 'Delete advertising campaign for Avito'
+  products: 'List of advertised products'
 
 success:
   new: 'An advertising campaign for Avito has been successfully created'

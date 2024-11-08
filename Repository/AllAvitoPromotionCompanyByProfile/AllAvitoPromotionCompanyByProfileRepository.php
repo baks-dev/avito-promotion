@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyByProfile;
@@ -105,6 +106,7 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
             ->addSelect('avito_promotion_event.id AS event')
             ->addSelect('avito_promotion_event.name AS promo_name')
             ->addSelect('avito_promotion_event.profile AS promo_profile')
+            ->addSelect('avito_promotion_event.date_end AS promo_date')
             ->join(
                 'avito_promotion',
                 AvitoPromotionEvent::class,
