@@ -23,7 +23,7 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Api\CreatePromotionCompany;
+namespace BaksDev\Avito\Promotion\Api\Post\CreatePromotionCompany;
 
 use BaksDev\Avito\Api\AvitoApi;
 use BaksDev\Reference\Money\Type\Money;

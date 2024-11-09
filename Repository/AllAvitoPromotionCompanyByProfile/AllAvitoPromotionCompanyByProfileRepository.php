@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyByProfile;
@@ -111,12 +110,15 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
                 'avito_promotion',
                 AvitoPromotionEvent::class,
                 'avito_promotion_event',
-                'avito_promotion_event.id = avito_promotion.event',
+                'avito_promotion_event.id = avito_promotion.event AND avito_promotion_event.profile = :profile',
+            )
+            ->setParameter(
+                'profile',
+                $this->profile,
+                UserProfileUid::TYPE
             );
 
-        $dbal
-            ->where('avito_promotion_event.profile = :profile')
-            ->setParameter('profile', $this->profile, UserProfileUid::TYPE);
+
 
         /** Категория */
         $dbal->join(
@@ -135,14 +137,15 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
         );
 
         /** Обложка */
-        $dbal->addSelect('category_cover.ext');
-        $dbal->addSelect('category_cover.cdn');
-        $dbal->leftJoin(
-            'category_event',
-            CategoryProductCover::class,
-            'category_cover',
-            'category_cover.event = category_event.id',
-        );
+        $dbal
+            ->addSelect('category_cover.ext')
+            ->addSelect('category_cover.cdn')
+            ->leftJoin(
+                'category_event',
+                CategoryProductCover::class,
+                'category_cover',
+                'category_cover.event = category_event.id',
+            );
 
         $dbal->addSelect(
             "
@@ -154,15 +157,15 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
         );
 
         /** Перевод категории */
-        $dbal->addSelect('category_trans.name as category_name');
-        $dbal->addSelect('category_trans.description as category_description');
-
-        $dbal->leftJoin(
-            'category_event',
-            CategoryProductTrans::class,
-            'category_trans',
-            'category_trans.event = category_event.id AND category_trans.local = :local',
-        );
+        $dbal
+            ->addSelect('category_trans.name as category_name')
+            ->addSelect('category_trans.description as category_description')
+            ->leftJoin(
+                'category_event',
+                CategoryProductTrans::class,
+                'category_trans',
+                'category_trans.event = category_event.id AND category_trans.local = :local',
+            );
 
         return $dbal;
     }
