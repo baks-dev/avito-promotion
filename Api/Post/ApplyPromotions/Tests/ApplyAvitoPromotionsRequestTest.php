@@ -52,7 +52,6 @@ final class ApplyAvitoPromotionsRequestTest extends KernelTestCase
 
     public function testToken(): void
     {
-
         self::assertTrue(true);
         return;
 
