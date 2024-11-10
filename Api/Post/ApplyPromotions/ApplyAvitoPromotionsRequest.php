@@ -50,7 +50,7 @@ final class ApplyAvitoPromotionsRequest extends AvitoApi
      *
      * @see https://developers.avito.ru/api-catalog/item/documentation#operation/applyVas
      */
-    public function put(string $itemId): array|bool
+    public function put(int|string $itemId): array|bool
     {
         if(false === $this->isExecuteEnvironment())
         {
@@ -65,7 +65,7 @@ final class ApplyAvitoPromotionsRequest extends AvitoApi
         $response = $this->TokenHttpClient()
             ->request(
                 'PUT',
-                '/core/v2/items/'.$itemId.'/vas/',
+                sprintf('/core/v2/items/%d/vas/', $itemId),
                 [
                     "json" => [
                         "slugs" => $this->slugs,

@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -128,7 +127,7 @@ final readonly class CreateAvitoPromotionsHandler
         /** @var AvitoPromotionPriceDTO $avitoPromotionPriceDTO */
         $avitoPromotionPriceDTO = $avitoPromotionPrice->current();
 
-        $availablePromotionList = $this->searchAvailablePromotionsV2($avitoPromotionPriceDTO, $promoBudget);
+        $availablePromotionList = $this->searchAvailablePromotions($avitoPromotionPriceDTO, $promoBudget);
 
         if(is_null($availablePromotionList))
         {
@@ -167,96 +166,81 @@ final readonly class CreateAvitoPromotionsHandler
      * Метод определяет подходящую услугу продвижения по ее цене и добавляет ее в список услуг, доступных для подключения.
      * Доступные по цене услуги не повторяются.
      */
-    private function searchAvailablePromotionsV1(
+    private function searchAvailablePromotions(
         AvitoPromotionPriceDTO $avitoPromotionPriceDTO,
         int $budget
     ): array|null
     {
-        $oneDayPromo = array_filter($avitoPromotionPriceDTO->getVas(), function(array $priceInfo) {
-
-            // исключаем услугу highlight
-            if($priceInfo['slug'] === 'highlight')
-            {
-                return false;
-            }
-
-            // исключаем услуги более чем на 1 день
-            if(false === str_ends_with($priceInfo['slug'], '_7'))
-            {
-                return true;
-            }
-
-            return false;
-        });
-
-        // сортируем услуги - от самой дорогой к самой дешёвой
-        usort($oneDayPromo, fn($promoA, $promoB) => $promoA['price'] > $promoB['price'] ? -1 : 1);
 
         $availablePromo = null;
 
-        // добавление доступных услуг в список - самая близкая цена услуги к бюджету
-        foreach($oneDayPromo as $promo)
+        /**
+         * Список услуг увеличения просмотров на 1 дней
+         */
+
+        $oneDayPromoViewing = array_filter($avitoPromotionPriceDTO->getVas(), function(array $priceInfo) {
+            return str_ends_with($priceInfo['slug'], '_1');
+        });
+
+        if(!empty($oneDayPromoViewing))
+        {
+            // сортируем услуги - от самой дорогой к самой дешёвой
+            usort($oneDayPromoViewing, fn($promoA, $promoB) => $promoA['price'] > $promoB['price'] ? -1 : 1);
+
+            foreach($oneDayPromoViewing as $promo)
+            {
+                if($budget >= $promo['price'])
+                {
+                    $availablePromo[] = $promo['slug'];
+                    $budget -= $promo['price'];
+                    break;
+                }
+            }
+        }
+
+
+        /**
+         * Список услуг "XL-объявление"
+         */
+
+        $oneDayPromoXl = array_filter($avitoPromotionPriceDTO->getVas(), function(array $priceInfo) {
+            return $priceInfo['slug'] === 'xl';
+        });
+
+        foreach($oneDayPromoXl as $promo)
         {
             if($budget >= $promo['price'])
             {
                 $availablePromo[] = $promo['slug'];
                 $budget -= $promo['price'];
+                break;
             }
         }
 
-        return $availablePromo;
-    }
 
-    /**
-     * Метод определяет подходящую услугу продвижения по ее цене и добавляет ее в список услуг, доступных для подключения.
-     * Доступные по цене услуги могут повторяться, при условии достаточного бюджета.
-     */
-    private function searchAvailablePromotionsV2(
-        AvitoPromotionPriceDTO $avitoPromotionPriceDTO,
-        int $budget
-    ): array|int|null
-    {
-        $oneDayPromo = array_filter($avitoPromotionPriceDTO->getVas(), function(array $priceInfo) {
+        /**
+         * Список услуг стикерпаков
+         */
 
-            // исключаем услугу highlight
-            if($priceInfo['slug'] === 'highlight')
-            {
-                return false;
-            }
-
-            // исключаем услуги более чем на 1 день
-            if(false === str_ends_with($priceInfo['slug'], '_7'))
-            {
-                return true;
-            }
-
-            return false;
+        $oneDayPromoStickerPack = array_filter($avitoPromotionPriceDTO->getVas(), function(array $priceInfo) {
+            return str_starts_with($priceInfo['slug'], 'stickerpack_');
         });
 
-        // сортируем услуги - от самой дорогой к самой дешёвой
-        usort($oneDayPromo, function($promoA, $promoB) {
-
-            return $promoA['price'] > $promoB['price'] ? -1 : 1;
-        });
-
-        // подключаем услугу, на сколько хватит бюджета
-        $availablePromo = null;
-
-        // минимальная стоимость услуги продвижения
-        $minPrice = $oneDayPromo[array_key_last($oneDayPromo)]['price'];
-
-        while($budget >= $minPrice)
+        if(!empty($oneDayPromoStickerPack))
         {
-            if($budget >= current($oneDayPromo)['price'])
+            usort($oneDayPromoStickerPack, fn($promoA, $promoB) => $promoA['price'] > $promoB['price'] ? -1 : 1);
+
+            foreach($oneDayPromoStickerPack as $promo)
             {
-                $availablePromo[] = current($oneDayPromo)['slug'];
-                $budget -= current($oneDayPromo)['price'];
-            }
-            else
-            {
-                next($oneDayPromo);
+                if($budget >= $promo['price'])
+                {
+                    $availablePromo[] = $promo['slug'];
+                    $budget -= $promo['price'];
+                    break;
+                }
             }
         }
+
 
         return $availablePromo;
     }

@@ -19,13 +19,13 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
 
 namespace BaksDev\Avito\Promotion\Api\Post\ApplyAvitoPromotions\Tests;
 
+use BaksDev\Avito\Board\Api\GetIdByArticleRequest;
 use BaksDev\Avito\Promotion\Api\Post\ApplyPromotions\ApplyAvitoPromotionsRequest;
 use BaksDev\Avito\Type\Authorization\AvitoTokenAuthorization;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
@@ -36,7 +36,7 @@ use Symfony\Component\DependencyInjection\Attribute\When;
  * @group avito-promotion
  */
 #[When(env: 'test')]
-final class GetAvitoPromotionPriceRequestTest extends KernelTestCase
+final class ApplyAvitoPromotionsRequestTest extends KernelTestCase
 {
     private static AvitoTokenAuthorization $authorization;
 
@@ -52,16 +52,32 @@ final class GetAvitoPromotionPriceRequestTest extends KernelTestCase
 
     public function testToken(): void
     {
+
         self::assertTrue(true);
         return;
+
+        /** @var GetIdByArticleRequest $GetIdByArticleRequest */
+        $GetIdByArticleRequest = static::getContainer()->get(GetIdByArticleRequest::class);
+        $GetIdByArticleRequest->tokenHttpClient(self::$authorization);
+
+        //  Triangle PL01 225/55 R17 101R
+        $identifier = $GetIdByArticleRequest->find('PL01-17-225-55-101R');
+
 
         /** @var ApplyAvitoPromotionsRequest $applyAvitoPromotionsRequest */
         $applyAvitoPromotionsRequest = static::getContainer()->get(ApplyAvitoPromotionsRequest::class);
         $applyAvitoPromotionsRequest->tokenHttpClient(self::$authorization);
 
+
         $result = $applyAvitoPromotionsRequest
-            ->slugs(['x1, x2, x3'])
-            ->put('id');
+            ->slugs([
+                'x2_1',
+                //'x5_1',
+                //'x10_1',
+                //'x15_1',
+                //'x20_1',
+            ])
+            ->put($identifier);
 
         self::assertIsArray($result);
     }
