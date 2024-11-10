@@ -20,3 +20,7 @@ ROLE_AVITO_PROMOTION_EDIT:
 ROLE_AVITO_PROMOTION_DELETE:
   name: 'Удалить'
   desc: ''
+
+ROLE_AVITO_PROMOTION_PRODUCTS:
+  name: 'Рекламная продукция'
+  desc: ''
