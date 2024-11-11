@@ -82,7 +82,6 @@ final readonly class CreateAvitoPromotionsHandler
             return;
         }
 
-        $deduplicator->save();
 
         $avitoProductPromotionDTO = new AvitoProductPromotionDTO();
         $promotionProduct->getDto($avitoProductPromotionDTO);
@@ -156,6 +155,8 @@ final readonly class CreateAvitoPromotionsHandler
 
             return;
         }
+
+        $deduplicator->save();
 
         $this->logger->info(
             sprintf('Применили услугу продвижения для продукта с артикулом %s', $avitoProductPromotionDTO->getArticle()),
