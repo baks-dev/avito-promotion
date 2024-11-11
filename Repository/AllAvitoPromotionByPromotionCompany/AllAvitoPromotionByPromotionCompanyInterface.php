@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -28,7 +27,6 @@ namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionByPromotionCompany
 
 use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
-use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
 
 interface AllAvitoPromotionByPromotionCompanyInterface
@@ -36,12 +34,14 @@ interface AllAvitoPromotionByPromotionCompanyInterface
     /** Идентификатор корня рекламной компании */
     public function byPromotionCompany(AvitoPromotion|AvitoPromotionUid|string $promoCompany): self;
 
-    /** Метод получает список рекламируемых продуктов в настоящий момент */
-    public function queryBuilder(): DBALQueryBuilder;
-
+    /**
+     * Метод получает пагинатор рекламируемых продуктов в настоящий момент
+     */
     public function findPaginator(): PaginatorInterface;
 
     /**
+     * Метод получает список рекламируемых продуктов в настоящий момент
+     *
      * @return array{
      * "promo_product_id": string,
      * "product_article": string,

@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -27,8 +26,9 @@ declare(strict_types=1);
 namespace BaksDev\Avito\Promotion\Commands;
 
 use BaksDev\Avito\Promotion\Messenger\Schedules\AvitoProductPromotionMessage;
-use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionByPromotionCompany\AllAvitoPromotionByPromotionCompanyRepository;
+use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionByPromotionCompany\AllAvitoPromotionByPromotionCompanyInterface;
 use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyByProfile\AllAvitoPromotionCompanyByProfileInterface;
+use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByActiveTokenInterface;
 use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
@@ -49,9 +49,9 @@ class ApplyAvitoPromotionCommand extends Command
 
     public function __construct(
         private readonly MessageDispatchInterface $messageDispatch,
-        private readonly AllUserProfilesByTokenRepository $allProfilesByToken,
+        private readonly AllUserProfilesByActiveTokenInterface $allProfilesByToken,
         private readonly AllAvitoPromotionCompanyByProfileInterface $allPromotionByProfile,
-        private readonly AllAvitoPromotionByPromotionCompanyRepository $allAvitoPromotionByPromotionCompanyRepository,
+        private readonly AllAvitoPromotionByPromotionCompanyInterface $allAvitoPromotionByPromotionCompanyRepository,
     )
     {
         parent::__construct();

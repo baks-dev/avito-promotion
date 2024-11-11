@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Avito\Promotion\Commands;
 
 use BaksDev\Avito\Promotion\Messenger\Schedules\FindOrdersByAvitoPromotionCompany\FindOrdersByAvitoPromotionCompanyMessage;
-use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
+use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByActiveTokenInterface;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -40,12 +40,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'baks:avito-promotion:update',
     description: 'Создает либо обновляет рекламную компанию'
 )]
-class CreateAvitoProductPromotionCommand extends Command
+class UpdateAvitoPromotionCompanyCommand extends Command
 {
     private SymfonyStyle $io;
 
     public function __construct(
-        private readonly AllUserProfilesByTokenRepository $allProfilesByToken,
+        private readonly AllUserProfilesByActiveTokenInterface $allProfilesByToken,
         private readonly MessageDispatchInterface $messageDispatch,
     )
     {

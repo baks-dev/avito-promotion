@@ -135,6 +135,7 @@ final readonly class CreateAvitoPromotionsHandler
         }
 
         $promotions = $this->getAvailableAvitoPromotionsRequest
+            ->profile($avitoProductPromotionDTO->getProfile())
             ->slugs($availablePromotionList)
             ->put($avitoPromotionPriceDTO->getId());
 
