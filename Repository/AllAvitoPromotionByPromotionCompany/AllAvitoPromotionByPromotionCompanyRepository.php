@@ -48,7 +48,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use InvalidArgumentException;
 
-final class AllAvitoPromotionByPromotionCompanyRepository
+final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPromotionByPromotionCompanyInterface
 {
     private AvitoPromotionUid|false $promoCompany = false;
 
@@ -101,6 +101,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository
             ->bindLocal();
 
         $dbal
+            ->addSelect('avito_promotion_product.id AS promo_product_id')
             ->addSelect('avito_promotion_product.article AS product_article')
             ->from(AvitoProductPromotion::class, 'avito_promotion_product')
             ->where('avito_promotion_product.company = :promoCompany')
@@ -286,6 +287,23 @@ final class AllAvitoPromotionByPromotionCompanyRepository
         return $this->pagination->fetchAllAssociative($dbal);
     }
 
+    /**
+     * @return array{
+     * "promo_product_id": string,
+     * "product_article": string,
+     * "product_name": string,
+     * "category_name": string|null,
+     * "product_offer_value": string|null,
+     * "product_offer_postfix": string|null,
+     * "product_offer_reference": string|null,
+     * "product_variation_value": string|null,
+     * "product_variation_postfix": string|null,
+     * "product_variation_reference": string|null,
+     * "product_modification_value": string|null,
+     * "product_modification_postfix": string|null,
+     * "product_modification_reference": string|null
+     * }|false
+     */
     public function find(): array|false
     {
         $dbal = $this->QueryBuilder();

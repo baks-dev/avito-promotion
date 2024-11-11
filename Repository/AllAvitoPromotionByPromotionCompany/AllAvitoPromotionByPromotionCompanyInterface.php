@@ -22,37 +22,42 @@
  *
  */
 
-namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyByProfile;
+declare(strict_types=1);
 
+namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionByPromotionCompany;
+
+use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
+use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
+use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
-use BaksDev\Users\Profile\UserProfile\Entity\UserProfile;
-use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 
-/**
- * Находит все рекламные компании для Авито по профилю пользователя
- */
-interface AllAvitoPromotionCompanyByProfileInterface
+interface AllAvitoPromotionByPromotionCompanyInterface
 {
-    /**
-     * Профиль пользователя
-     */
-    public function profile(UserProfile|UserProfileUid|string $profile): self;
+    /** Идентификатор корня рекламной компании */
+    public function byPromotionCompany(AvitoPromotion|AvitoPromotionUid|string $promoCompany): self;
+
+    /** Метод получает список рекламируемых продуктов в настоящий момент */
+    public function queryBuilder(): DBALQueryBuilder;
 
     public function findPaginator(): PaginatorInterface;
 
     /**
      * @return array{
-     * "id": string,
-     * "event": string,
-     * "promo_name": string,
-     * "promo_profile": string,
-     * "promo_date": string,
-     * "ext": string,
-     * "cdn": bool,
-     * "cover": string,
-     * "category_name": string,
-     * "category_description": string,
+     * "promo_product_id": string,
+     * "product_article": string,
+     * "product_name": string,
+     * "category_name": string|null,
+     * "product_offer_value": string|null,
+     * "product_offer_postfix": string|null,
+     * "product_offer_reference": string|null,
+     * "product_variation_value": string|null,
+     * "product_variation_postfix": string|null,
+     * "product_variation_reference": string|null,
+     * "product_modification_value": string|null,
+     * "product_modification_postfix": string|null,
+     * "product_modification_reference": string|null
      * }|false
      */
     public function find(): array|false;
+
 }

@@ -26,17 +26,29 @@ declare(strict_types=1);
 
 namespace BaksDev\Avito\Promotion\Messenger\Schedules;
 
+use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
 use BaksDev\Avito\Promotion\Type\Promotion\AvitoProductPromotionUid;
 
 final readonly class AvitoProductPromotionMessage
 {
-    public function __construct(
-        private AvitoProductPromotionUid $id,
-    ) {}
+    private AvitoProductPromotionUid $id;
 
-    /**
-     * Идентификатор
-     */
+    public function __construct(AvitoProductPromotion|AvitoProductPromotionUid|string $id)
+    {
+        if(is_string($id))
+        {
+            $id = new AvitoProductPromotionUid($id);
+        }
+
+        if($id instanceof AvitoProductPromotion)
+        {
+            $id = $id->getId();
+        }
+
+        $this->id = $id;
+    }
+
+    /** Идентификатор рекламного продукта */
     public function getId(): AvitoProductPromotionUid
     {
         return $this->id;
