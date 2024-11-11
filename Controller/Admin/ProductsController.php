@@ -28,7 +28,7 @@ namespace BaksDev\Avito\Promotion\Controller\Admin;
 
 use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
 use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
-use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionByPromotionCompany\AllAvitoPromotionByPromotionCompanyRepository;
+use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionByPromotionCompany\AllAvitoPromotionByPromotionCompanyInterface;
 use BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotionByEvent\CurrentAvitoPromotionByEventInterface;
 use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Form\Search\SearchDTO;
@@ -53,7 +53,7 @@ final class ProductsController extends AbstractController
         Request $request,
         #[MapEntity] AvitoPromotion $company,
         CurrentAvitoPromotionByEventInterface $currentAvitoPromotionByEvent,
-        AllAvitoPromotionByPromotionCompanyRepository $allAvitoPromotionByPromotionCompanyRepository,
+        AllAvitoPromotionByPromotionCompanyInterface $allAvitoPromotionByPromotionCompany,
     ): Response
     {
         $currentPromotionCompany = $currentAvitoPromotionByEvent->find($company->getId());
@@ -76,7 +76,7 @@ final class ProductsController extends AbstractController
             ])->handleRequest($request);
 
         /** @var array<int, AvitoProductPromotion> $products */
-        $products = $allAvitoPromotionByPromotionCompanyRepository
+        $products = $allAvitoPromotionByPromotionCompany
             ->search($search)
             ->byPromotionCompany($company)
             ->findPaginator();

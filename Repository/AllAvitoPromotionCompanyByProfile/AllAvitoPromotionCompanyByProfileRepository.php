@@ -19,6 +19,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
+ *
  */
 
 namespace BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyByProfile;
@@ -68,6 +69,20 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
         return $this->pagination->fetchAllAssociative($dbal);
     }
 
+    /**
+     * @return array{
+     * "id": string,
+     * "event": string,
+     * "promo_name": string,
+     * "promo_profile": string,
+     * "promo_date": string,
+     * "ext": string,
+     * "cdn": bool,
+     * "cover": string,
+     * "category_name": string,
+     * "category_description": string,
+     * }|false
+     */
     public function find(): array|false
     {
         $dbal = $this->QueryBuilder();
@@ -117,7 +132,6 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
                 $this->profile,
                 UserProfileUid::TYPE
             );
-
 
 
         /** Категория */
