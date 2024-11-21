@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -34,7 +33,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
 /** @see FindOrdersByAvitoPromotionCompanyHandler */
-#[AsCronTask('0 0 * * *', jitter: 60)]
+#[AsCronTask('0 3 * * *', jitter: 60)]
 final readonly class FindProfileWithActiveAvitoTokenCron
 {
     private LoggerInterface $logger;

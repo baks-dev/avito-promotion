@@ -77,7 +77,7 @@ final class ApplyAvitoPromotionsRequest extends AvitoApi
 
         if($response->getStatusCode() !== 200)
         {
-            $this->logger->critical('avito-promotion:Ошибка применение услуг продвижения для продукта: '.$itemId,
+            $this->logger->critical('avito-promotion: Ошибка применение услуг продвижения для продукта: '.$itemId,
                 [
                     __FILE__.':'.__LINE__,
                     $result,

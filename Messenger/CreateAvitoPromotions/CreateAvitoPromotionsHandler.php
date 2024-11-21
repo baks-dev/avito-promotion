@@ -45,7 +45,7 @@ final readonly class CreateAvitoPromotionsHandler
     private LoggerInterface $logger;
 
     public function __construct(
-        LoggerInterface $avitoBoardLogger,
+        LoggerInterface $avitoPromotionLogger,
         private DeduplicatorInterface $deduplicator,
         private MessageDispatchInterface $messageDispatch,
         private CurrentAvitoProductPromotionByIdInterface $currentAvitoProductPromotion,
@@ -54,7 +54,7 @@ final readonly class CreateAvitoPromotionsHandler
         private ApplyAvitoPromotionsRequest $getAvailableAvitoPromotionsRequest,
     )
     {
-        $this->logger = $avitoBoardLogger;
+        $this->logger = $avitoPromotionLogger;
     }
 
     /**
@@ -67,7 +67,7 @@ final readonly class CreateAvitoPromotionsHandler
     {
         $deduplicator = $this->deduplicator
             ->namespace('avito-promotion')
-            ->expiresAfter(DateInterval::createFromDateString('23 hours + 55 minutes'))
+            ->expiresAfter(DateInterval::createFromDateString('23 hours'))
             ->deduplication([$message->getId(), self::class]);
 
         if($deduplicator->isExecuted())
@@ -150,18 +150,25 @@ final readonly class CreateAvitoPromotionsHandler
                     message: $message,
                     // задержка 1 час для повторного запроса на создание компании
                     stamps: [new MessageDelay('1 hour')],
-                    transport: (string) $avitoProductPromotionDTO->getProfile(),
+                    transport: 'avito-promotion',
                 );
+
+            /**
+             * Пробуем обновить один раз через час на случай, если произошла временная ошибка Avito.
+             * Если произошла ошибка по причине недостатка средств - рекламная компания запустится только на след. день после пополнения
+             */
+            $deduplicator->save();
 
             return;
         }
 
-        $deduplicator->save();
 
         $this->logger->info(
             sprintf('Применили услугу продвижения для продукта с артикулом %s', $avitoProductPromotionDTO->getArticle()),
             [__FILE__.':'.__LINE__]
         );
+
+        $deduplicator->save();
     }
 
     /**
