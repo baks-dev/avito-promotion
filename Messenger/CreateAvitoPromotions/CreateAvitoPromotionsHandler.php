@@ -26,6 +26,8 @@ declare(strict_types=1);
 namespace BaksDev\Avito\Promotion\Messenger\CreateAvitoPromotions;
 
 use BaksDev\Avito\Board\Api\GetIdByArticleRequest;
+use BaksDev\Avito\Promotion\Api\AvitoProductInfo\GetAvitoProductInfoPromotionRequest;
+use BaksDev\Avito\Promotion\Api\FindPromotionAvitoProductRequest;
 use BaksDev\Avito\Promotion\Api\Get\PromotionPrice\AvitoPromotionPriceDTO;
 use BaksDev\Avito\Promotion\Api\Get\PromotionPrice\GetAvitoPromotionPriceRequest;
 use BaksDev\Avito\Promotion\Api\Post\ApplyPromotions\ApplyAvitoPromotionsRequest;
@@ -52,6 +54,7 @@ final readonly class CreateAvitoPromotionsHandler
         private GetIdByArticleRequest $getIdByArticleRequest,
         private GetAvitoPromotionPriceRequest $getAvitoPromotionPriceRequest,
         private ApplyAvitoPromotionsRequest $getAvailableAvitoPromotionsRequest,
+        private FindPromotionAvitoProductRequest $FindPromotionAvitoProductRequest
     )
     {
         $this->logger = $avitoPromotionLogger;
@@ -95,6 +98,35 @@ final readonly class CreateAvitoPromotionsHandler
         {
             $this->logger->critical(
                 sprintf('avito-promotion: Не найден идентификатор объявления по артикулу %s', $avitoProductPromotionDTO->getArticle()),
+                [__FILE__.':'.__LINE__]
+            );
+
+            return;
+        }
+
+
+        /** Проверяем, что к объявлению не применено продвижение  */
+
+        $PromotionAvitoProduct = $this->FindPromotionAvitoProductRequest
+            ->profile($avitoProductPromotionDTO->getProfile())
+            ->find($identifier);
+
+        if(false === $PromotionAvitoProduct)
+        {
+            $this->messageDispatch->dispatch(
+                $message,
+                [new MessageDelay('10 minutes')],
+                'avito-promotion'
+            );
+
+            return;
+        }
+
+
+        if(false === is_null($PromotionAvitoProduct))
+        {
+            $this->logger->info(
+                sprintf('Услуга продвижения уже применена к объявлению с артикулом %s', $avitoProductPromotionDTO->getArticle()),
                 [__FILE__.':'.__LINE__]
             );
 

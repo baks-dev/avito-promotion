@@ -23,50 +23,46 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Avito\Promotion\Api\Get\PromotionPrice;
+namespace BaksDev\Avito\Promotion\Api;
 
 use BaksDev\Avito\Api\AvitoApi;
-use Generator;
-use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-#[Autoconfigure(public: true)]
-final class GetAvitoPromotionPriceRequest extends AvitoApi
+final class FindPromotionAvitoProductRequest extends AvitoApi
 {
     /**
-     * Возвращает в ответ список объектов c информацией о стоимости услуг продвижения и доступных значках
+     * Получает действующую платную услугу
      *
-     * @see https://developers.avito.ru/api-catalog/item/documentation#operation/vasPrices
+     * @see https://developers.avito.ru/api-catalog/item/documentation#operation/putItemVas
      */
-    public function get(array $items): Generator|false
+    public function find(int|string $identifier): string|null|false
     {
         $response = $this->TokenHttpClient()
             ->request(
-                'POST',
-                '/core/v1/accounts/'.$this->getUser().'/vas/prices',
-                [
-                    "json" => [
-                        "itemIds" => $items,
-                    ]
-                ],
+                'GET',
+                sprintf('/core/v1/accounts/%s/items/%s/', $this->getUser(), $identifier),
             );
 
         $result = $response->toArray(false);
 
         if($response->getStatusCode() !== 200)
         {
-            $this->logger->critical('avito-promotion: Ошибка информации о стоимости услуг продвижения для продукта',
+            $this->logger->critical(
+                sprintf('avito-products: Не удалось получить информацию о платных услугах %s', $identifier),
                 [
-                    self::class.':'.__LINE__,
-                    $items,
+                    __FILE__.':'.__LINE__,
                     $result,
                 ]);
 
             return false;
         }
 
-        foreach($result as $promotionPrice)
+        if(empty($result['vas']))
         {
-            yield new AvitoPromotionPriceDTO($promotionPrice);
+            return null;
         }
+
+        $promotion = current($result['vas']);
+
+        return $promotion['vas_id'];
     }
 }
