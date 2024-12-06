@@ -32,7 +32,7 @@ final class FindPromotionAvitoProductRequest extends AvitoApi
     /**
      * Получает действующую платную услугу
      *
-     * @see https://developers.avito.ru/api-catalog/item/documentation#operation/putItemVas
+     * @see https://developers.avito.ru/api-catalog/item/documentation#operation/getItemInfo
      */
     public function find(int|string $identifier): string|null|false
     {
