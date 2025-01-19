@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -37,15 +36,15 @@ use InvalidArgumentException;
 
 final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProductPromotionInterface
 {
-    private UserProfileUid|false $profile;
+    private UserProfileUid|false $profile = false;
 
-    private ProductUid|false $product;
+    private ProductUid|false $product = false;
 
-    private ProductOfferConst|false $offer;
+    private ProductOfferConst|false $offer = false;
 
-    private ProductVariationConst|false $variation;
+    private ProductVariationConst|false $variation = false;
 
-    private ProductModificationConst|false $modification;
+    private ProductModificationConst|false $modification = false;
 
     public function __construct(
         readonly private ORMQueryBuilder $ORMQueryBuilder
