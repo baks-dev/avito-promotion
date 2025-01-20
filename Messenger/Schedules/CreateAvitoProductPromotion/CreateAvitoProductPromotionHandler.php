@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -32,24 +31,21 @@ use BaksDev\Avito\Promotion\Repository\CurrentAvitoPromotionByEvent\CurrentAvito
 use BaksDev\Avito\Promotion\UseCase\NewEdit\AvitoPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionDTO;
 use BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion\AvitoProductPromotionHandler;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 
 #[AsMessageHandler]
 final readonly class CreateAvitoProductPromotionHandler
 {
-    private LoggerInterface $logger;
-
     public function __construct(
-        LoggerInterface $avitoPromotionLogger,
+        #[Target('avitoPromotionLogger')] private LoggerInterface $logger,
         private CurrentAvitoPromotionByEventInterface $currentAvitoPromotion,
         private CurrentAvitoProductPromotionInterface $currentAvitoProductPromotion,
         private AvitoProductPromotionHandler $avitoProductPromotionHandler,
-    )
-    {
-        $this->logger = $avitoPromotionLogger;
-    }
+    ) {}
 
     /**
      * Метод:
@@ -128,7 +124,7 @@ final readonly class CreateAvitoProductPromotionHandler
         $avitoProductPromotionDTO
             ->setBudget($promoBudget) // рассчитанный бюджет для продукта
             ->setCompany($message->getPromotion()) // идентификатор рекламной компании
-            ->setCreated(new \DateTimeImmutable()); // дата
+            ->setCreated(new DateTimeImmutable()); // дата
 
         $result = $this->avitoProductPromotionHandler->handle($avitoProductPromotionDTO);
 

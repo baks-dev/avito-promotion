@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -30,22 +30,18 @@ use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByToken
 use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
 /** @see FindOrdersByAvitoPromotionCompanyHandler */
 #[AsCronTask('0 3 * * *', jitter: 60)]
 final readonly class FindProfileWithActiveAvitoTokenCron
 {
-    private LoggerInterface $logger;
-
     public function __construct(
-        LoggerInterface $avitoPromotionLogger,
+        #[Target('avitoPromotionLogger')] private LoggerInterface $logger,
         private MessageDispatchInterface $messageDispatch,
         private AllUserProfilesByTokenRepository $allProfilesByToken,
-    )
-    {
-        $this->logger = $avitoPromotionLogger;
-    }
+    ) {}
 
     public function __invoke(): void
     {
