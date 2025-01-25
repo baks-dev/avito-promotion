@@ -22,7 +22,6 @@
 
 executeFunc(function initAvitoPromotion()
 {
-
     const avitoPromotionForm = document.forms.avito_promotion_form;
 
     let categoryElement = document.getElementById('avito_promotion_form_category');
