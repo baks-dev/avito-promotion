@@ -71,7 +71,7 @@ final readonly class FindOrdersByAvitoPromotionCompanyHandler
             return;
         }
 
-        $deduplicator = $this->deduplicator
+        $this->deduplicator
             ->namespace('avito-promotion')
             ->expiresAfter(DateInterval::createFromDateString('23 hours'));
 
@@ -95,7 +95,7 @@ final readonly class FindOrdersByAvitoPromotionCompanyHandler
             /** Создаем рекламный продукт */
             foreach($orders as $order)
             {
-                $deduplicator->deduplication(
+                $deduplicator = $this->deduplicator->deduplication(
                     [
                         $profile,
                         $order['orders_product'],
