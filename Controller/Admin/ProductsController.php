@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -34,6 +33,8 @@ use BaksDev\Core\Controller\AbstractController;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Form\Search\SearchForm;
 use BaksDev\Core\Listeners\Event\Security\RoleSecurity;
+use DateTimeImmutable;
+use DomainException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,22 +59,21 @@ final class ProductsController extends AbstractController
     {
         $currentPromotionCompany = $currentAvitoPromotionByEvent->find($company->getId());
 
-        if($currentPromotionCompany->getDateEnd() < new \DateTimeImmutable('now'))
+        if($currentPromotionCompany->getDateEnd() < new DateTimeImmutable('now'))
         {
-            throw new \DomainException('Срок рекламной компании завершен');
+            throw new DomainException('Срок рекламной компании завершен');
         }
 
         /** Поиск */
         $search = new SearchDTO();
 
-        $searchForm = $this->createForm(
-            type: SearchForm::class,
-            data: $search,
-            options: [
-                'action' => $this->generateUrl(
-                    route: 'avito-promotion:admin.products.index',
-                    parameters: ['company' => $company])
-            ])->handleRequest($request);
+        $searchForm = $this
+            ->createForm(
+                type: SearchForm::class,
+                data: $search,
+                options: ['action' => $this->generateUrl('avito-promotion:admin.products.index', ['company' => $company])]
+            )
+            ->handleRequest($request);
 
         /** @var array<int, AvitoProductPromotion> $products */
         $products = $allAvitoPromotionByPromotionCompany

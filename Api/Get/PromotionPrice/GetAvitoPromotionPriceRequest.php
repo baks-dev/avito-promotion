@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@ final class GetAvitoPromotionPriceRequest extends AvitoApi
      */
     public function get(array $items): Generator|false
     {
+
         $response = $this->TokenHttpClient()
             ->request(
                 'POST',
@@ -52,7 +53,7 @@ final class GetAvitoPromotionPriceRequest extends AvitoApi
 
         $result = $response->toArray(false);
 
-        if($response->getStatusCode() !== 200)
+        if($response->getStatusCode() !== 200 || isset($result['code']))
         {
             $this->logger->critical('avito-promotion: Ошибка информации о стоимости услуг продвижения для продукта',
                 [

@@ -1,6 +1,6 @@
 # BaksDev Avito Promotion
 
-[![Version](https://img.shields.io/badge/version-7.2.3-blue)](https://github.com/baks-dev/avito-promotion/releases)
+[![Version](https://img.shields.io/badge/version-7.2.4-blue)](https://github.com/baks-dev/avito-promotion/releases)
 ![php 8.4+](https://img.shields.io/badge/php-min%208.4-red.svg)
 
 Модуль продвижения объявлений Avito
