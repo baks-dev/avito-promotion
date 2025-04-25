@@ -134,11 +134,23 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
 
         $orm
             ->select('avito_promotion_product')
-            ->from(AvitoProductPromotion::class, 'avito_promotion_product')
+            ->from(AvitoProductPromotion::class, 'avito_promotion_product');
+
+        $orm
             ->where('avito_promotion_product.profile = :profile')
+            ->setParameter(
+                key: 'profile',
+                value: $this->profile,
+                type: UserProfileUid::TYPE
+            );
+
+        $orm
             ->andWhere('avito_promotion_product.product = :product')
-            ->setParameter('profile', $this->profile, UserProfileUid::TYPE)
-            ->setParameter('product', $this->product, ProductUid::TYPE);
+            ->setParameter(
+                key: 'product',
+                value: $this->product,
+                type: ProductUid::TYPE
+            );
 
         if(false === $this->offer)
         {
@@ -148,7 +160,11 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
         {
             $orm
                 ->andWhere('avito_promotion_product.offer = :offer')
-                ->setParameter('offer', $this->offer, ProductOfferConst::TYPE);
+                ->setParameter(
+                    key: 'offer',
+                    value: $this->offer,
+                    type: ProductOfferConst::TYPE
+                );
         }
 
         if(false === $this->variation)
@@ -159,7 +175,11 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
         {
             $orm
                 ->andWhere('avito_promotion_product.variation = :variation')
-                ->setParameter('variation', $this->variation, ProductVariationConst::TYPE);
+                ->setParameter(
+                    key: 'variation',
+                    value: $this->variation,
+                    type: ProductVariationConst::TYPE
+                );
         }
 
         if(false === $this->modification)
@@ -170,7 +190,11 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
         {
             $orm
                 ->andWhere('avito_promotion_product.modification = :modification')
-                ->setParameter('modification', $this->modification, ProductModificationConst::TYPE);
+                ->setParameter(
+                    key: 'modification',
+                    value: $this->modification,
+                    type: ProductModificationConst::TYPE
+                );
         }
 
         $result = $orm->getOneOrNullResult();

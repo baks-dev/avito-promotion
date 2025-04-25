@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -112,13 +111,13 @@ class AvitoPromotionEvent extends EntityEvent
      * Коллекция свойств для фильтрации и применения услуг продвижения
      */
     #[Assert\Valid]
-    #[ORM\OneToMany(targetEntity: AvitoPromotionFilter::class, mappedBy: 'event', cascade: ['all'])]
+    #[ORM\OneToMany(targetEntity: AvitoPromotionFilter::class, mappedBy: 'event', cascade: ['all'], fetch: 'EAGER')]
     private Collection $filters;
 
     /**
      * Модификатор события
      */
-    #[ORM\OneToOne(targetEntity: AvitoPromotionEventModify::class, mappedBy: 'event', cascade: ['all'])]
+    #[ORM\OneToOne(targetEntity: AvitoPromotionEventModify::class, mappedBy: 'event', cascade: ['all'], fetch: 'EAGER')]
     private AvitoPromotionEventModify $modify;
 
     public function __construct()

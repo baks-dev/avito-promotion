@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -53,13 +52,18 @@ final readonly class CurrentAvitoPromotionByEventRepository implements CurrentAv
             ->select('event')
             ->from(AvitoPromotionEvent::class, 'event')
             ->where('event.main = :main')
-            ->join(
-                AvitoPromotion::class,
-                'main',
-                Join::WITH,
-                'main.event = event.id'
-            )
-            ->setParameter('main', $main, AvitoPromotionUid::TYPE);
+            ->setParameter(
+                key: 'main',
+                value: $main,
+                type: AvitoPromotionUid::TYPE
+            );
+
+        $orm->join(
+            AvitoPromotion::class,
+            'main',
+            Join::WITH,
+            'main.event = event.id'
+        );
 
         return $orm->getOneOrNullResult() ?: false;
     }
