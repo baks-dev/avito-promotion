@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2025.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,59 +23,24 @@
 
 namespace BaksDev\Avito\Promotion\Controller\Admin\Tests;
 
-use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
-use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Users\User\Tests\TestUserAccount;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
  * @group avito-promotion
- * @group avito-promotion-delete
+ * @group avito-promotion-new
  *
- * @depends BaksDev\Avito\Promotion\Controller\Admin\Tests\ProductsControllerTest::class
+ * @depends BaksDev\Avito\Promotion\Controller\Admin\Tests\IndexControllerTest::class
  */
 #[When(env: 'test')]
-final class DeleteControllerTest extends WebTestCase
+final class NewControllerAdminTest extends WebTestCase
 {
-    private const string ROLE = 'ROLE_AVITO_PROMOTION_DELETE';
+    private const string URL = '/admin/avito-promotion/company/new';
 
-    private static string $url = '/admin/avito-promotion/company/delete/%s';
+    private const string ROLE = 'ROLE_AVITO_PROMOTION_NEW';
 
-    public static function setUpBeforeClass(): void
-    {
-        $container = self::getContainer();
-
-        /** @var EntityManagerInterface $em */
-        $em = $container->get(EntityManagerInterface::class);
-
-        /**
-         * Находим корень
-         *
-         * @var AvitoPromotion $main
-         */
-        $main = $em
-            ->getRepository(AvitoPromotion::class)
-            ->find(AvitoPromotionUid::TEST);
-
-        if(empty($main))
-        {
-            self::assertNull($main);
-            return;
-        }
-
-        self::assertNotNull($main);
-
-        /**
-         * Подставляем активное событие в URL
-         */
-        self::$url = sprintf(self::$url, $main->getEvent());
-
-        $em->clear();
-    }
-
-    /** Доступ по роли */
+    /** Доступ по роли ROLE_PRODUCT */
     public function testRoleSuccessful(): void
     {
         self::ensureKernelShutdown();
@@ -88,8 +53,7 @@ final class DeleteControllerTest extends WebTestCase
             $usr = TestUserAccount::getModer(self::ROLE);
 
             $client->loginUser($usr, 'user');
-
-            $client->request('GET', self::$url);
+            $client->request('GET', self::URL);
 
             self::assertResponseIsSuccessful();
         }
@@ -106,11 +70,11 @@ final class DeleteControllerTest extends WebTestCase
         foreach(TestUserAccount::getDevice() as $device)
         {
             $client->setServerParameter('HTTP_USER_AGENT', $device);
+
             $usr = TestUserAccount::getAdmin();
 
             $client->loginUser($usr, 'user');
-
-            $client->request('GET', self::$url);
+            $client->request('GET', self::URL);
 
             self::assertResponseIsSuccessful();
         }
@@ -119,7 +83,7 @@ final class DeleteControllerTest extends WebTestCase
     }
 
     /** Доступ по роли ROLE_USER */
-    public function testRoleUserDeny(): void
+    public function testRoleUserFiled(): void
     {
         self::ensureKernelShutdown();
         $client = static::createClient();
@@ -130,8 +94,7 @@ final class DeleteControllerTest extends WebTestCase
 
             $usr = TestUserAccount::getUsr();
             $client->loginUser($usr, 'user');
-
-            $client->request('GET', self::$url);
+            $client->request('GET', self::URL);
 
             self::assertResponseStatusCodeSame(403);
         }
@@ -149,7 +112,7 @@ final class DeleteControllerTest extends WebTestCase
         {
             $client->setServerParameter('HTTP_USER_AGENT', $device);
 
-            $client->request('GET', self::$url);
+            $client->request('GET', self::URL);
 
             // Full authentication is required to access this resource
             self::assertResponseStatusCodeSame(401);

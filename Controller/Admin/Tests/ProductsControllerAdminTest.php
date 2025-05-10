@@ -1,17 +1,17 @@
 <?php
 /*
  *  Copyright 2025.  Baks.dev <admin@baks.dev>
- *
+ *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
  *  in the Software without restriction, including without limitation the rights
  *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *  copies of the Software, and to permit persons to whom the Software is furnished
  *  to do so, subject to the following conditions:
- *
+ *  
  *  The above copyright notice and this permission notice shall be included in all
  *  copies or substantial portions of the Software.
- *
+ *  
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,16 +32,15 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
  * @group avito-promotion
- * @group avito-promotion-edit
  *
- * @depends BaksDev\Avito\Promotion\UseCase\NewEdit\Tests\AvitoPromotionNewTest::class
+ * @depends BaksDev\Avito\Promotion\UseCase\NewEdit\Tests\AvitoPromotionEditTest::class
  */
 #[When(env: 'test')]
-final class EditControllerTest extends WebTestCase
+final class ProductsControllerAdminTest extends WebTestCase
 {
-    private const string ROLE = 'ROLE_AVITO_PROMOTION_EDIT';
+    private const string ROLE = 'ROLE_AVITO_PROMOTION_PRODUCTS';
 
-    private static string $url = '/admin/avito-promotion/company/edit/%s';
+    private static string $url = '/admin/avito-promotion/products/%s';
 
     public static function setUpBeforeClass(): void
     {
@@ -59,18 +58,12 @@ final class EditControllerTest extends WebTestCase
             ->getRepository(AvitoPromotion::class)
             ->find(AvitoPromotionUid::TEST);
 
-        if(empty($main))
-        {
-            self::assertNull($main);
-            return;
-        }
-
         self::assertNotNull($main);
 
         /**
-         * Подставляем активное событие в URL
+         * Подставляем корень в URL
          */
-        self::$url = sprintf(self::$url, $main->getEvent());
+        self::$url = sprintf(self::$url, $main->getId());
 
         $em->clear();
     }

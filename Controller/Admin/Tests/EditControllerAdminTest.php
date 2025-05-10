@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 namespace BaksDev\Avito\Promotion\Controller\Admin\Tests;
@@ -33,15 +32,16 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 
 /**
  * @group avito-promotion
+ * @group avito-promotion-edit
  *
- * @depends BaksDev\Avito\Promotion\UseCase\NewEdit\Tests\AvitoPromotionEditTest::class
+ * @depends BaksDev\Avito\Promotion\UseCase\NewEdit\Tests\AvitoPromotionNewTest::class
  */
 #[When(env: 'test')]
-final class ProductsControllerTest extends WebTestCase
+final class EditControllerAdminTest extends WebTestCase
 {
-    private const string ROLE = 'ROLE_AVITO_PROMOTION_PRODUCTS';
+    private const string ROLE = 'ROLE_AVITO_PROMOTION_EDIT';
 
-    private static string $url = '/admin/avito-promotion/products/%s';
+    private static string $url = '/admin/avito-promotion/company/edit/%s';
 
     public static function setUpBeforeClass(): void
     {
@@ -59,12 +59,18 @@ final class ProductsControllerTest extends WebTestCase
             ->getRepository(AvitoPromotion::class)
             ->find(AvitoPromotionUid::TEST);
 
+        if(empty($main))
+        {
+            self::assertNull($main);
+            return;
+        }
+
         self::assertNotNull($main);
 
         /**
-         * Подставляем корень в URL
+         * Подставляем активное событие в URL
          */
-        self::$url = sprintf(self::$url, $main->getId());
+        self::$url = sprintf(self::$url, $main->getEvent());
 
         $em->clear();
     }
