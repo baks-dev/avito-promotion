@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -32,7 +31,7 @@ use Symfony\Component\Uid\AbstractUid;
 final class AvitoProductPromotionUid extends Uid
 {
     /** Тестовый идентификатор */
-    public const string TEST = '461b5cc8-e513-4091-a084-e4e0e0faa923';
+    public const string TEST = '95868005-e5a5-7dd7-bc22-0dc62f6781d3';
 
     public const string TYPE = 'avito_promotion_product';
 
