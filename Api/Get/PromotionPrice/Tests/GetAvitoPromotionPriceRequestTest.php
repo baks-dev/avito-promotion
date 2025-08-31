@@ -43,11 +43,11 @@ final class GetAvitoPromotionPriceRequestTest extends KernelTestCase
     public static function setUpBeforeClass(): void
     {
         self::$authorization = new AvitoTokenAuthorization(
-            UserProfileUid::TEST,
-            $_SERVER['TEST_AVITO_CLIENT'],
-            $_SERVER['TEST_AVITO_SECRET'],
-            $_SERVER['TEST_AVITO_USER'],
-            $_SERVER['TEST_AVITO_PERCENT'] ?? '0',
+            profile: new UserProfileUid(),
+            client: $_SERVER['TEST_AVITO_CLIENT'],
+            secret: $_SERVER['TEST_AVITO_SECRET'],
+            user: $_SERVER['TEST_AVITO_USER'],
+            percent: $_SERVER['TEST_AVITO_PERCENT'] ?? '0',
         );
     }
 
