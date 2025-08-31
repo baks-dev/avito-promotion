@@ -27,16 +27,13 @@ use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Users\User\Tests\TestUserAccount;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DependsOnClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group avito-promotion
- * @group avito-promotion-delete
- *
- * @depends BaksDev\Avito\Promotion\Controller\Admin\Tests\ProductsControllerTest::class
- */
 #[When(env: 'test')]
+#[Group('avito-promotion')]
 final class DeleteAdminControllerTest extends WebTestCase
 {
     private const string ROLE = 'ROLE_AVITO_PROMOTION_DELETE';
@@ -76,6 +73,7 @@ final class DeleteAdminControllerTest extends WebTestCase
     }
 
     /** Доступ по роли */
+    #[DependsOnClass(ProductsControllerAdminTest::class)]
     public function testRoleSuccessful(): void
     {
         self::ensureKernelShutdown();
@@ -98,6 +96,7 @@ final class DeleteAdminControllerTest extends WebTestCase
     }
 
     /** Доступ по роли ROLE_ADMIN */
+    #[DependsOnClass(ProductsControllerAdminTest::class)]
     public function testRoleAdminSuccessful(): void
     {
         self::ensureKernelShutdown();
@@ -119,6 +118,7 @@ final class DeleteAdminControllerTest extends WebTestCase
     }
 
     /** Доступ по роли ROLE_USER */
+    #[DependsOnClass(ProductsControllerAdminTest::class)]
     public function testRoleUserDeny(): void
     {
         self::ensureKernelShutdown();
@@ -140,6 +140,7 @@ final class DeleteAdminControllerTest extends WebTestCase
     }
 
     /** Доступ без роли */
+    #[DependsOnClass(ProductsControllerAdminTest::class)]
     public function testGuestFiled(): void
     {
         self::ensureKernelShutdown();

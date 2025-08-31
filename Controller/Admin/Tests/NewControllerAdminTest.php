@@ -24,16 +24,13 @@
 namespace BaksDev\Avito\Promotion\Controller\Admin\Tests;
 
 use BaksDev\Users\User\Tests\TestUserAccount;
+use PHPUnit\Framework\Attributes\DependsOnClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group avito-promotion
- * @group avito-promotion-new
- *
- * @depends BaksDev\Avito\Promotion\Controller\Admin\Tests\IndexControllerTest::class
- */
 #[When(env: 'test')]
+#[Group('avito-promotion')]
 final class NewControllerAdminTest extends WebTestCase
 {
     private const string URL = '/admin/avito-promotion/company/new';
@@ -62,6 +59,7 @@ final class NewControllerAdminTest extends WebTestCase
     }
 
     /** Доступ по роли ROLE_ADMIN */
+    #[DependsOnClass(IndexControllerAdminTest::class)]
     public function testRoleAdminSuccessful(): void
     {
         self::ensureKernelShutdown();
@@ -83,6 +81,7 @@ final class NewControllerAdminTest extends WebTestCase
     }
 
     /** Доступ по роли ROLE_USER */
+    #[DependsOnClass(IndexControllerAdminTest::class)]
     public function testRoleUserFiled(): void
     {
         self::ensureKernelShutdown();
@@ -103,6 +102,7 @@ final class NewControllerAdminTest extends WebTestCase
     }
 
     /** Доступ без роли */
+    #[DependsOnClass(IndexControllerAdminTest::class)]
     public function testGuestFiled(): void
     {
         self::ensureKernelShutdown();

@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 
 namespace BaksDev\Avito\Promotion\UseCase\Delete\Tests;
 
+use BaksDev\Avito\Promotion\Controller\Admin\Tests\DeleteAdminControllerTest;
 use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
 use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEvent;
 use BaksDev\Avito\Promotion\Entity\Event\AvitoPromotionEventInterface;
@@ -33,15 +34,13 @@ use BaksDev\Avito\Promotion\UseCase\NewEdit\Filter\AvitoPromotionFilterDTO;
 use BaksDev\Products\Category\Type\Section\Field\Id\CategoryProductSectionFieldUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DependsOnClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group avito-promotion
- *
- * @depends BaksDev\Avito\Promotion\Controller\Admin\Tests\DeleteControllerTest::class
- */
 #[When(env: 'test')]
+#[Group('avito-promotion')]
 class AvitoPromotionDeleteTest extends KernelTestCase
 {
     public static function tearDownAfterClass(): void
@@ -61,6 +60,7 @@ class AvitoPromotionDeleteTest extends KernelTestCase
         $em->clear();
     }
 
+    #[DependsOnClass(DeleteAdminControllerTest::class)]
     public function testDelete(): void
     {
         $container = self::getContainer();

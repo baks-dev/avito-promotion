@@ -25,18 +25,16 @@ namespace BaksDev\Avito\Promotion\Controller\Admin\Tests;
 
 use BaksDev\Avito\Promotion\Entity\AvitoPromotion;
 use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
+use BaksDev\Avito\Promotion\UseCase\NewEdit\Tests\AvitoPromotionNewTest;
 use BaksDev\Users\User\Tests\TestUserAccount;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DependsOnClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group avito-promotion
- * @group avito-promotion-edit
- *
- * @depends BaksDev\Avito\Promotion\UseCase\NewEdit\Tests\AvitoPromotionNewTest::class
- */
 #[When(env: 'test')]
+#[Group('avito-promotion')]
 final class EditControllerAdminTest extends WebTestCase
 {
     private const string ROLE = 'ROLE_AVITO_PROMOTION_EDIT';
@@ -76,6 +74,7 @@ final class EditControllerAdminTest extends WebTestCase
     }
 
     /** Доступ по роли */
+    #[DependsOnClass(AvitoPromotionNewTest::class)]
     public function testRoleSuccessful(): void
     {
         self::ensureKernelShutdown();
@@ -98,6 +97,7 @@ final class EditControllerAdminTest extends WebTestCase
     }
 
     /** Доступ по роли ROLE_ADMIN */
+    #[DependsOnClass(AvitoPromotionNewTest::class)]
     public function testRoleAdminSuccessful(): void
     {
         self::ensureKernelShutdown();
@@ -119,6 +119,7 @@ final class EditControllerAdminTest extends WebTestCase
     }
 
     /** Доступ по роли ROLE_USER */
+    #[DependsOnClass(AvitoPromotionNewTest::class)]
     public function testRoleUserDeny(): void
     {
         self::ensureKernelShutdown();
@@ -140,6 +141,7 @@ final class EditControllerAdminTest extends WebTestCase
     }
 
     /** Доступ без роли */
+    #[DependsOnClass(AvitoPromotionNewTest::class)]
     public function testGuestFiled(): void
     {
         self::ensureKernelShutdown();
