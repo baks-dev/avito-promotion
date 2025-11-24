@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2025.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ use BaksDev\Avito\Promotion\Type\AvitoPromotionUid;
 use BaksDev\Core\Doctrine\DBALQueryBuilder;
 use BaksDev\Core\Form\Search\SearchDTO;
 use BaksDev\Core\Services\Paginator\PaginatorInterface;
-use BaksDev\Elastic\Api\Index\ElasticGetIndex;
 use BaksDev\Products\Category\Entity\CategoryProduct;
 use BaksDev\Products\Category\Entity\Offers\CategoryProductOffers;
 use BaksDev\Products\Category\Entity\Offers\Variation\CategoryProductVariation;
@@ -56,7 +55,6 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
     public function __construct(
         private readonly DBALQueryBuilder $DBALQueryBuilder,
         private readonly PaginatorInterface $pagination,
-        private readonly ?ElasticGetIndex $elasticGetIndex = null,
     ) {}
 
     public function search(SearchDTO $search): self
@@ -229,43 +227,6 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
 
         if($this->search?->getQuery())
         {
-            /** Поиск по модификации */
-            $result = $this->elasticGetIndex ? $this->elasticGetIndex->handle(ProductModification::class, $this->search->getQuery(), 1) : false;
-
-            if($result)
-            {
-                $counter = $result['hits']['total']['value'];
-
-                if($counter)
-                {
-                    /** Идентификаторы */
-                    $data = array_column($result['hits']['hits'], "_source");
-
-                    $dbal
-                        ->createSearchQueryBuilder($this->search)
-                        ->addSearchInArray('product_modification.id', array_column($data, "id"));
-
-                    return $dbal;
-                }
-
-                /** Поиск по продукции */
-                $result = $this->elasticGetIndex->handle(Product::class, $this->search->getQuery(), 1);
-
-                $counter = $result['hits']['total']['value'];
-
-                if($counter)
-                {
-                    /** Идентификаторы */
-                    $data = array_column($result['hits']['hits'], "_source");
-
-                    $dbal
-                        ->createSearchQueryBuilder($this->search)
-                        ->addSearchInArray('product.id', array_column($data, "id"));
-
-                    return $dbal;
-                }
-            }
-
             $dbal
                 ->createSearchQueryBuilder($this->search)
                 ->addSearchEqualUid('account.id')
