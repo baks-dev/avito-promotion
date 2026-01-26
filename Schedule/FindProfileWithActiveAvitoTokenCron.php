@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace BaksDev\Avito\Promotion\Schedule;
 
 use BaksDev\Avito\Promotion\Messenger\Schedules\FindOrdersByAvitoPromotionCompany\FindOrdersByAvitoPromotionCompanyMessage;
-use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
+use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllProfilesByActiveTokenRepository;
 use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use Psr\Log\LoggerInterface;
@@ -40,13 +40,13 @@ final readonly class FindProfileWithActiveAvitoTokenCron
     public function __construct(
         #[Target('avitoPromotionLogger')] private LoggerInterface $logger,
         private MessageDispatchInterface $messageDispatch,
-        private AllUserProfilesByTokenRepository $allProfilesByToken,
+        private AllProfilesByActiveTokenRepository $allProfilesByToken,
     ) {}
 
     public function __invoke(): void
     {
         /** Получаем все активные профили, у которых активный токен Авито */
-        $profiles = $this->allProfilesByToken->findProfilesByActiveToken();
+        $profiles = $this->allProfilesByToken->findAll();
 
         if(false === $profiles->valid())
         {

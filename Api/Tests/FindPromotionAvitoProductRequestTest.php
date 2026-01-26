@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ namespace BaksDev\Avito\Promotion\Api\Tests;
 use BaksDev\Avito\Board\Api\GetIdByArticleRequest;
 use BaksDev\Avito\Promotion\Api\FindPromotionAvitoProductRequest;
 use BaksDev\Avito\Type\Authorization\AvitoTokenAuthorization;
+use BaksDev\Avito\Type\Id\AvitoTokenUid;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use PHPUnit\Framework\Attributes\DependsOnClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -43,7 +44,8 @@ class FindPromotionAvitoProductRequestTest extends KernelTestCase
     public static function setUpBeforeClass(): void
     {
         self::$authorization = new AvitoTokenAuthorization(
-            profile: new UserProfileUid(),
+            token: new AvitoTokenUid(AvitoTokenUid::TEST),
+            profile: new UserProfileUid(UserProfileUid::TEST),
             client: $_SERVER['TEST_AVITO_CLIENT'],
             secret: $_SERVER['TEST_AVITO_SECRET'],
             user: $_SERVER['TEST_AVITO_USER'],

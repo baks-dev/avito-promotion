@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2025.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,8 @@ namespace BaksDev\Avito\Promotion\Commands;
 use BaksDev\Avito\Promotion\Messenger\Schedules\AvitoProductPromotionMessage;
 use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionByPromotionCompany\AllAvitoPromotionByPromotionCompanyInterface;
 use BaksDev\Avito\Promotion\Repository\AllAvitoPromotionCompanyByProfile\AllAvitoPromotionCompanyByProfileInterface;
-use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByActiveTokenInterface;
-use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllUserProfilesByTokenRepository;
+use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllProfilesByActiveTokenInterface;
+use BaksDev\Avito\Repository\AllUserProfilesByActiveToken\AllProfilesByActiveTokenRepository;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
 use BaksDev\Users\Profile\UserProfile\Type\Id\UserProfileUid;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -49,7 +49,7 @@ class ApplyAvitoPromotionCommand extends Command
 
     public function __construct(
         private readonly MessageDispatchInterface $messageDispatch,
-        private readonly AllUserProfilesByActiveTokenInterface $allProfilesByToken,
+        private readonly AllProfilesByActiveTokenInterface $allProfilesByToken,
         private readonly AllAvitoPromotionCompanyByProfileInterface $allPromotionByProfile,
         private readonly AllAvitoPromotionByPromotionCompanyInterface $allAvitoPromotionByPromotionCompanyRepository,
     )
@@ -65,7 +65,7 @@ class ApplyAvitoPromotionCommand extends Command
         /** Получаем активные токены авторизации профилей Yandex Market */
         $profiles = $this
             ->allProfilesByToken
-            ->findProfilesByActiveToken();
+            ->findAll();
 
         if(false === $profiles->valid())
         {
