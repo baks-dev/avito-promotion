@@ -64,6 +64,8 @@ final readonly class CreateAvitoPromotionsHandler
      */
     public function __invoke(AvitoProductPromotionMessage $message): void
     {
+
+
         $deduplicator = $this->deduplicator
             ->namespace('avito-promotion')
             ->expiresAfter(DateInterval::createFromDateString('23 hours'))
