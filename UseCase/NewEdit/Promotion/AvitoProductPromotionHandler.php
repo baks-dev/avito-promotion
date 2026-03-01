@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright 2024.  Baks.dev <admin@baks.dev>
+ *  Copyright 2026.  Baks.dev <admin@baks.dev>
  *  
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -19,7 +19,6 @@
  *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
- *
  */
 
 declare(strict_types=1);
@@ -29,7 +28,9 @@ namespace BaksDev\Avito\Promotion\UseCase\NewEdit\Promotion;
 use BaksDev\Avito\Promotion\Entity\Promotion\AvitoProductPromotion;
 use BaksDev\Avito\Promotion\Messenger\Schedules\AvitoProductPromotionMessage;
 use BaksDev\Core\Entity\AbstractHandler;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
+#[Autoconfigure(public: true)]
 final class AvitoProductPromotionHandler extends AbstractHandler
 {
     public function handle(AvitoProductPromotionDTO $command): AvitoProductPromotion|string
