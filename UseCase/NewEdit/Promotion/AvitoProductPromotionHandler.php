@@ -30,7 +30,7 @@ use BaksDev\Avito\Promotion\Messenger\Schedules\AvitoProductPromotionMessage;
 use BaksDev\Core\Entity\AbstractHandler;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-#[Autoconfigure(public: true)]
+// #[Autoconfigure(public: true)]
 final class AvitoProductPromotionHandler extends AbstractHandler
 {
     public function handle(AvitoProductPromotionDTO $command): AvitoProductPromotion|string
