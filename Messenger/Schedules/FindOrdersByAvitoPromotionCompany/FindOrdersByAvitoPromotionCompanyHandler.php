@@ -104,8 +104,8 @@ final readonly class FindOrdersByAvitoPromotionCompanyHandler
                         $order['product_offer_const'],
                         $order['product_variation_const'],
                         $order['product_modification_const'],
-                        self::class
-                    ]
+                        self::class,
+                    ],
                 );
 
                 if($deduplicator->isExecuted())
@@ -113,7 +113,7 @@ final readonly class FindOrdersByAvitoPromotionCompanyHandler
                     $this->logger->warning(
                         sprintf(
                             'Рекламный продукт с артикулом %s уже сохранен и используется в другой рекламной компании',
-                            $order['product_article']
+                            $order['product_article'],
                         ),
                         [__FILE__.':'.__LINE__],
                     );

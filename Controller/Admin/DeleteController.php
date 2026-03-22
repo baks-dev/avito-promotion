@@ -64,7 +64,7 @@ final class DeleteController extends AbstractController
                 options: [
                     'action' => $this->generateUrl(
                         route: 'avito-promotion:admin.company.delete',
-                        parameters: ['id' => $deleteDTO->getEvent(),]
+                        parameters: ['id' => $deleteDTO->getEvent(),],
                     ),
                 ],
             )

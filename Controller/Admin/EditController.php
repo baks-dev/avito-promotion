@@ -63,7 +63,7 @@ final class EditController extends AbstractController
                     'action' => $this
                         ->generateUrl(
                             route: 'avito-promotion:admin.company.edit',
-                            parameters: ['id' => $event->getEvent(),]
+                            parameters: ['id' => $event->getEvent(),],
                         ),
                 ],
             )

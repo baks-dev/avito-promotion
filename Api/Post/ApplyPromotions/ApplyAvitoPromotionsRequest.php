@@ -69,7 +69,7 @@ final class ApplyAvitoPromotionsRequest extends AvitoApi
                 [
                     "json" => [
                         "slugs" => $this->slugs,
-                    ]
+                    ],
                 ],
             );
 

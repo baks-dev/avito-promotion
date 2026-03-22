@@ -47,7 +47,7 @@ final class GetAvitoPromotionPriceRequest extends AvitoApi
                 [
                     "json" => [
                         "itemIds" => $items,
-                    ]
+                    ],
                 ],
             );
 

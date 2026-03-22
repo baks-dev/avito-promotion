@@ -71,7 +71,7 @@ final class ProductsController extends AbstractController
             ->createForm(
                 type: SearchForm::class,
                 data: $search,
-                options: ['action' => $this->generateUrl('avito-promotion:admin.products.index', ['company' => $company])]
+                options: ['action' => $this->generateUrl('avito-promotion:admin.products.index', ['company' => $company])],
             )
             ->handleRequest($request);
 

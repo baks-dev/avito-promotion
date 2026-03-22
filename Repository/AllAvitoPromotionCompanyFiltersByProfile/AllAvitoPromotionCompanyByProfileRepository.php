@@ -122,7 +122,7 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
             ->setParameter(
                 'profile',
                 $this->profile,
-                UserProfileUid::TYPE
+                UserProfileUid::TYPE,
             );
 
         /**
@@ -169,7 +169,7 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
             ->setParameter(
                 'status',
                 UserProfileStatusActive::class,
-                UserProfileStatus::TYPE
+                UserProfileStatus::TYPE,
             );
 
 

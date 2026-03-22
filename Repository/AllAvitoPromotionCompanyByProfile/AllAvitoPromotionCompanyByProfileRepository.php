@@ -69,36 +69,6 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
         return $this->pagination->fetchAllAssociative($dbal);
     }
 
-    /**
-     * @return array{
-     * "id": string,
-     * "event": string,
-     * "promo_name": string,
-     * "promo_profile": string,
-     * "promo_date": string,
-     * "ext": string,
-     * "cdn": bool,
-     * "cover": string,
-     * "category_name": string,
-     * "category_description": string,
-     * }|false
-     */
-    public function find(): array|false
-    {
-        $dbal = $this->QueryBuilder();
-
-        $dbal->setMaxResults(1000);
-
-        $result = $dbal->fetchAllAssociative();
-
-        if(empty($result))
-        {
-            return false;
-        }
-
-        return $result;
-    }
-
     private function QueryBuilder(): DBALQueryBuilder
     {
         if(false === $this->profile)
@@ -130,7 +100,7 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
             ->setParameter(
                 'profile',
                 $this->profile,
-                UserProfileUid::TYPE
+                UserProfileUid::TYPE,
             );
 
 
@@ -182,5 +152,35 @@ final class AllAvitoPromotionCompanyByProfileRepository implements AllAvitoPromo
             );
 
         return $dbal;
+    }
+
+    /**
+     * @return array{
+     * "id": string,
+     * "event": string,
+     * "promo_name": string,
+     * "promo_profile": string,
+     * "promo_date": string,
+     * "ext": string,
+     * "cdn": bool,
+     * "cover": string,
+     * "category_name": string,
+     * "category_description": string,
+     * }|false
+     */
+    public function find(): array|false
+    {
+        $dbal = $this->QueryBuilder();
+
+        $dbal->setMaxResults(1000);
+
+        $result = $dbal->fetchAllAssociative();
+
+        if(empty($result))
+        {
+            return false;
+        }
+
+        return $result;
     }
 }

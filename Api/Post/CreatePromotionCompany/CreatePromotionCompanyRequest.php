@@ -114,7 +114,7 @@ final class CreatePromotionCompanyRequest extends AvitoApi
                 '/autostrategy/v1/campaign/create',
                 [
                     'json' => $body,
-                ]
+                ],
             );
 
             $result = $request->toArray(false);
@@ -124,7 +124,7 @@ final class CreatePromotionCompanyRequest extends AvitoApi
         {
             $this->logger->critical(
                 sprintf('avito-promotion: Ошибка при создании рекламной компании для продукта с артикулом %s', $this->article),
-                [__FILE__.':'.__LINE__, $exception]
+                [__FILE__.':'.__LINE__, $exception],
             );
 
             return false;
@@ -134,7 +134,7 @@ final class CreatePromotionCompanyRequest extends AvitoApi
         {
             $this->logger->critical(
                 sprintf('avito-promotion: Ошибка при создании рекламной компании для продукта с артикулом %s', $this->article),
-                [__FILE__.':'.__LINE__, $result, $body]
+                [__FILE__.':'.__LINE__, $result, $body],
             );
 
             return false;

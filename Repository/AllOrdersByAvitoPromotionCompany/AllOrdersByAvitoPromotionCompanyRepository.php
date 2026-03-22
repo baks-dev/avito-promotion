@@ -420,7 +420,7 @@ final class AllOrdersByAvitoPromotionCompanyRepository implements AllOrdersByAvi
                         '
                             product_property_'.$uniqueTable.'.field = :'.$uniqueField.' AND 
                             product_property_'.$uniqueTable.'.value = :'.$uniqueValue.' AND
-                            product_property_'.$uniqueTable.'.event = orders_product.product'
+                            product_property_'.$uniqueTable.'.event = orders_product.product',
                     );
 
                 $dbal->setParameter($uniqueField, $property->property);

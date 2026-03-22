@@ -135,7 +135,7 @@ final readonly class CreateAvitoProductPromotionHandler
                 sprintf(
                     'avito-promotion: Ошибка %s при создании/обновлении рекламного продукта: %s',
                     $result,
-                    $avitoProductPromotionDTO->getArticle()
+                    $avitoProductPromotionDTO->getArticle(),
                 ),
                 [self::class.':'.__LINE__],
             );

@@ -301,6 +301,7 @@ final class AvitoPromotionForm extends AbstractType
     {
         /**
          * Массив с элементами "свойства продукта"
+         *
          * @var list<CategoryProductSectionFieldUid> $productProperties
          */
         $productProperties = $this->propertyFields

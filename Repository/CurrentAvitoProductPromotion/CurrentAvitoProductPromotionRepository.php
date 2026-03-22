@@ -141,7 +141,7 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
             ->setParameter(
                 key: 'profile',
                 value: $this->profile,
-                type: UserProfileUid::TYPE
+                type: UserProfileUid::TYPE,
             );
 
         $orm
@@ -149,7 +149,7 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
             ->setParameter(
                 key: 'product',
                 value: $this->product,
-                type: ProductUid::TYPE
+                type: ProductUid::TYPE,
             );
 
         if(false === $this->offer)
@@ -163,7 +163,7 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
                 ->setParameter(
                     key: 'offer',
                     value: $this->offer,
-                    type: ProductOfferConst::TYPE
+                    type: ProductOfferConst::TYPE,
                 );
         }
 
@@ -178,7 +178,7 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
                 ->setParameter(
                     key: 'variation',
                     value: $this->variation,
-                    type: ProductVariationConst::TYPE
+                    type: ProductVariationConst::TYPE,
                 );
         }
 
@@ -193,7 +193,7 @@ final class CurrentAvitoProductPromotionRepository implements CurrentAvitoProduc
                 ->setParameter(
                     key: 'modification',
                     value: $this->modification,
-                    type: ProductModificationConst::TYPE
+                    type: ProductModificationConst::TYPE,
                 );
         }
 

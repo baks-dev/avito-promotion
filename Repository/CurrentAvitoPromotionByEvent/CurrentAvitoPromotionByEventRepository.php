@@ -55,14 +55,14 @@ final readonly class CurrentAvitoPromotionByEventRepository implements CurrentAv
             ->setParameter(
                 key: 'main',
                 value: $main,
-                type: AvitoPromotionUid::TYPE
+                type: AvitoPromotionUid::TYPE,
             );
 
         $orm->join(
             AvitoPromotion::class,
             'main',
             Join::WITH,
-            'main.event = event.id'
+            'main.event = event.id',
         );
 
         return $orm->getOneOrNullResult() ?: false;

@@ -82,6 +82,15 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
         return $this;
     }
 
+    /**
+     * Метод получает пагинатор рекламируемых продуктов в настоящий момент
+     */
+    public function findPaginator(): PaginatorInterface
+    {
+        $dbal = $this->QueryBuilder();
+
+        return $this->pagination->fetchAllAssociative($dbal);
+    }
 
     private function queryBuilder(): DBALQueryBuilder
     {
@@ -111,7 +120,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'avito_promotion_product',
                 Product::class,
                 'product',
-                'product.id = avito_promotion_product.product'
+                'product.id = avito_promotion_product.product',
             );
 
         /** Название продукта */
@@ -123,7 +132,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_trans',
                 '
                     product_trans.event = product.event AND 
-                    product_trans.local = :local'
+                    product_trans.local = :local',
             );
 
         /** Категория */
@@ -134,14 +143,14 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_category',
                 '
                     product_category.event = product.event AND 
-                    product_category.root = true'
+                    product_category.root = true',
             );
 
         $dbal->join(
             'product_category',
             CategoryProduct::class,
             'category',
-            'category.id = product_category.category'
+            'category.id = product_category.category',
         );
 
         /** Название категории */
@@ -153,7 +162,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'category_trans',
                 '
                     category_trans.event = category.event AND 
-                    category_trans.local = :local'
+                    category_trans.local = :local',
             );
 
         /** OFFER */
@@ -166,7 +175,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_offer',
                 '
                     product_offer.event = product.event AND
-                    product_offer.const = avito_promotion_product.offer'
+                    product_offer.const = avito_promotion_product.offer',
             );
 
         /** ТИП торгового предложения */
@@ -176,7 +185,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_offer',
                 CategoryProductOffers::class,
                 'product_category_offers',
-                'product_category_offers.id = product_offer.category_offer'
+                'product_category_offers.id = product_offer.category_offer',
             );
 
         /** VARIATION */
@@ -189,7 +198,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_variation',
                 '
                     product_variation.offer = product_offer.id AND
-                    product_variation.const = avito_promotion_product.variation'
+                    product_variation.const = avito_promotion_product.variation',
             );
 
         /** ТИП варианта торгового предложения */
@@ -199,7 +208,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_variation',
                 CategoryProductVariation::class,
                 'category_offer_variation',
-                'category_offer_variation.id = product_variation.category_variation'
+                'category_offer_variation.id = product_variation.category_variation',
             );
 
         /** MODIFICATION */
@@ -212,7 +221,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_modification',
                 '
                     product_modification.variation = product_variation.id AND
-                    product_modification.const = avito_promotion_product.modification'
+                    product_modification.const = avito_promotion_product.modification',
             );
 
         /** ТИП модификации множественного варианта */
@@ -222,7 +231,7 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
                 'product_modification',
                 CategoryProductModification::class,
                 'category_offer_modification',
-                'category_offer_modification.id = product_modification.category_modification'
+                'category_offer_modification.id = product_modification.category_modification',
             );
 
         if($this->search?->getQuery())
@@ -236,16 +245,6 @@ final class AllAvitoPromotionByPromotionCompanyRepository implements AllAvitoPro
         }
 
         return $dbal;
-    }
-
-    /**
-     * Метод получает пагинатор рекламируемых продуктов в настоящий момент
-     */
-    public function findPaginator(): PaginatorInterface
-    {
-        $dbal = $this->QueryBuilder();
-
-        return $this->pagination->fetchAllAssociative($dbal);
     }
 
     /**

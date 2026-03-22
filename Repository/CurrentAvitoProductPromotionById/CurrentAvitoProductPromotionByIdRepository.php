@@ -53,7 +53,7 @@ final readonly class CurrentAvitoProductPromotionByIdRepository implements Curre
             ->setParameter(
                 key: 'promotion',
                 value: $promotion,
-                type: AvitoProductPromotionUid::TYPE
+                type: AvitoProductPromotionUid::TYPE,
             );
 
         return $orm->getOneOrNullResult() ?: false;

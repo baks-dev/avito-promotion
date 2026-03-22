@@ -82,7 +82,7 @@ class UpdateAvitoPromotionCompanyCommand extends Command
         $question = new ChoiceQuestion(
             'Профиль пользователя',
             $questions,
-            0
+            0,
         );
 
         $profileName = $helper->ask($input, $output, $question);

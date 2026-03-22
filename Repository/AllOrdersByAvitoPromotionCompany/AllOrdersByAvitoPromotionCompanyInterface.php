@@ -28,7 +28,8 @@ use BaksDev\Products\Category\Type\Id\CategoryProductUid;
 use DateInterval;
 
 /**
- * Репозиторий возвращает все заказы, попадающие под фильтр из рекламной компании по соответствию Offer, Variation, Modification, Property.
+ * Репозиторий возвращает все заказы, попадающие под фильтр из рекламной компании по соответствию Offer, Variation,
+ * Modification, Property.
  */
 interface AllOrdersByAvitoPromotionCompanyInterface
 {

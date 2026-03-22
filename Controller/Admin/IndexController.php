@@ -57,7 +57,7 @@ final class IndexController extends AbstractController
             ->createForm(
                 type: SearchForm::class,
                 data: $search,
-                options: ['action' => $this->generateUrl('avito-promotion:admin.company.index')]
+                options: ['action' => $this->generateUrl('avito-promotion:admin.company.index')],
             )
             ->handleRequest($request);
 
