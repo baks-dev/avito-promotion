@@ -28,7 +28,7 @@ namespace BaksDev\Avito\Promotion\Api\Get\CpxPromo;
 use BaksDev\Avito\Api\AvitoApi;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-// #[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 final class GetCpxPromoRequest extends AvitoApi
 {
     /**

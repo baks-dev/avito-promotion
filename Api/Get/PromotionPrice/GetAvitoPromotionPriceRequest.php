@@ -29,7 +29,7 @@ use BaksDev\Avito\Api\AvitoApi;
 use Generator;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-// #[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 final class GetAvitoPromotionPriceRequest extends AvitoApi
 {
     /**

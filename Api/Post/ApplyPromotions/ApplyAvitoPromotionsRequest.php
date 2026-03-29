@@ -29,7 +29,7 @@ use BaksDev\Avito\Api\AvitoApi;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-// #[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 final class ApplyAvitoPromotionsRequest extends AvitoApi
 {
     private array|null $slugs = null;

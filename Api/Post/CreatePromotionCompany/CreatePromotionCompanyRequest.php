@@ -33,7 +33,7 @@ use Exception;
 use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
-// #[Autoconfigure(public: true)]
+#[Autoconfigure(shared: false)]
 final class CreatePromotionCompanyRequest extends AvitoApi
 {
     private string|false $article = false;
